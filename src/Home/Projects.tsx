@@ -1,116 +1,123 @@
+import { ExternalLink, CheckCircle, Code2, Users } from 'lucide-react';
+
 export const Projects = () => {
-    const projects = [
-        {
-            id: 1,
-            title: "Campus Connect",
-            description: "A social platform connecting students across departments",
-            tech: ["React", "Node.js", "MongoDB"],
-            author: "Team Alpha",
-            stars: 45,
-            link: "https://github.com"
-        },
-        {
-            id: 2,
-            title: "SmartAttendance AI",
-            description: "Facial recognition attendance system using machine learning",
-            tech: ["Python", "TensorFlow", "OpenCV"],
-            author: "Team Beta",
-            stars: 62,
-            link: "https://github.com"
-        },
-        {
-            id: 3,
-            title: "EcoTrack",
-            description: "Environmental monitoring and sustainability tracking app",
-            tech: ["Flutter", "Firebase", "IoT"],
-            author: "Team Gamma",
-            stars: 38,
-            link: "https://github.com"
-        },
-        {
-            id: 4,
-            title: "CodeMentor",
-            description: "Peer-to-peer programming learning platform",
-            tech: ["Vue.js", "Django", "PostgreSQL"],
-            author: "Team Delta",
-            stars: 51,
-            link: "https://github.com"
-        }
-    ];
-
     return (
-        <section className="py-20 bg-white">
+        <section className="py-20 bg-gray-50 relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Section Header */}
-                <div className="mb-12">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="w-1 h-8 bg-[#f59e0b]"></div>
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Student Projects</h2>
-                    </div>
-                    <p className="text-gray-600 text-lg ml-4">Innovative solutions built by our members</p>
-                </div>
+                <div className="grid lg:grid-cols-2 gap-16 items-center">
+                    {/* Left Side - Content */}
+                    <div className="order-2 lg:order-1">
+                        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 italic leading-tight">
+                            Discover more than a classroom — join a{' '}
+                            <span className="text-blue-900">tech community.</span>
+                        </h2>
 
-                {/* Projects Grid */}
-                <div className="grid md:grid-cols-2 gap-6">
-                    {projects.map((project) => (
-                        <div
-                            key={project.id}
-                            className="bg-white rounded-lg shadow-sm hover:shadow-md p-6 group transition-all duration-300 border border-gray-100"
-                        >
-                            <div className="flex items-start justify-between mb-4">
-                                <h3 className="text-xl font-bold text-gray-900 group-hover:text-[#f59e0b] transition-colors">
-                                    {project.title}
-                                </h3>
-                                <div className="flex items-center gap-1 text-gray-500">
-                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                    </svg>
-                                    <span className="text-sm font-semibold">{project.stars}</span>
-                                </div>
+                        <div className="space-y-4 mb-8">
+                            <div className="flex items-start gap-3">
+                                <CheckCircle className="w-5 h-5 text-blue-900 mt-1 shrink-0" />
+                                <p className="text-gray-700 leading-relaxed">
+                                    Access world-class student projects from{' '}
+                                    <a href="/departments/software-engineering" className="text-blue-600 hover:underline font-medium">Software Engineering</a>,{' '}
+                                    <a href="/departments/bbit" className="text-blue-600 hover:underline font-medium">BBIT</a>, and{' '}
+                                    <a href="/departments/data-analytics" className="text-blue-600 hover:underline font-medium">Data Analytics</a> departments.
+                                </p>
                             </div>
 
-                            <p className="text-gray-600 mb-4 text-sm">{project.description}</p>
-
-                            {/* Tech Stack */}
-                            <div className="flex flex-wrap gap-2 mb-4">
-                                {project.tech.map((tech, index) => (
-                                    <span
-                                        key={index}
-                                        className="text-xs font-mono bg-gray-100 text-gray-700 px-3 py-1 border border-gray-200"
-                                    >
-                                        {tech}
-                                    </span>
-                                ))}
+                            <div className="flex items-start gap-3">
+                                <CheckCircle className="w-5 h-5 text-blue-900 mt-1 shrink-0" />
+                                <p className="text-gray-700 leading-relaxed">
+                                    Learn from innovative BITSA student solutions in Web Development, Mobile Apps, AI, IoT, and Cyber Security.
+                                </p>
                             </div>
 
-                            {/* Footer */}
-                            <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                                <span className="text-sm text-gray-500">{project.author}</span>
-                                <a
-                                    href={project.link}
-                                    className="inline-flex items-center gap-1 text-sm font-medium text-[#1e3a8a] hover:text-[#f59e0b] transition-colors"
-                                >
-                                    View Project
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                    </svg>
-                                </a>
+                            <div className="flex items-start gap-3">
+                                <CheckCircle className="w-5 h-5 text-blue-900 mt-1 shrink-0" />
+                                <p className="text-gray-700 leading-relaxed">
+                                    Connect with BITSA's network of ambitious student developers and tech innovators.
+                                </p>
+                            </div>
+
+                            <div className="flex items-start gap-3">
+                                <CheckCircle className="w-5 h-5 text-blue-900 mt-1 shrink-0" />
+                                <p className="text-gray-700 leading-relaxed">
+                                    Find a range of student projects covering diverse topics and technologies for all skill levels.
+                                </p>
+                            </div>
+
+                            <div className="flex items-start gap-3">
+                                <CheckCircle className="w-5 h-5 text-blue-900 mt-1 shrink-0" />
+                                <p className="text-gray-700 leading-relaxed">
+                                    Engage with student projects via searchable filters, detailed showcases, and GitHub repositories.
+                                </p>
                             </div>
                         </div>
-                    ))}
-                </div>
 
-                {/* View All Button */}
-                <div className="text-center mt-12">
-                    <a
-                        href="/projects"
-                        className="inline-flex items-center gap-2 text-[#1e3a8a] font-semibold hover:text-[#f59e0b] transition-colors group"
-                    >
-                        Explore All Projects
-                        <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
-                    </a>
+                        <a
+                            href="/projects"
+                            className="inline-flex items-center gap-2 px-8 py-3 bg-blue-900 text-white rounded-lg hover:bg-blue-800 transition-all font-semibold shadow-md hover:shadow-lg"
+                        >
+                            Explore All Projects
+                            <ExternalLink className="w-5 h-5" />
+                        </a>
+                    </div>
+
+                    {/* Right Side - Image with Diagonal Crop */}
+                    <div className="order-1 lg:order-2 relative">
+                        {/* Diagonal cropped image container */}
+                        <div className="relative" style={{ clipPath: 'polygon(0 5%, 100% 0, 100% 95%, 0 100%)' }}>
+                            <div className="relative overflow-hidden shadow-2xl">
+                                <img
+                                    src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&q=80"
+                                    alt="BITSA students collaborating on projects"
+                                    className="w-full h-[500px] object-cover"
+                                />
+                                {/* Gradient Overlay */}
+                                <div className="absolute inset-0 bg-gradient-to-tr from-blue-900/60 via-transparent to-transparent"></div>
+
+                                {/* Stats Overlay */}
+                                <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/70 to-transparent">
+                                    <div className="flex items-center justify-between text-white">
+                                        <div>
+                                            <h3 className="text-2xl font-bold mb-1">Student Projects</h3>
+                                            <p className="text-blue-200 text-sm">Built by BITSA members</p>
+                                        </div>
+                                        <div className="flex gap-6">
+                                            <div className="text-center">
+                                                <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2 mb-2">
+                                                    <Code2 className="w-5 h-5 text-orange-400" />
+                                                    <span className="text-2xl font-bold">50+</span>
+                                                </div>
+                                                <p className="text-xs text-blue-200">Projects</p>
+                                            </div>
+                                            <div className="text-center">
+                                                <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2 mb-2">
+                                                    <Users className="w-5 h-5 text-orange-400" />
+                                                    <span className="text-2xl font-bold">100+</span>
+                                                </div>
+                                                <p className="text-xs text-blue-200">Students</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Featured Projects Badge */}
+                        <div className="absolute -top-6 -right-6 bg-orange-500 text-white rounded-lg p-5 shadow-xl z-10">
+                            <div className="text-center">
+                                <Code2 className="w-8 h-8 mx-auto mb-2" />
+                                <p className="text-xs font-semibold">Featured</p>
+                                <p className="text-xs">Showcase</p>
+                            </div>
+                        </div>
+
+                        {/* Decorative dots */}
+                        <div className="absolute -bottom-4 -left-4 w-24 h-24 grid grid-cols-4 gap-2 opacity-20">
+                            {[...Array(16)].map((_, i) => (
+                                <div key={i} className="w-2 h-2 bg-blue-900 rounded-full"></div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>

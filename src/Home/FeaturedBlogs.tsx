@@ -51,7 +51,7 @@ export const FeaturedBlogs = () => {
                 {/* Header Section */}
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-12">
                     <div>
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Latest Articles</h2>
+                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Latest Blogs</h2>
                         <p className="text-gray-600 text-lg">Insights and stories from our tech community</p>
                     </div>
 
@@ -73,7 +73,7 @@ export const FeaturedBlogs = () => {
                             href="/blogs"
                             className="px-6 py-3 border-2 border-blue-900 text-blue-900 font-semibold rounded-lg hover:bg-blue-900 hover:text-white transition-all whitespace-nowrap"
                         >
-                            View All Articles
+                            View All Blogs
                         </a>
                     </div>
                 </div>
@@ -138,36 +138,6 @@ export const FeaturedBlogs = () => {
                         </div>
                     )}
                 </div>
-
-                {/* Editorial Team Section */}
-                {filteredBlogs.length > 0 && (
-                    <div className="mt-16 bg-blue-900 rounded-lg p-8 text-white">
-                        <div className="flex items-center gap-3 mb-6">
-                            <User className="w-6 h-6" />
-                            <h3 className="text-2xl font-bold">Editorial Team</h3>
-                        </div>
-                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            {[
-                                { name: "Prof. Paul Samuel Francis", role: "Editor-in-Chief", avatar: "https://ui-avatars.com/api/?name=Paul+Francis&background=f59e0b&color=fff" },
-                                { name: "Prof. Catherine Amino", role: "Associate Editor", avatar: "https://ui-avatars.com/api/?name=Catherine+Amino&background=1e3a8a&color=fff" },
-                                { name: "Dr. Antony Oteng'o", role: "Associate Editor", avatar: "https://ui-avatars.com/api/?name=Antony+Otengo&background=f59e0b&color=fff" },
-                                { name: "Prof. Ramesh Francis", role: "Managing Editor", avatar: "https://ui-avatars.com/api/?name=Ramesh+Francis&background=1e3a8a&color=fff" }
-                            ].map((editor, index) => (
-                                <div key={index} className="flex items-center gap-3">
-                                    <img
-                                        src={editor.avatar}
-                                        alt={editor.name}
-                                        className="w-12 h-12 rounded-full"
-                                    />
-                                    <div>
-                                        <p className="font-semibold text-sm">{editor.name}</p>
-                                        <p className="text-xs text-blue-200">{editor.role}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
             </div>
         </section>
     );
