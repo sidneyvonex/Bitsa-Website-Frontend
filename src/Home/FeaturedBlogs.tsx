@@ -46,7 +46,7 @@ export const FeaturedBlogs = () => {
     );
 
     return (
-        <section className="py-20 bg-gray-50">
+        <section className="py-20 bg-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header Section */}
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-12">

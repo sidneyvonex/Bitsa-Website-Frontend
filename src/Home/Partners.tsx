@@ -15,7 +15,7 @@ export const Partners = () => {
     ];
 
     return (
-        <section className="py-20 bg-gray-50 overflow-hidden">
+        <section className="py-20 bg-white overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Section Header */}
                 <div className="mb-12 text-center">
@@ -26,8 +26,8 @@ export const Partners = () => {
                 {/* Infinite Scrolling Partners */}
                 <div className="relative partner-carousel">
                     {/* Gradient Overlays */}
-                    <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none"></div>
-                    <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-gray-50 to-transparent z-10 pointer-events-none"></div>
+                    <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
+                    <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
 
                     {/* Scrolling Container */}
                     <div className="flex overflow-hidden py-8">

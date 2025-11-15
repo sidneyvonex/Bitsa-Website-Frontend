@@ -59,7 +59,7 @@ export const Footer = () => {
           </div>
         </div>
       </div>
-      <div className="bg-[#f59e0b] py-4">
+      <div className="bg-[#f59e0b]/80 py-4 backdrop-blur-sm border-t border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <p className="text-white text-sm text-center">
             Copyright © 2025, BITSA | All Right Reserved

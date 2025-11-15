@@ -134,24 +134,60 @@ export const Topbar = () => {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                 </svg>
                             </button>
-                            <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                            <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 py-1">
                                 <button
                                     onClick={() => setLanguage('en')}
-                                    className={`block w-full text-left px-4 py-2 hover:bg-gray-50 rounded-t-lg ${language === 'en' ? 'bg-blue-50 text-blue-600 font-semibold' : 'text-gray-700'}`}
+                                    className={`block w-full text-left px-4 py-2.5 hover:bg-gray-50 ${language === 'en' ? 'bg-blue-50 text-blue-600 font-semibold' : 'text-gray-700'}`}
                                 >
                                     English
                                 </button>
                                 <button
                                     onClick={() => setLanguage('sw')}
-                                    className={`block w-full text-left px-4 py-2 hover:bg-gray-50 ${language === 'sw' ? 'bg-blue-50 text-blue-600 font-semibold' : 'text-gray-700'}`}
+                                    className={`block w-full text-left px-4 py-2.5 hover:bg-gray-50 ${language === 'sw' ? 'bg-blue-50 text-blue-600 font-semibold' : 'text-gray-700'}`}
                                 >
                                     Kiswahili
                                 </button>
                                 <button
                                     onClick={() => setLanguage('fr')}
-                                    className={`block w-full text-left px-4 py-2 hover:bg-gray-50 rounded-b-lg ${language === 'fr' ? 'bg-blue-50 text-blue-600 font-semibold' : 'text-gray-700'}`}
+                                    className={`block w-full text-left px-4 py-2.5 hover:bg-gray-50 ${language === 'fr' ? 'bg-blue-50 text-blue-600 font-semibold' : 'text-gray-700'}`}
                                 >
                                     Français
+                                </button>
+                                <div className="border-t border-gray-200 my-1"></div>
+                                <button
+                                    className="block w-full text-left px-4 py-2.5 hover:bg-gray-50 text-gray-700"
+                                >
+                                    Bahasa Indonesia
+                                </button>
+                                <button
+                                    className="block w-full text-left px-4 py-2.5 hover:bg-gray-50 text-gray-700"
+                                >
+                                    Deutsch
+                                </button>
+                                <button
+                                    className="block w-full text-left px-4 py-2.5 hover:bg-gray-50 text-gray-700"
+                                >
+                                    Español
+                                </button>
+                                <button
+                                    className="block w-full text-left px-4 py-2.5 hover:bg-gray-50 text-gray-700"
+                                >
+                                    Italiano
+                                </button>
+                                <button
+                                    className="block w-full text-left px-4 py-2.5 hover:bg-gray-50 text-gray-700"
+                                >
+                                    Português
+                                </button>
+                                <button
+                                    className="block w-full text-left px-4 py-2.5 hover:bg-gray-50 text-gray-700"
+                                >
+                                    日本語
+                                </button>
+                                <button
+                                    className="block w-full text-left px-4 py-2.5 hover:bg-gray-50 text-gray-700"
+                                >
+                                    한국어
                                 </button>
                             </div>
                         </div>
