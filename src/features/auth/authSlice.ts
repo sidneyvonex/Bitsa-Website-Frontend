@@ -43,12 +43,12 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.token = action.payload.token;
       state.isAuthenticated = true;
-      
+
       if (action.payload.refreshToken) {
         state.refreshToken = action.payload.refreshToken;
         localStorage.setItem('refreshToken', action.payload.refreshToken);
       }
-      
+
       localStorage.setItem('token', action.payload.token);
     },
     logout: (state) => {
@@ -56,7 +56,7 @@ const authSlice = createSlice({
       state.token = null;
       state.refreshToken = null;
       state.isAuthenticated = false;
-      
+
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
     },

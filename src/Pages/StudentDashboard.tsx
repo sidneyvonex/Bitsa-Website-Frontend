@@ -9,7 +9,7 @@ import { useCheckMyInterestsQuery } from '../features/api';
 const StudentDashboard = () => {
   const user = useAppSelector(selectCurrentUser);
   const [interestsCompleted, setInterestsCompleted] = useState(false);
-  
+
   // Check if user has selected interests
   const { data: interestsCheck, isLoading } = useCheckMyInterestsQuery(undefined, {
     skip: !user || user.role !== 'Student',
@@ -40,7 +40,7 @@ const StudentDashboard = () => {
       <DashboardLayout userRole="Student">
         <StudentDashboardOverview />
       </DashboardLayout>
-      
+
       {user && user.role === 'Student' && (
         <InterestSelectionModal
           isOpen={shouldShowModal}

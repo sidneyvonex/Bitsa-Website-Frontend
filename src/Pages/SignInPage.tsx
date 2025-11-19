@@ -72,23 +72,23 @@ export const SignInPage: React.FC = () => {
                 navigate('/dashboard');
             }
         } catch (err) {
-            const error = err as { 
-                data?: { 
+            const error = err as {
+                data?: {
                     message?: string;
                     error?: string;
                 };
                 status?: number;
             };
             console.error('Login failed:', err);
-            
+
             // Check if error is due to unverified email
             const errorMessage = error?.data?.message?.toLowerCase() || error?.data?.error?.toLowerCase() || '';
-            const isVerificationError = 
-                errorMessage.includes('verify') || 
+            const isVerificationError =
+                errorMessage.includes('verify') ||
                 errorMessage.includes('verification') ||
                 errorMessage.includes('not verified') ||
                 errorMessage.includes('email verification');
-                
+
             if (isVerificationError) {
                 setShowEmailVerification(true);
                 setLocalError('Your email is not verified. Please check your email for the verification link or resend it below.');
@@ -151,11 +151,10 @@ export const SignInPage: React.FC = () => {
                             </h2>
 
                             {(localError || error) && (
-                                <div className={`mb-4 p-3 border rounded-lg text-sm ${
-                                    showEmailVerification 
+                                <div className={`mb-4 p-3 border rounded-lg text-sm ${showEmailVerification
                                         ? 'bg-yellow-50 border-yellow-200 text-yellow-800'
                                         : 'bg-red-50 border-red-200 text-red-600'
-                                }`}>
+                                    }`}>
                                     <div className="flex items-start gap-2">
                                         {showEmailVerification && <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />}
                                         <div className="flex-1">

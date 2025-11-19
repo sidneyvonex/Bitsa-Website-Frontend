@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useAppSelector } from '../../app/hooks';
 import { selectCurrentUser } from '../../features/auth/authSlice';
-import { 
-    useGetAllEventsQuery, 
-    useGetAllCommunitiesQuery, 
+import {
+    useGetAllEventsQuery,
+    useGetAllCommunitiesQuery,
     useGetAllBlogsQuery,
-    useGetMyInterestsQuery 
+    useGetMyInterestsQuery
 } from '../../features/api';
 import {
     Search,
