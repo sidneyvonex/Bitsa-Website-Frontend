@@ -55,16 +55,7 @@ export const DashboardTopbar = ({ onToggleSidebar }: DashboardTopbarProps) => {
 
                 {/* Right Section */}
                 <div className="flex items-center gap-2">
-                    {/* Time remaining badge */}
-                    <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg mr-2">
-                        <Clock className="w-4 h-4 text-gray-500" />
-                        <span className="text-xs text-gray-600">1 Hour remaining</span>
-                    </div>
-
-                    {/* New Courses Button */}
-                    <button className="hidden sm:flex items-center gap-2 px-4 py-2 bg-[#4361c7] hover:bg-[#3651b7] text-white rounded-lg text-sm font-medium transition-colors">
-                        New Courses
-                    </button>
+                    {/* Removed demo time badge and demo courses button */}
 
                     {/* Refresh Button */}
                     <button className="p-2 hover:bg-gray-50 rounded-lg transition-colors">

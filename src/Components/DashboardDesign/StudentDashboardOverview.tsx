@@ -22,20 +22,7 @@ import {
 import { CalendarWidget } from './CalendarWidget';
 import { QuickLinks } from './QuickLinks';
 
-interface Course {
-    id: string;
-    subject: string;
-    code: string;
-    progress: number;
-    color: string;
-}
-
-interface Result {
-    subject: string;
-    quiz: string;
-    score: number;
-    color: string;
-}
+// Removed demo Course and Result interfaces - real data should come from APIs
 
 export const StudentDashboardOverview = () => {
     const user = useAppSelector(selectCurrentUser);
@@ -49,23 +36,7 @@ export const StudentDashboardOverview = () => {
     const userName = user?.firstName || 'Student';
     const myInterests = myInterestsData?.data || [];
 
-    // Mock course data - can be replaced with real API data
-    const courses: Course[] = [
-        { id: '1', subject: 'English', code: 'BCS-4A', progress: 70, color: 'bg-yellow-500' },
-        { id: '2', subject: 'Science', code: 'BCS-4A', progress: 30, color: 'bg-red-500' },
-        { id: '3', subject: 'Social', code: 'BCS-4A', progress: 50, color: 'bg-gray-500' },
-        { id: '4', subject: 'Projects', code: 'BCS-4A', progress: 40, color: 'bg-orange-500' },
-        { id: '5', subject: 'Arts', code: 'BCS-4A', progress: 100, color: 'bg-green-500' },
-    ];
-
-    // Mock results data - can be replaced with real API data
-    const results: Result[] = [
-        { subject: 'English', quiz: 'Quiz: 01', score: 37, color: 'bg-red-400' },
-        { subject: 'English', quiz: 'Quiz: 02', score: 87, color: 'bg-green-400' },
-        { subject: 'Science', quiz: 'Quiz: 01', score: 50, color: 'bg-gray-500' },
-        { subject: 'English', quiz: 'Quiz: 01', score: 37, color: 'bg-red-400' },
-        { subject: 'English', quiz: 'Quiz: 01', score: 100, color: 'bg-blue-500' },
-    ];
+    // Demo data removed. Courses and results should be fetched from APIs.
 
     const overallProgress = 80;
 
@@ -174,106 +145,16 @@ export const StudentDashboardOverview = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Your Courses Section */}
-                <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm p-6">
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-xl font-bold text-gray-800">Your Courses</h2>
-                        <div className="flex items-center space-x-2">
-                            <div className="relative">
-                                <input
-                                    type="text"
-                                    placeholder="Search Course"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                />
-                                <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                            </div>
-                            <button className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                                <Filter className="w-5 h-5 text-gray-600" />
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Course List */}
-                    <div className="space-y-4">
-                        {courses.map((course) => (
-                            <div
-                                key={course.id}
-                                className="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:shadow-md transition-shadow"
-                            >
-                                <div className="flex items-center space-x-4 flex-1">
-                                    <div className={`w-12 h-12 ${course.color} rounded-lg flex items-center justify-center text-white font-bold`}>
-                                        {course.subject.charAt(0)}
-                                    </div>
-                                    <div className="flex-1">
-                                        <div className="flex items-center space-x-2 mb-1">
-                                            <h3 className="font-semibold text-gray-800">{course.subject}</h3>
-                                            <span className="text-sm text-gray-500">{course.code}</span>
-                                        </div>
-                                        <div className="flex items-center space-x-4 text-sm text-gray-600">
-                                            <span className="font-medium">{course.progress}%</span>
-                                            <div className="flex-1 max-w-xs">
-                                                <div className="w-full bg-gray-200 rounded-full h-2">
-                                                    <div
-                                                        className={`h-2 rounded-full ${course.color}`}
-                                                        style={{ width: `${course.progress}%` }}
-                                                    ></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button className="ml-4 px-4 py-2 border border-blue-600 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-50 transition-colors">
-                                    View
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="flex items-center justify-between mt-6 pt-6 border-t border-gray-100">
-                        <button className="text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors">
-                            View More
-                        </button>
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors">
-                            Enroll Course
-                        </button>
+                {/* Left: main content placeholder - courses removed */}
+                <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm p-6 flex items-center justify-center">
+                    <div className="text-center">
+                        <h2 className="text-lg font-semibold text-gray-800">Courses</h2>
+                        <p className="text-sm text-gray-500">Courses are not available in this view. Please visit the Courses page for details.</p>
                     </div>
                 </div>
 
-                {/* Right Sidebar - Recent Results & Actions */}
+                {/* Right Sidebar - keep quick actions and upcoming events */}
                 <div className="space-y-6">
-                    {/* Recent Results */}
-                    <div className="bg-white rounded-2xl shadow-sm p-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-bold text-gray-800">Recent Results</h3>
-                            <button className="text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors">
-                                View More
-                            </button>
-                        </div>
-                        <div className="space-y-3">
-                            {results.map((result, index) => (
-                                <div key={index} className="flex items-center justify-between">
-                                    <div className="flex-1">
-                                        <p className="text-sm font-medium text-gray-800">{result.subject}</p>
-                                        <p className="text-xs text-gray-500">{result.quiz}</p>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                        <div className="w-full max-w-[80px] bg-gray-200 rounded-full h-2">
-                                            <div
-                                                className={`h-2 rounded-full ${result.color}`}
-                                                style={{ width: `${result.score}%` }}
-                                            ></div>
-                                        </div>
-                                        <span className="text-sm font-semibold text-gray-700 w-10 text-right">
-                                            {result.score}%
-                                        </span>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
                     {/* Quick Actions */}
                     <div className="space-y-3">
                         <button className="w-full bg-white rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition-shadow">
