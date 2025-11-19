@@ -1,5 +1,5 @@
 import { Code2, GraduationCap, Network, Shield, BarChart3, Target } from 'lucide-react';
-import { useLanguage } from '../contexts/LanguageContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 export const WhoAreWe = () => {
     const { t } = useLanguage();
