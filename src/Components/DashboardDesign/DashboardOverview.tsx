@@ -1,6 +1,7 @@
 import { useAppSelector } from '../../app/hooks';
 import { selectCurrentUser } from '../../features/auth/authSlice';
 import { useGetAllEventsQuery, useGetAllCommunitiesQuery } from '../../features/api';
+import type { Event } from '../../features/api/EventApi';
 import {
     Calendar,
     Users,
@@ -10,13 +11,6 @@ import {
     MapPin,
     ArrowRight
 } from 'lucide-react';
-
-interface Event {
-    _id: string;
-    title: string;
-    date: string;
-    location: string;
-}
 
 interface Community {
     _id: string;
@@ -31,8 +25,8 @@ export const DashboardOverview = () => {
     const { data: eventsData } = useGetAllEventsQuery({ page: 1, limit: 3 });
     const { data: communitiesData } = useGetAllCommunitiesQuery();
 
-    const upcomingEvents = Array.isArray(eventsData?.data?.events)
-        ? eventsData.data.events.slice(0, 3)
+    const upcomingEvents = Array.isArray(eventsData?.events)
+        ? eventsData.events.slice(0, 3)
         : [];
 
     const myCommunities = Array.isArray(communitiesData?.data)
@@ -165,11 +159,11 @@ export const DashboardOverview = () => {
                                         <div className="flex items-center gap-3 text-xs text-gray-600">
                                             <span className="flex items-center gap-1">
                                                 <Clock className="w-3.5 h-3.5" />
-                                                {new Date(event.date).toLocaleDateString()}
+                                                {event.startDate ? new Date(event.startDate).toLocaleDateString() : 'TBA'}
                                             </span>
                                             <span className="flex items-center gap-1">
                                                 <MapPin className="w-3.5 h-3.5" />
-                                                {event.location}
+                                                {event.locationName}
                                             </span>
                                         </div>
                                     </div>

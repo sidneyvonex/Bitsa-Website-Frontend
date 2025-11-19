@@ -13,6 +13,8 @@ import StudentDashboard from './Pages/StudentDashboard'
 import AdminDashboard from './Pages/AdminDashboard'
 import SuperAdminDashboard from './Pages/SuperAdminDasboard'
 import Help from './Pages/Help'
+import { Events } from './Pages/Events'
+import { EventDetails } from './Pages/EventDetails'
 
 function App() {
   return (
@@ -28,6 +30,11 @@ function App() {
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/verify-email" element={<EmailVerificationPage />} />
         <Route path="/help" element={<Help />} />
+        <Route path="/events" element={<Events />} />
+        <Route path="/events/upcoming" element={<Events />} />
+        <Route path="/events/past" element={<Events />} />
+        <Route path="/events/calendar-view" element={<Events />} />
+        <Route path="/events/:eventId" element={<EventDetails />} />
 
         {/* Protected Routes - Student Dashboard */}
         <Route

@@ -1,46 +1,50 @@
 import { baseApi } from './baseApi';
 
-interface Event {
-  _id: string;
+export interface Event {
+  id: string;
   title: string;
   description: string;
-  date: string;
-  time: string;
-  location: string;
-  category: string;
+  startDate: string;
+  endDate: string;
+  locationName: string;
   image?: string;
-  capacity: number;
-  registeredCount: number;
-  organizerId: string;
-  status: 'upcoming' | 'ongoing' | 'completed' | 'cancelled';
-  tags?: string[];
+  latitude?: string;
+  longitude?: string;
+  category?: string;
+  status?: 'upcoming' | 'ongoing' | 'completed' | 'cancelled';
+  createdBy?: string;
+  creatorSchoolId?: string;
+  creatorFirstName?: string;
+  creatorLastName?: string;
+  creatorEmail?: string;
+  creatorRole?: string;
+  createdAt?: string;
+  updatedAt?: string;
   gallery?: string[];
-  createdAt: string;
-  updatedAt: string;
 }
 
-interface EventListResponse {
-  success: boolean;
-  data: {
-    events: Event[];
-    pagination: {
-      currentPage: number;
-      totalPages: number;
-      totalEvents: number;
-      limit: number;
-    };
-  };
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface EventListResponse {
+  events: Event[];
+  pagination: Pagination;
 }
 
 interface CreateEventRequest {
   title: string;
   description: string;
-  date: string;
-  time: string;
-  location: string;
-  category: string;
+  startDate: string;
+  endDate: string;
+  locationName: string;
+  category?: string;
   image?: string;
-  capacity: number;
+  latitude?: string;
+  longitude?: string;
   tags?: string[];
 }
 
@@ -55,13 +59,88 @@ interface EventStatsResponse {
   };
 }
 
-interface GalleryImage {
+export interface GalleryImage {
   _id: string;
   eventId: string;
   imageUrl: string;
   caption?: string;
   uploadedAt: string;
 }
+
+const defaultPagination: Pagination = {
+  page: 1,
+  limit: 10,
+  total: 0,
+  totalPages: 0,
+};
+
+const mapEvent = (event: Record<string, unknown>): Event => ({
+  id: String(event.id ?? event._id ?? ''),
+  title: String(event.title ?? 'BITSA Event'),
+  description: String(event.description ?? ''),
+  startDate: String(event.startDate ?? event.date ?? new Date().toISOString()),
+  endDate: String(event.endDate ?? event.date ?? event.startDate ?? new Date().toISOString()),
+  locationName: String(event.locationName ?? event.location ?? 'TBA'),
+  image: event.image ? String(event.image) : undefined,
+  latitude: event.latitude ? String(event.latitude) : undefined,
+  longitude: event.longitude ? String(event.longitude) : undefined,
+  category: event.category ? String(event.category) : undefined,
+  status: (event.status as Event['status']) ?? undefined,
+  createdBy: event.createdBy ? String(event.createdBy) : undefined,
+  creatorSchoolId: event.creatorSchoolId ? String(event.creatorSchoolId) : undefined,
+  creatorFirstName: event.creatorFirstName ? String(event.creatorFirstName) : undefined,
+  creatorLastName: event.creatorLastName ? String(event.creatorLastName) : undefined,
+  creatorEmail: event.creatorEmail ? String(event.creatorEmail) : undefined,
+  creatorRole: event.creatorRole ? String(event.creatorRole) : undefined,
+  createdAt: event.createdAt ? String(event.createdAt) : undefined,
+  updatedAt: event.updatedAt ? String(event.updatedAt) : undefined,
+  gallery: Array.isArray(event.gallery) ? (event.gallery as string[]) : undefined,
+});
+
+const normalizeEventListResponse = (response: unknown): EventListResponse => {
+  if (!response || typeof response !== 'object') {
+    return { events: [], pagination: defaultPagination };
+  }
+
+  const raw = response as {
+    data?: Partial<EventListResponse>;
+    events?: Event[];
+    pagination?: Pagination;
+  };
+
+  const eventsSource = raw.events ?? raw.data?.events ?? [];
+  const paginationSource = raw.pagination ?? raw.data?.pagination ?? defaultPagination;
+
+  return {
+    events: Array.isArray(eventsSource) ? eventsSource.map((event) => mapEvent(event as Record<string, unknown>)) : [],
+    pagination: {
+      page: paginationSource.page ?? defaultPagination.page,
+      limit: paginationSource.limit ?? defaultPagination.limit,
+      total: paginationSource.total ?? defaultPagination.total,
+      totalPages: paginationSource.totalPages ?? defaultPagination.totalPages,
+    },
+  };
+};
+
+const normalizeEventResponse = (response: unknown): Event => {
+  if (!response || typeof response !== 'object') {
+    return mapEvent({});
+  }
+
+  const raw = response as { data?: Record<string, unknown> } | Record<string, unknown>;
+  const eventData = ('data' in raw ? raw.data : raw) ?? {};
+  return mapEvent(eventData);
+};
+
+const normalizeGalleryResponse = (response: unknown): GalleryImage[] => {
+  if (!response || typeof response !== 'object') {
+    return [];
+  }
+
+  const raw = response as { data?: GalleryImage[]; gallery?: GalleryImage[] };
+  const images = raw.data ?? raw.gallery ?? [];
+  return Array.isArray(images) ? images : [];
+};
 
 export const eventsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -78,6 +157,7 @@ export const eventsApi = baseApi.injectEndpoints({
         url: '/events',
         params: { page, limit, search, category, status, sortBy },
       }),
+      transformResponse: normalizeEventListResponse,
       providesTags: ['Event'],
     }),
 
@@ -87,6 +167,7 @@ export const eventsApi = baseApi.injectEndpoints({
         url: '/events/upcoming',
         params: { limit },
       }),
+      transformResponse: normalizeEventListResponse,
       providesTags: ['Event'],
     }),
 
@@ -96,18 +177,21 @@ export const eventsApi = baseApi.injectEndpoints({
         url: '/events/past',
         params: { page, limit },
       }),
+      transformResponse: normalizeEventListResponse,
       providesTags: ['Event'],
     }),
 
     // Get event by ID (with gallery)
-    getEventById: builder.query<{ success: boolean; data: Event }, string>({
+    getEventById: builder.query<Event, string>({
       query: (id) => `/events/${id}`,
+      transformResponse: normalizeEventResponse,
       providesTags: (result, error, id) => [{ type: 'Event', id }],
     }),
 
     // Get event gallery images
-    getEventGallery: builder.query<{ success: boolean; data: GalleryImage[] }, string>({
+    getEventGallery: builder.query<GalleryImage[], string>({
       query: (eventId) => `/events/${eventId}/gallery`,
+      transformResponse: normalizeGalleryResponse,
       providesTags: (result, error, eventId) => [{ type: 'Event', id: eventId }],
     }),
 

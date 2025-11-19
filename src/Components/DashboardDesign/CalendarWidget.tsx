@@ -6,7 +6,7 @@ export const CalendarWidget = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
     const { data: eventsData } = useGetAllEventsQuery({ page: 1, limit: 100 });
 
-    const events = eventsData?.data || [];
+    const events = eventsData?.events || [];
 
     // Get month and year
     const monthNames = [
@@ -33,6 +33,7 @@ export const CalendarWidget = () => {
     const hasEvent = (day: number) => {
         const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         return events.some(event => {
+            if (!event.startDate) return false;
             const eventDate = new Date(event.startDate).toISOString().split('T')[0];
             return eventDate === dateStr;
         });
@@ -134,7 +135,7 @@ export const CalendarWidget = () => {
                     <p className="text-sm font-medium text-gray-700 mb-2">Upcoming Events</p>
                     <div className="space-y-2">
                         {events.slice(0, 3).map((event) => (
-                            <div key={event._id} className="flex items-center gap-2 text-xs">
+                            <div key={event.id} className="flex items-center gap-2 text-xs">
                                 <div className="w-1.5 h-1.5 bg-[#5773da] rounded-full"></div>
                                 <span className="text-gray-600 truncate">{event.title}</span>
                             </div>

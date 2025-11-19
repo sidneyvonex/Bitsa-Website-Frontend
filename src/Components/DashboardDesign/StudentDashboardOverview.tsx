@@ -118,7 +118,7 @@ export const StudentDashboardOverview = () => {
                                 <Calendar className="w-6 h-6 text-white" />
                             </div>
                             <p className="text-3xl font-bold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">
-                                {eventsData?.data?.events?.length || 0}
+                                {eventsData?.events?.length || 0}
                             </p>
                             <p className="text-sm font-medium text-gray-600">Events</p>
                         </div>
@@ -209,21 +209,21 @@ export const StudentDashboardOverview = () => {
                     </div>
 
                     {/* Upcoming Events */}
-                    {eventsData?.data?.events && eventsData.data.events.length > 0 && (
+                    {eventsData?.events && eventsData.events.length > 0 && (
                         <div className="bg-white rounded-2xl shadow-sm p-6">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-lg font-bold text-gray-800">Upcoming Events</h3>
                                 <Calendar className="w-5 h-5 text-gray-400" />
                             </div>
                             <div className="space-y-3">
-                                {eventsData.data.events.slice(0, 3).map((event, index: number) => (
+                                {eventsData.events.slice(0, 3).map((event, index: number) => (
                                     <div key={index} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
                                         <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                                         <div className="flex-1">
                                             <p className="text-sm font-medium text-gray-800">{event.title}</p>
                                             <p className="text-xs text-gray-500 flex items-center mt-1">
                                                 <Clock className="w-3 h-3 mr-1" />
-                                                {new Date(event.date).toLocaleDateString()}
+                                                {event.startDate ? new Date(event.startDate).toLocaleDateString() : 'TBA'}
                                             </p>
                                         </div>
                                     </div>
