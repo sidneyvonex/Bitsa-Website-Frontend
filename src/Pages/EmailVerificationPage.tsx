@@ -34,7 +34,7 @@ export const EmailVerificationPage = () => {
 
         try {
             const response = await verifyEmail({ token }).unwrap();
-            
+
             // Check for success response
             if (response.success) {
                 setVerificationStatus('success');
@@ -48,8 +48,8 @@ export const EmailVerificationPage = () => {
                 setErrorMessage(response.message || 'Email verification failed.');
             }
         } catch (err) {
-            const error = err as { 
-                data?: { 
+            const error = err as {
+                data?: {
                     success?: boolean;
                     message?: string;
                     error?: string;
@@ -61,18 +61,18 @@ export const EmailVerificationPage = () => {
                 };
                 status?: number;
             };
-            
+
             setVerificationStatus('error');
-            
+
             // Extract email for potential resend
             if (error?.data?.data?.email) {
                 setEmail(error.data.data.email);
             }
-            
+
             // Show appropriate error message
             const errorMsg = error?.data?.error || error?.data?.message || 'Email verification failed. The link may be expired or invalid.';
             setErrorMessage(errorMsg);
-            
+
             // Show resend option if token is expired
             if (error?.data?.statusCode === 400 || error?.status === 400) {
                 setShowResendForm(true);
@@ -92,7 +92,7 @@ export const EmailVerificationPage = () => {
 
         try {
             const response = await resendVerification({ email }).unwrap();
-            
+
             if (response.success) {
                 setResendSuccess(true);
                 setErrorMessage('');
@@ -101,8 +101,8 @@ export const EmailVerificationPage = () => {
                 setErrorMessage(response.message || 'Failed to resend verification email.');
             }
         } catch (err) {
-            const error = err as { 
-                data?: { 
+            const error = err as {
+                data?: {
                     success?: boolean;
                     message?: string;
                     error?: string;
@@ -113,7 +113,7 @@ export const EmailVerificationPage = () => {
                 };
                 status?: number;
             };
-            
+
             // Handle rate limiting (429)
             if (error?.data?.statusCode === 429 || error?.status === 429) {
                 const retryAfter = error?.data?.data?.retryAfter;

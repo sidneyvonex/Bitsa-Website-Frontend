@@ -51,7 +51,7 @@ export const SignInPage: React.FC = () => {
             const lastName = userData.lastName || result.fullName?.split(' ').slice(1).join(' ') || '';
             const schoolId = userData.schoolId || result.userId;
             const major = userData.major || '';
-            
+
             // Handle emailVerified from either root level or nested data
             const emailVerified = result.emailVerified ?? userData.emailVerified ?? true;
 
@@ -101,7 +101,7 @@ export const SignInPage: React.FC = () => {
             // Check for 403 status (email not verified)
             const statusCode = error?.data?.statusCode || error?.status;
             const needsVerification = error?.data?.data?.needsVerification;
-            
+
             // Check if error is due to unverified email
             const errorMessage = error?.data?.message?.toLowerCase() || error?.data?.error?.toLowerCase() || '';
             const isVerificationError =
@@ -124,10 +124,10 @@ export const SignInPage: React.FC = () => {
     const handleResendVerification = async () => {
         setResendSuccess(false);
         setLocalError('');
-        
+
         try {
             const response = await resendVerification({ email: formData.email }).unwrap();
-            
+
             if (response.success) {
                 setResendSuccess(true);
                 setLocalError(''); // Clear any previous errors
@@ -135,8 +135,8 @@ export const SignInPage: React.FC = () => {
                 setLocalError(response.message || 'Failed to resend verification email.');
             }
         } catch (err) {
-            const error = err as { 
-                data?: { 
+            const error = err as {
+                data?: {
                     success?: boolean;
                     message?: string;
                     error?: string;
@@ -144,7 +144,7 @@ export const SignInPage: React.FC = () => {
                 };
                 status?: number;
             };
-            
+
             // Handle rate limiting (429)
             if (error?.data?.statusCode === 429 || error?.status === 429) {
                 setLocalError(error?.data?.error || error?.data?.message || 'Too many requests. Please wait a few minutes before trying again.');
