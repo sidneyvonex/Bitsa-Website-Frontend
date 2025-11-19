@@ -216,7 +216,7 @@ export const EmailVerificationPage = () => {
                                                     onChange={(e) => setEmail(e.target.value)}
                                                     placeholder="Enter your email"
                                                     required
-                                                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5773da] focus:border-transparent"
+                                                    className="w-full pl-10 pr-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5773da] focus:border-[#5773da]"
                                                 />
                                             </div>
                                         </div>

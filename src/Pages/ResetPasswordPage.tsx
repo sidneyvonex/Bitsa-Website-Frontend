@@ -123,7 +123,7 @@ export const ResetPasswordPage: React.FC = () => {
                           onChange={(e) => setPassword(e.target.value)}
                           placeholder="New Password"
                           required
-                          className="w-full pl-12 pr-12 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-transparent transition-all"
+                          className="w-full pl-12 pr-12 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] transition-all"
                         />
                         <button
                           type="button"
@@ -147,7 +147,7 @@ export const ResetPasswordPage: React.FC = () => {
                           onChange={(e) => setConfirmPassword(e.target.value)}
                           placeholder="Confirm Password"
                           required
-                          className="w-full pl-12 pr-12 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-transparent transition-all"
+                          className="w-full pl-12 pr-12 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] transition-all"
                         />
                         <button
                           type="button"

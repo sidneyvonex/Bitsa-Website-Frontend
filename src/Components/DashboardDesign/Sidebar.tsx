@@ -29,10 +29,12 @@ interface NavItem {
 
 const studentNavItems: NavItem[] = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-    { name: 'Events', path: '/events', icon: Calendar },
+    { name: 'Profile', path: '/dashboard/profile', icon: User },
+    { name: 'My Projects', path: '/dashboard/projects', icon: Briefcase },
+    { name: 'My Events', path: '/dashboard/events', icon: Calendar },
+    { name: 'Blogs', path: '/dashboard/blogs', icon: FileText },
     { name: 'Communities', path: '/communities', icon: Users },
-    { name: 'Blogs', path: '/blogs', icon: FileText },
-    { name: 'Projects', path: '/projects', icon: Briefcase },
+    { name: 'Settings', path: '/dashboard/settings', icon: Settings },
     { name: 'Help', path: '/help', icon: HelpCircle },
 ];
 
@@ -80,74 +82,130 @@ export const Sidebar = ({ isCollapsed, userRole }: SidebarProps) => {
         ? `${user.firstName} ${user.lastName}`
         : user?.email?.split('@')[0] || 'Student';
 
-    const userAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=d1d5db&color=1f2937&size=128`;
+    // Use profile picture from Redux or generate avatar
+    const userAvatar = user?.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=5773da&color=fff&size=128`;
 
     return (
         <aside
             className={`fixed left-0 top-16 bottom-0 bg-[#5773da] transition-all duration-300 ease-in-out z-30 ${isCollapsed ? 'w-20' : 'w-64'
                 }`}
         >
-            <div className="flex flex-col h-full">
-                {/* User Profile - Light blue/gray background */}
+            <div className="flex flex-col h-full overflow-hidden">
+                {/* Curved Profile Section */}
                 {!isCollapsed && (
-                    <div className="px-4 py-4 bg-[#e8ecf4]">
-                        <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
-                                <img
-                                    src={userAvatar}
-                                    alt={userName}
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                            <div>
-                                <p className="text-gray-900 font-semibold text-sm">{userName}</p>
-                                <p className="text-gray-600 text-xs">{user?.role || 'Student'}</p>
+                    <div className="relative -mx-4 mb-6">
+                        {/* Curved container with rounded bottom */}
+                        <div className="bg-gradient-to-b from-[#4a63c4] via-[#5773da] to-[#5773da] rounded-b-3xl pt-6 pb-8 px-6">
+                            {/* Profile Picture */}
+                            <div className="flex flex-col items-center">
+                                <div className="w-24 h-24 rounded-full bg-white flex items-center justify-center overflow-hidden border-4 border-white shadow-lg mb-3">
+                                    <img
+                                        src={userAvatar}
+                                        alt={userName}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                                <p className="text-white font-bold text-base">{userName}</p>
+                                <p className="text-white/80 text-xs mt-1">{user?.role || 'Student'}</p>
                             </div>
                         </div>
                     </div>
                 )}
 
-                {/* Navigation - Constant blue background */}
-                <nav className="flex-1 overflow-y-auto bg-[#5773da] pt-4">
-                    <ul className="space-y-1 px-3">
-                        {navItems.map((item) => (
-                            <li key={item.path}>
-                                <NavLink
-                                    to={item.path}
-                                    className={({ isActive }) =>
-                                        `flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${isActive
-                                            ? 'bg-white/20 text-white font-medium'
-                                            : 'text-white/80 hover:bg-white/10 hover:text-white'
-                                        }`
-                                    }
-                                >
-                                    {({ isActive }) => (
-                                        <>
-                                            <item.icon
-                                                className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-white/80'
-                                                    }`}
-                                            />
-                                            {!isCollapsed && (
-                                                <span className="text-sm">{item.name}</span>
-                                            )}
-                                        </>
-                                    )}
-                                </NavLink>
-                            </li>
-                        ))}
-                    </ul>
+                {/* Navigation Sections */}
+                <nav className="flex-1 overflow-y-auto px-4 pb-4">
+                    {/* Learning Section */}
+                    <div className="mb-6">
+                        <h3 className="text-white/70 text-xs font-semibold uppercase tracking-wider mb-3 px-2">
+                            Learning
+                        </h3>
+                        <ul className="space-y-1">
+                            {navItems.slice(0, 5).map((item) => (
+                                <li key={item.path}>
+                                    <NavLink
+                                        to={item.path}
+                                        className={({ isActive }) =>
+                                            `flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${isActive
+                                                ? 'bg-white text-[#5773da] font-semibold shadow-md'
+                                                : 'text-white/80 hover:bg-white/10 hover:text-white'
+                                            }`
+                                        }
+                                    >
+                                        {({ isActive }) => (
+                                            <>
+                                                <item.icon
+                                                    className={`w-5 h-5 shrink-0 ${isActive ? 'text-[#5773da]' : 'text-white/80'
+                                                        }`}
+                                                />
+                                                {!isCollapsed && (
+                                                    <span className="text-sm font-medium">{item.name}</span>
+                                                )}
+                                            </>
+                                        )}
+                                    </NavLink>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    {/* Help & Support Section */}
+                    <div className="mb-6">
+                        <h3 className="text-white/70 text-xs font-semibold uppercase tracking-wider mb-3 px-2">
+                            Help & Support
+                        </h3>
+                        <ul className="space-y-1">
+                            {navItems.slice(-3).map((item) => (
+                                <li key={item.path}>
+                                    <NavLink
+                                        to={item.path}
+                                        className={({ isActive }) =>
+                                            `flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${isActive
+                                                ? 'bg-white text-[#5773da] font-semibold shadow-md'
+                                                : 'text-white/80 hover:bg-white/10 hover:text-white'
+                                            }`
+                                        }
+                                    >
+                                        {({ isActive }) => (
+                                            <>
+                                                <item.icon
+                                                    className={`w-5 h-5 shrink-0 ${isActive ? 'text-[#5773da]' : 'text-white/80'
+                                                        }`}
+                                                />
+                                                {!isCollapsed && (
+                                                    <span className="text-sm font-medium">{item.name}</span>
+                                                )}
+                                            </>
+                                        )}
+                                    </NavLink>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
                 </nav>
 
                 {/* Upgrade Section */}
                 {!isCollapsed && userRole === 'Student' && (
-                    <div className="p-4 m-4 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
-                        <p className="text-white text-xs mb-3 leading-relaxed">
+                    <div className="p-4 mx-4 mb-4 bg-white/15 backdrop-blur-sm rounded-2xl border border-white/30">
+                        <p className="text-white text-xs mb-3 leading-relaxed font-medium">
                             Upgrade to <span className="font-bold">PRO</span> for<br />
                             more resources
                         </p>
-                        <button className="w-full bg-white/20 hover:bg-white/30 text-white text-sm font-semibold py-2.5 px-4 rounded-lg transition-colors">
+                        <button className="w-full bg-white text-[#5773da] text-xs font-bold py-2.5 px-4 rounded-lg hover:bg-white/90 transition-all shadow-md">
                             Upgrade
                         </button>
+                    </div>
+                )}
+
+                {/* Collapsed state - show avatar only */}
+                {isCollapsed && (
+                    <div className="flex flex-col items-center py-4 px-2 mb-4">
+                        <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-white shadow-md">
+                            <img
+                                src={userAvatar}
+                                alt={userName}
+                                className="w-full h-full object-cover"
+                            />
+                        </div>
                     </div>
                 )}
             </div>

@@ -219,7 +219,7 @@ export const SignUpPage: React.FC = () => {
                           onChange={handleChange}
                           placeholder="School ID"
                           required
-                          className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-transparent transition-all"
+                          className="w-full pl-12 pr-4 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] transition-all"
                         />
                       </div>
 
@@ -235,7 +235,7 @@ export const SignUpPage: React.FC = () => {
                           onChange={handleChange}
                           placeholder="First Name"
                           required
-                          className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-transparent transition-all"
+                          className="w-full pl-12 pr-4 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] transition-all"
                         />
                       </div>
                     </div>
@@ -254,7 +254,7 @@ export const SignUpPage: React.FC = () => {
                           onChange={handleChange}
                           placeholder="Last Name"
                           required
-                          className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-transparent transition-all"
+                          className="w-full pl-12 pr-4 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] transition-all"
                         />
                       </div>
 
@@ -270,7 +270,7 @@ export const SignUpPage: React.FC = () => {
                           onChange={handleChange}
                           placeholder="Email"
                           required
-                          className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-transparent transition-all"
+                          className="w-full pl-12 pr-4 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] transition-all"
                         />
                       </div>
                     </div>
@@ -286,7 +286,7 @@ export const SignUpPage: React.FC = () => {
                         value={formData.university}
                         onChange={handleChange}
                         required
-                        className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-transparent transition-all appearance-none"
+                        className="w-full pl-12 pr-4 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] transition-all appearance-none"
                       >
                         <option value="">Select University</option>
                         {universities.map((university) => (
@@ -327,7 +327,7 @@ export const SignUpPage: React.FC = () => {
                         value={formData.major}
                         onChange={handleChange}
                         required
-                        className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-transparent transition-all appearance-none"
+                        className="w-full pl-12 pr-4 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] transition-all appearance-none"
                       >
                         <option value="">Select Major</option>
                         {majors.map((major) => (
@@ -371,7 +371,7 @@ export const SignUpPage: React.FC = () => {
                           onChange={handleChange}
                           placeholder="Password"
                           required
-                          className="w-full pl-12 pr-12 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-transparent transition-all"
+                          className="w-full pl-12 pr-12 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] transition-all"
                         />
                         <button
                           type="button"
@@ -394,7 +394,7 @@ export const SignUpPage: React.FC = () => {
                           onChange={handleChange}
                           placeholder="Confirm Password"
                           required
-                          className="w-full pl-12 pr-12 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-transparent transition-all"
+                          className="w-full pl-12 pr-12 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] transition-all"
                         />
                         <button
                           type="button"

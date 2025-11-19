@@ -236,7 +236,7 @@ export const SignInPage: React.FC = () => {
                                             value={formData.email}
                                             onChange={handleChange}
                                             required
-                                            className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-transparent transition-all"
+                                            className="w-full pl-12 pr-4 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] transition-all"
                                             placeholder="Username"
                                         />
                                     </div>
@@ -254,7 +254,7 @@ export const SignInPage: React.FC = () => {
                                             value={formData.password}
                                             onChange={handleChange}
                                             required
-                                            className="w-full pl-12 pr-12 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-transparent transition-all"
+                                            className="w-full pl-12 pr-12 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] transition-all"
                                             placeholder="Password"
                                         />
                                         <button

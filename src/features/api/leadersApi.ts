@@ -1,38 +1,39 @@
 import { baseApi } from './baseApi';
 
-interface Leader {
-  _id: string;
-  firstName: string;
-  lastName: string;
+export interface Leader {
+  id: string;
+  fullName: string;
   position: string;
   academicYear: string;
-  image?: string;
-  bio?: string;
+  profilePicture?: string;
   email?: string;
-  linkedIn?: string;
-  twitter?: string;
+  phone?: string | null;
   isCurrent: boolean;
-  order: number;
   createdAt: string;
-  updatedAt: string;
 }
 
 interface LeaderListResponse {
   success: boolean;
-  data: Leader[];
+  data: {
+    leaders: Leader[];
+    total: number;
+    limit: number;
+    offset: number;
+  };
+}
+
+interface LeaderSingleResponse {
+  success: boolean;
+  data: Leader;
 }
 
 interface CreateLeaderRequest {
-  firstName: string;
-  lastName: string;
+  fullName: string;
   position: string;
   academicYear: string;
-  image?: string;
-  bio?: string;
+  profilePicture?: string;
   email?: string;
-  linkedIn?: string;
-  twitter?: string;
-  order?: number;
+  phone?: string;
 }
 
 interface LeaderStatsResponse {
@@ -49,12 +50,12 @@ export const leadersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // Get all leaders with optional filters
     getAllLeaders: builder.query<LeaderListResponse, {
-      year?: string;
-      position?: string;
+      limit?: number;
+      offset?: number;
     } | void>({
       query: (params) => ({
         url: '/leaders',
-        params,
+        params: params || { limit: 50, offset: 0 },
       }),
       providesTags: ['Leader'],
     }),
@@ -62,12 +63,44 @@ export const leadersApi = baseApi.injectEndpoints({
     // Get current leaders only
     getCurrentLeaders: builder.query<LeaderListResponse, void>({
       query: () => '/leaders/current',
+      transformResponse: (response: LeaderListResponse | { success: boolean; data: Leader[] }) => {
+        // Handle both response formats
+        if (Array.isArray((response as { success: boolean; data: Leader[] }).data)) {
+          const leaders = (response as { success: boolean; data: Leader[] }).data;
+          return {
+            success: true,
+            data: {
+              leaders,
+              total: leaders.length,
+              limit: leaders.length,
+              offset: 0,
+            },
+          } as LeaderListResponse;
+        }
+        return response as LeaderListResponse;
+      },
       providesTags: ['Leader'],
     }),
 
     // Get past leaders
     getPastLeaders: builder.query<LeaderListResponse, void>({
       query: () => '/leaders/past',
+      transformResponse: (response: LeaderListResponse | { success: boolean; data: Leader[] }) => {
+        // Handle both response formats
+        if (Array.isArray((response as { success: boolean; data: Leader[] }).data)) {
+          const leaders = (response as { success: boolean; data: Leader[] }).data;
+          return {
+            success: true,
+            data: {
+              leaders,
+              total: leaders.length,
+              limit: leaders.length,
+              offset: 0,
+            },
+          } as LeaderListResponse;
+        }
+        return response as LeaderListResponse;
+      },
       providesTags: ['Leader'],
     }),
 
@@ -77,7 +110,7 @@ export const leadersApi = baseApi.injectEndpoints({
     }),
 
     // Get leader by ID
-    getLeaderById: builder.query<{ success: boolean; data: Leader }, string>({
+    getLeaderById: builder.query<LeaderSingleResponse, string>({
       query: (id) => `/leaders/${id}`,
       providesTags: (result, error, id) => [{ type: 'Leader', id }],
     }),
@@ -88,7 +121,7 @@ export const leadersApi = baseApi.injectEndpoints({
     }),
 
     // Admin: Create leader
-    createLeader: builder.mutation<{ success: boolean; data: Leader }, CreateLeaderRequest>({
+    createLeader: builder.mutation<LeaderSingleResponse, CreateLeaderRequest>({
       query: (data) => ({
         url: '/leaders/admin',
         method: 'POST',
@@ -98,7 +131,7 @@ export const leadersApi = baseApi.injectEndpoints({
     }),
 
     // Admin: Update leader
-    updateLeader: builder.mutation<{ success: boolean; data: Leader }, {
+    updateLeader: builder.mutation<LeaderSingleResponse, {
       id: string;
       data: Partial<CreateLeaderRequest>;
     }>({

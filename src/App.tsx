@@ -14,7 +14,17 @@ import AdminDashboard from './Pages/AdminDashboard'
 import SuperAdminDashboard from './Pages/SuperAdminDasboard'
 import Help from './Pages/Help'
 import { Events } from './Pages/Events'
+import { Blogs } from './Pages/Blogs'
+import Communities from './Pages/Communities'
 import { EventDetails } from './Pages/EventDetails'
+import About from './Pages/About'
+import MissionVision from './Pages/MissionVision'
+import OurLeaders from './Pages/OurLeaders'
+import Constitution from './Pages/Constitution'
+import Projects from './Pages/Projects'
+import ProjectDetails from './Pages/ProjectDetails'
+import Gallery from './Pages/Gallery'
+import Marketplace from './Pages/Marketplace'
 
 function App() {
   return (
@@ -35,10 +45,20 @@ function App() {
         <Route path="/events/past" element={<Events />} />
         <Route path="/events/calendar-view" element={<Events />} />
         <Route path="/events/:eventId" element={<EventDetails />} />
+        <Route path="/blogs" element={<Blogs />} />
+        <Route path="/communities" element={<Communities />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/mission" element={<MissionVision />} />
+        <Route path="/leadership" element={<OurLeaders />} />
+        <Route path="/constitution" element={<Constitution />} />
+        <Route path="/projects" element={<Projects />} />
+        <Route path="/projects/:id" element={<ProjectDetails />} />
+        <Route path="/gallery" element={<Gallery />} />
+        <Route path="/marketplace" element={<Marketplace />} />
 
         {/* Protected Routes - Student Dashboard */}
         <Route
-          path="/dashboard"
+          path="/dashboard/*"
           element={
             <ProtectedRoute requiredRole={['Student']}>
               <StudentDashboard />
