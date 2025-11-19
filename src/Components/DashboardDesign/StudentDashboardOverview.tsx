@@ -108,38 +108,62 @@ export const StudentDashboardOverview = () => {
                     <CalendarWidget />
                 </div>
 
-                {/* Stats Cards */}
+                {/* Stats Cards - Enhanced Design */}
                 <div className="lg:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow">
-                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
-                            <Calendar className="w-5 h-5 text-blue-600" />
+                    {/* Events Card */}
+                    <div className="group bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-2xl shadow-sm p-5 hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer border border-blue-200/50 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-20 h-20 bg-blue-200/30 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500"></div>
+                        <div className="relative z-10">
+                            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-3 shadow-lg group-hover:rotate-6 transition-transform duration-300">
+                                <Calendar className="w-6 h-6 text-white" />
+                            </div>
+                            <p className="text-3xl font-bold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">
+                                {eventsData?.data?.events?.length || 0}
+                            </p>
+                            <p className="text-sm font-medium text-gray-600">Events</p>
                         </div>
-                        <p className="text-2xl font-bold text-gray-900">{eventsData?.data?.events?.length || 0}</p>
-                        <p className="text-sm text-gray-500">Events</p>
                     </div>
 
-                    <div className="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow">
-                        <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mb-3">
-                            <FileText className="w-5 h-5 text-green-600" />
+                    {/* Blogs Card */}
+                    <div className="group bg-gradient-to-br from-green-50 to-green-100/50 rounded-2xl shadow-sm p-5 hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer border border-green-200/50 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-20 h-20 bg-green-200/30 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500"></div>
+                        <div className="relative z-10">
+                            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mb-3 shadow-lg group-hover:rotate-6 transition-transform duration-300">
+                                <FileText className="w-6 h-6 text-white" />
+                            </div>
+                            <p className="text-3xl font-bold text-gray-900 mb-1 group-hover:text-green-600 transition-colors">
+                                {blogsData?.data?.pagination?.totalBlogs || 0}
+                            </p>
+                            <p className="text-sm font-medium text-gray-600">Blogs</p>
                         </div>
-                        <p className="text-2xl font-bold text-gray-900">{blogsData?.data?.totalBlogs || 0}</p>
-                        <p className="text-2xl font-bold text-gray-900">{blogsData?.data?.pagination?.totalBlogs || 0}</p>
                     </div>
 
-                    <div className="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow">
-                        <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
-                            <MessageSquare className="w-5 h-5 text-purple-600" />
+                    {/* Communities Card */}
+                    <div className="group bg-gradient-to-br from-purple-50 to-purple-100/50 rounded-2xl shadow-sm p-5 hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer border border-purple-200/50 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-20 h-20 bg-purple-200/30 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500"></div>
+                        <div className="relative z-10">
+                            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-3 shadow-lg group-hover:rotate-6 transition-transform duration-300">
+                                <MessageSquare className="w-6 h-6 text-white" />
+                            </div>
+                            <p className="text-3xl font-bold text-gray-900 mb-1 group-hover:text-purple-600 transition-colors">
+                                {communitiesData?.data?.length || 0}
+                            </p>
+                            <p className="text-sm font-medium text-gray-600">Communities</p>
                         </div>
-                        <p className="text-2xl font-bold text-gray-900">{communitiesData?.data?.length || 0}</p>
-                        <p className="text-sm text-gray-500">Communities</p>
                     </div>
 
-                    <div className="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow">
-                        <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mb-3">
-                            <Heart className="w-5 h-5 text-orange-600" />
+                    {/* Interests Card */}
+                    <div className="group bg-gradient-to-br from-orange-50 to-orange-100/50 rounded-2xl shadow-sm p-5 hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer border border-orange-200/50 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-20 h-20 bg-orange-200/30 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500"></div>
+                        <div className="relative z-10">
+                            <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center mb-3 shadow-lg group-hover:rotate-6 transition-transform duration-300">
+                                <Heart className="w-6 h-6 text-white" />
+                            </div>
+                            <p className="text-3xl font-bold text-gray-900 mb-1 group-hover:text-orange-600 transition-colors">
+                                {myInterests.length}
+                            </p>
+                            <p className="text-sm font-medium text-gray-600">Interests</p>
                         </div>
-                        <p className="text-2xl font-bold text-gray-900">{myInterests.length}</p>
-                        <p className="text-sm text-gray-500">Interests</p>
                     </div>
                 </div>
             </div>

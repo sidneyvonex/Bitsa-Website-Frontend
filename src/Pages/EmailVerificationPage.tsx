@@ -33,26 +33,57 @@ export const EmailVerificationPage = () => {
         if (!token) return;
 
         try {
-            await verifyEmail({ token }).unwrap();
-            setVerificationStatus('success');
+            const response = await verifyEmail({ token }).unwrap();
+            
+            // Check for success response
+            if (response.success) {
+                setVerificationStatus('success');
 
-            // Redirect to sign in after 3 seconds
-            setTimeout(() => {
-                navigate('/signin');
-            }, 3000);
+                // Redirect to sign in after 3 seconds
+                setTimeout(() => {
+                    navigate('/signin');
+                }, 3000);
+            } else {
+                setVerificationStatus('error');
+                setErrorMessage(response.message || 'Email verification failed.');
+            }
         } catch (err) {
-            const error = err as { data?: { message?: string } };
+            const error = err as { 
+                data?: { 
+                    success?: boolean;
+                    message?: string;
+                    error?: string;
+                    statusCode?: number;
+                    data?: {
+                        canResend?: boolean;
+                        email?: string;
+                    };
+                };
+                status?: number;
+            };
+            
             setVerificationStatus('error');
-            setErrorMessage(
-                error?.data?.message ||
-                'Email verification failed. The link may be expired or invalid.'
-            );
+            
+            // Extract email for potential resend
+            if (error?.data?.data?.email) {
+                setEmail(error.data.data.email);
+            }
+            
+            // Show appropriate error message
+            const errorMsg = error?.data?.error || error?.data?.message || 'Email verification failed. The link may be expired or invalid.';
+            setErrorMessage(errorMsg);
+            
+            // Show resend option if token is expired
+            if (error?.data?.statusCode === 400 || error?.status === 400) {
+                setShowResendForm(true);
+            }
         }
     };
 
     const handleResendVerification = async (e: React.FormEvent) => {
         e.preventDefault();
         setResendSuccess(false);
+        setErrorMessage('');
 
         if (!email) {
             setErrorMessage('Please enter your email address');
@@ -60,16 +91,37 @@ export const EmailVerificationPage = () => {
         }
 
         try {
-            await resendVerification({ email }).unwrap();
-            setResendSuccess(true);
-            setErrorMessage('');
-            setEmail('');
+            const response = await resendVerification({ email }).unwrap();
+            
+            if (response.success) {
+                setResendSuccess(true);
+                setErrorMessage('');
+                // Don't clear email - user might need it again
+            } else {
+                setErrorMessage(response.message || 'Failed to resend verification email.');
+            }
         } catch (err) {
-            const error = err as { data?: { message?: string } };
-            setErrorMessage(
-                error?.data?.message ||
-                'Failed to resend verification email. Please try again.'
-            );
+            const error = err as { 
+                data?: { 
+                    success?: boolean;
+                    message?: string;
+                    error?: string;
+                    statusCode?: number;
+                    data?: {
+                        retryAfter?: number;
+                    };
+                };
+                status?: number;
+            };
+            
+            // Handle rate limiting (429)
+            if (error?.data?.statusCode === 429 || error?.status === 429) {
+                const retryAfter = error?.data?.data?.retryAfter;
+                const waitTime = retryAfter ? Math.ceil(retryAfter / 60) : 5;
+                setErrorMessage(`Too many requests. Please wait ${waitTime} minute(s) before trying again.`);
+            } else {
+                setErrorMessage(error?.data?.error || error?.data?.message || 'Failed to resend verification email. Please try again.');
+            }
         }
     };
 

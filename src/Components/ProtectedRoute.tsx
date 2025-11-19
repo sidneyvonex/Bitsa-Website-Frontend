@@ -32,6 +32,13 @@ export const ProtectedRoute = ({
     return <Navigate to={redirectTo} state={{ from: location }} replace />;
   }
 
+  // Check if email is verified (if backend provides this info)
+  // Note: Backend should block unverified logins, but this provides an extra client-side check
+  // Uncomment if backend returns isEmailVerified field and you want to enforce it client-side:
+  // if (user.isEmailVerified === false) {
+  //   return <Navigate to="/verify-email" state={{ from: location }} replace />;
+  // }
+
   // Check if user has required role
   if (requiredRole && !requiredRole.includes(user.role)) {
     // Redirect to appropriate dashboard based on user role

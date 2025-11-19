@@ -38,29 +38,40 @@ export const SignInPage: React.FC = () => {
         try {
             const result = await login(formData).unwrap();
 
+            // Validate required fields (backend returns flat structure)
             if (!result.token || !result.userId) {
                 console.error('Missing token or userId in response:', result);
                 setLocalError('Invalid response from server. Please try again.');
                 return;
             }
 
+            // Extract user data from response (handle both flat and nested structures)
+            const userData = result.data || {};
+            const firstName = userData.firstName || result.fullName?.split(' ')[0] || '';
+            const lastName = userData.lastName || result.fullName?.split(' ').slice(1).join(' ') || '';
+            const schoolId = userData.schoolId || result.userId;
+            const major = userData.major || '';
+            
+            // Handle emailVerified from either root level or nested data
+            const emailVerified = result.emailVerified ?? userData.emailVerified ?? true;
+
             const user = {
                 id: result.userId,
                 email: result.email,
-                firstName: result.fullName?.split(' ')[0] || '',
-                lastName: result.fullName?.split(' ').slice(1).join(' ') || '',
+                firstName,
+                lastName,
                 role: (result.userRole?.charAt(0).toUpperCase() + result.userRole?.slice(1)) as 'Student' | 'Admin' | 'SuperAdmin',
-                schoolId: result.userId,
-                major: '',
-                isEmailVerified: true, // Will be updated based on backend response
-                hasSelectedInterests: false, // Will be checked after login
+                schoolId,
+                major,
+                isEmailVerified: emailVerified,
+                hasSelectedInterests: false, // Will be checked after login via useCheckMyInterestsQuery
                 profilePicture: result.profileUrl || undefined,
             };
 
             dispatch(setCredentials({
                 user,
                 token: result.token,
-                refreshToken: result.token,
+                refreshToken: result.refreshToken || result.token,
             }));
 
             const roleLower = result.userRole?.toLowerCase();
@@ -74,16 +85,28 @@ export const SignInPage: React.FC = () => {
         } catch (err) {
             const error = err as {
                 data?: {
+                    success?: boolean;
                     message?: string;
                     error?: string;
+                    statusCode?: number;
+                    data?: {
+                        needsVerification?: boolean;
+                        email?: string;
+                    };
                 };
                 status?: number;
             };
             console.error('Login failed:', err);
 
+            // Check for 403 status (email not verified)
+            const statusCode = error?.data?.statusCode || error?.status;
+            const needsVerification = error?.data?.data?.needsVerification;
+            
             // Check if error is due to unverified email
             const errorMessage = error?.data?.message?.toLowerCase() || error?.data?.error?.toLowerCase() || '';
             const isVerificationError =
+                statusCode === 403 ||
+                needsVerification === true ||
                 errorMessage.includes('verify') ||
                 errorMessage.includes('verification') ||
                 errorMessage.includes('not verified') ||
@@ -91,22 +114,43 @@ export const SignInPage: React.FC = () => {
 
             if (isVerificationError) {
                 setShowEmailVerification(true);
-                setLocalError('Your email is not verified. Please check your email for the verification link or resend it below.');
+                setLocalError(error?.data?.error || error?.data?.message || 'Your email is not verified. Please check your email for the verification link or resend it below.');
             } else {
-                setLocalError(error?.data?.message || error?.data?.error || 'Login failed. Please check your credentials and try again.');
+                setLocalError(error?.data?.error || error?.data?.message || 'Login failed. Please check your credentials and try again.');
             }
         }
     };
 
     const handleResendVerification = async () => {
         setResendSuccess(false);
+        setLocalError('');
+        
         try {
-            await resendVerification({ email: formData.email }).unwrap();
-            setResendSuccess(true);
-            setLocalError('');
+            const response = await resendVerification({ email: formData.email }).unwrap();
+            
+            if (response.success) {
+                setResendSuccess(true);
+                setLocalError(''); // Clear any previous errors
+            } else {
+                setLocalError(response.message || 'Failed to resend verification email.');
+            }
         } catch (err) {
-            const error = err as { data?: { message?: string } };
-            setLocalError(error?.data?.message || 'Failed to resend verification email. Please try again.');
+            const error = err as { 
+                data?: { 
+                    success?: boolean;
+                    message?: string;
+                    error?: string;
+                    statusCode?: number;
+                };
+                status?: number;
+            };
+            
+            // Handle rate limiting (429)
+            if (error?.data?.statusCode === 429 || error?.status === 429) {
+                setLocalError(error?.data?.error || error?.data?.message || 'Too many requests. Please wait a few minutes before trying again.');
+            } else {
+                setLocalError(error?.data?.error || error?.data?.message || 'Failed to resend verification email. Please try again.');
+            }
         }
     };
 
@@ -152,8 +196,8 @@ export const SignInPage: React.FC = () => {
 
                             {(localError || error) && (
                                 <div className={`mb-4 p-3 border rounded-lg text-sm ${showEmailVerification
-                                        ? 'bg-yellow-50 border-yellow-200 text-yellow-800'
-                                        : 'bg-red-50 border-red-200 text-red-600'
+                                    ? 'bg-yellow-50 border-yellow-200 text-yellow-800'
+                                    : 'bg-red-50 border-red-200 text-red-600'
                                     }`}>
                                     <div className="flex items-start gap-2">
                                         {showEmailVerification && <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />}

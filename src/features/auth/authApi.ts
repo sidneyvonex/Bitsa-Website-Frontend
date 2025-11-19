@@ -29,17 +29,54 @@ interface VerifyEmailRequest {
 }
 
 interface LoginResponse {
+  // Actual backend response (flat structure)
   token: string;
   userId: string;
   email: string;
   fullName: string;
   userRole: string;
   profileUrl: string | null;
+  emailVerified?: boolean;
+  refreshToken?: string;
+  // Optional nested data (for future compatibility)
+  success?: boolean;
+  message?: string;
+  data?: {
+    schoolId: string;
+    major?: string;
+    firstName: string;
+    lastName: string;
+    emailVerified: boolean;
+    createdAt: string;
+    lastLogin: string;
+  };
 }
 
 interface SuccessResponse {
   success: boolean;
   message: string;
+  data?: Record<string, unknown>;
+}
+
+interface VerifyEmailResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    userId: string;
+    email: string;
+    emailVerified: boolean;
+    verifiedAt: string;
+  };
+}
+
+interface ResendVerificationResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    email: string;
+    sentAt: string;
+    expiresIn: string;
+  };
 }
 
 export const authApi = baseApi.injectEndpoints({
@@ -110,7 +147,7 @@ export const authApi = baseApi.injectEndpoints({
     }),
 
     // Verify Email
-    verifyEmail: builder.mutation<SuccessResponse, VerifyEmailRequest>({
+    verifyEmail: builder.mutation<VerifyEmailResponse, VerifyEmailRequest>({
       query: (data) => ({
         url: '/auth/verify-email',
         method: 'POST',
@@ -120,7 +157,7 @@ export const authApi = baseApi.injectEndpoints({
     }),
 
     // Send Verification Email
-    sendVerification: builder.mutation<SuccessResponse, void>({
+    sendVerification: builder.mutation<ResendVerificationResponse, void>({
       query: () => ({
         url: '/auth/send-verification',
         method: 'POST',
@@ -128,7 +165,7 @@ export const authApi = baseApi.injectEndpoints({
     }),
 
     // Resend Verification
-    resendVerification: builder.mutation<SuccessResponse, { email: string }>({
+    resendVerification: builder.mutation<ResendVerificationResponse, { email: string }>({
       query: (data) => ({
         url: '/auth/resend-verification',
         method: 'POST',
