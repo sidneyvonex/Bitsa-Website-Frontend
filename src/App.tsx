@@ -9,12 +9,7 @@ import { ForgotPasswordPage } from './Pages/ForgotPasswordPage'
 import { ResetPasswordPage } from './Pages/ResetPasswordPage'
 import { SignUpPage } from './Pages/SignUpPage'
 import { EmailVerificationPage } from './Pages/EmailVerificationPage'
-import StudentDashboard from './Pages/StudentDashboard'
-import StudentTimeSchedule from './Pages/StudentTimeSchedule'
-import StudentNotifications from './Pages/StudentNotifications'
-import StudentMessages from './Pages/StudentMessages'
-import StudentLearningPlan from './Pages/StudentLearningPlan'
-import StudentContact from './Pages/StudentContact'
+import DashboardRouter from './Pages/DashboardRouter'
 import AdminDashboard from './Components/AdminDashboard/AdminDashboard'
 import SuperAdminDashboard from './Pages/SuperAdminDasboard'
 import AdminUsersPage from './Components/AdminDashboard/AdminUsersPage'
@@ -22,6 +17,7 @@ import AdminEventsPage from './Components/AdminDashboard/AdminEventsPage'
 import AdminBlogsPage from './Components/AdminDashboard/AdminBlogsPage'
 import AdminCommunitiesPage from './Components/AdminDashboard/AdminCommunitiesPage'
 import AdminInterestsPage from './Components/AdminDashboard/AdminInterestsPage'
+import AdminReportsPage from './Components/AdminDashboard/AdminReportsPage'
 import Help from './Pages/Help'
 import NotFoundPage from './Pages/NotFoundPage'
 import About from './Pages/About'
@@ -81,50 +77,10 @@ function App() {
 
         {/* Protected Routes - Student Dashboard */}
         <Route
-          path="/dashboard"
+          path="/dashboard/*"
           element={
             <ProtectedRoute requiredRole={['Student']}>
-              <StudentDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard/schedule"
-          element={
-            <ProtectedRoute requiredRole={['Student']}>
-              <StudentTimeSchedule />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard/notifications"
-          element={
-            <ProtectedRoute requiredRole={['Student']}>
-              <StudentNotifications />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard/messages"
-          element={
-            <ProtectedRoute requiredRole={['Student']}>
-              <StudentMessages />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard/learning-plan"
-          element={
-            <ProtectedRoute requiredRole={['Student']}>
-              <StudentLearningPlan />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard/contact"
-          element={
-            <ProtectedRoute requiredRole={['Student']}>
-              <StudentContact />
+              <DashboardRouter />
             </ProtectedRoute>
           }
         />
@@ -175,6 +131,14 @@ function App() {
           element={
             <ProtectedRoute requiredRole={['Admin', 'SuperAdmin']}>
               <AdminInterestsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/reports"
+          element={
+            <ProtectedRoute requiredRole={['Admin', 'SuperAdmin']}>
+              <AdminReportsPage />
             </ProtectedRoute>
           }
         />

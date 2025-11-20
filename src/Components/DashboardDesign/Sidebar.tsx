@@ -12,11 +12,7 @@ import {
     Database,
     Activity,
     Globe,
-    Bell,
-    MessageSquare,
-    BookOpen,
-    Clock,
-    Mail
+    User
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -40,17 +36,23 @@ const studentNavSections: NavSection[] = [
         title: 'Learning',
         items: [
             { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-            { name: 'Time Schedule', path: '/dashboard/schedule', icon: Clock },
-            { name: 'Notifications', path: '/dashboard/notifications', icon: Bell },
-            { name: 'Messages', path: '/dashboard/messages', icon: MessageSquare },
-            { name: 'Learning Plan', path: '/dashboard/learning-plan', icon: BookOpen },
+            { name: 'Events', path: '/events', icon: Calendar },
+            { name: 'Communities', path: '/communities', icon: Users },
+            { name: 'Blogs', path: '/blogs', icon: FileText },
+            { name: 'Projects', path: '/projects', icon: Globe },
+        ]
+    },
+    {
+        title: 'Account',
+        items: [
+            { name: 'Profile', path: '/dashboard/profile', icon: User },
+            { name: 'Settings', path: '/dashboard/settings', icon: Settings },
         ]
     },
     {
         title: 'Help & Support',
         items: [
-            { name: 'Help/Report', path: '/help', icon: HelpCircle },
-            { name: 'Contact Us', path: '/dashboard/contact', icon: Mail },
+            { name: 'Help', path: '/help', icon: HelpCircle },
         ]
     }
 ];

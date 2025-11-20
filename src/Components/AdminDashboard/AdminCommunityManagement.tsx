@@ -40,7 +40,7 @@ export const AdminCommunityManagement = () => {
     const [updateCommunity] = useUpdateCommunityMutation();
     const [deleteCommunity] = useDeleteCommunityMutation();
 
-    const communities = communitiesData?.data || [];
+    const communities = Array.isArray(communitiesData?.data) ? communitiesData.data : [];
 
     const filteredCommunities = communities.filter((community) =>
         community.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { RefreshCw, Search, Filter, Code2 } from 'lucide-react';
 import { Topbar } from '../Components/Topbar';
 import { Footer } from '../Components/Footer';
-import { ProjectCard } from '../Components/Projects/projectCard';
+import { ProjectCard } from '../Components/projects';
 import { useGetAllProjectsQuery, useGetFeaturedProjectsQuery, type Project } from '../features/api/projectsApi';
 
 const skeletonItems = Array.from({ length: 6 });

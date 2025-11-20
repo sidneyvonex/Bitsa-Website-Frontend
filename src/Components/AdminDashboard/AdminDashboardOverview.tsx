@@ -306,7 +306,7 @@ export const AdminDashboardOverview = () => {
                             <p className="text-xs text-gray-600 line-clamp-2 mb-3">{blog.excerpt}</p>
                             <div className="flex items-center justify-between pt-3 border-t border-gray-100">
                                 <span className="text-xs text-gray-500">
-                                    By {blog.author.firstName}
+                                    By {blog.author?.firstName || 'Unknown'}
                                 </span>
                                 {blog.isPublished ? (
                                     <span className="inline-flex items-center gap-1 text-xs text-green-600">
