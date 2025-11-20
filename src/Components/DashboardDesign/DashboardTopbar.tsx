@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import { useAppSelector, useAppDispatch } from '../../features/app/hooks';
 import { selectCurrentUser, logout } from '../../features/auth/authSlice';
 import { Menu, Search, Settings, LogOut, User } from 'lucide-react';
 import { useState } from 'react';

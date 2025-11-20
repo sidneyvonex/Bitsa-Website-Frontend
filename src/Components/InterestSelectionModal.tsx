@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { X, Check, Sparkles, TrendingUp, Heart } from 'lucide-react';
 import { useGetAllInterestsQuery, useAddMyInterestsMutation, type Interest } from '../features/api';
-import { useAppDispatch } from '../app/hooks';
+import { useAppDispatch } from '../features/app/hooks';
 import { updateUser } from '../features/auth/authSlice';
 
 interface InterestSelectionModalProps {

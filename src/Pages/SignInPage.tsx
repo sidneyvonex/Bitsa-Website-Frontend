@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Topbar } from '../Components/Topbar';
 import { Footer } from '../Components/Footer';
 import { useLoginMutation, useResendVerificationMutation } from '../features/api';
-import { useAppDispatch } from '../app/hooks';
+import { useAppDispatch } from '../features/app/hooks';
 import { setCredentials } from '../features/auth/authSlice';
 
 export const SignInPage: React.FC = () => {
@@ -63,13 +63,13 @@ export const SignInPage: React.FC = () => {
             // Normalize role - handle different backend formats
             let normalizedRole: 'Student' | 'Admin' | 'SuperAdmin' = 'Student';
             const rawRole = result.userRole || result.role || userData.role;
-            
+
             console.log('🔍 RAW ROLE:', rawRole);
-            
+
             if (rawRole) {
                 const roleLower = String(rawRole).toLowerCase().trim();
                 console.log('🔍 ROLE LOWER:', roleLower);
-                
+
                 if (roleLower === 'admin') {
                     normalizedRole = 'Admin';
                 } else if (roleLower === 'superadmin' || roleLower === 'super admin') {
@@ -104,7 +104,7 @@ export const SignInPage: React.FC = () => {
 
             // Redirect based on role
             console.log('🔍 REDIRECTING TO:', normalizedRole === 'Admin' ? '/admin' : normalizedRole === 'SuperAdmin' ? '/superadmin' : '/dashboard');
-            
+
             if (normalizedRole === 'Admin') {
                 navigate('/admin');
             } else if (normalizedRole === 'SuperAdmin') {

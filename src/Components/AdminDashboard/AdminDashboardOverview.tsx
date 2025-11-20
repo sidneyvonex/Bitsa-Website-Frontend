@@ -9,7 +9,7 @@ import {
     Eye,
     Clock,
 } from 'lucide-react';
-import { useAppSelector } from '../../app/hooks';
+import { useAppSelector } from '../../features/app/hooks';
 import { selectCurrentUser } from '../../features/auth/authSlice';
 import {
     useGetUserStatsQuery,
@@ -102,18 +102,17 @@ export const AdminDashboardOverview = () => {
                     </h1>
                     <p className="text-gray-600 mt-2 text-lg">Welcome back to your dashboard</p>
                 </div>
-                
+
                 {/* Time Range Pills */}
                 <div className="flex gap-2">
                     {['Today', 'Week', 'Month'].map((range) => (
                         <button
                             key={range}
                             onClick={() => setSelectedTimeRange(range.toLowerCase())}
-                            className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${
-                                selectedTimeRange === range.toLowerCase()
+                            className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${selectedTimeRange === range.toLowerCase()
                                     ? 'bg-[#5773da] text-white shadow-lg shadow-[#5773da]/30'
                                     : 'bg-white border border-gray-200 text-gray-700 hover:border-[#5773da] hover:text-[#5773da]'
-                            }`}
+                                }`}
                         >
                             {range}
                         </button>
