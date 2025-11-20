@@ -76,6 +76,25 @@ export const blogsApi = baseApi.injectEndpoints({
         url: '/blogs',
         params: { page, limit, search, category, sortBy },
       }),
+      transformResponse: (response: BlogListResponse | { blogs: Blog[]; pagination: any }) => {
+        // Handle different response formats
+        if ('blogs' in response && !('success' in response)) {
+          // Direct format: { blogs: [], pagination: {} }
+          return {
+            success: true,
+            data: {
+              blogs: response.blogs,
+              pagination: response.pagination || {
+                page: 1,
+                limit: response.blogs.length,
+                total: response.blogs.length,
+                totalPages: 1,
+              },
+            },
+          } as BlogListResponse;
+        }
+        return response as BlogListResponse;
+      },
       providesTags: ['Blog'],
     }),
 
@@ -85,6 +104,40 @@ export const blogsApi = baseApi.injectEndpoints({
         url: '/blogs/latest',
         params: { limit },
       }),
+      transformResponse: (response: BlogListResponse | { success: boolean; data: Blog[] } | { blogs: Blog[] }) => {
+        // Handle different response formats
+        if (Array.isArray((response as { success: boolean; data: Blog[] }).data)) {
+          const blogs = (response as { success: boolean; data: Blog[] }).data;
+          return {
+            success: true,
+            data: {
+              blogs,
+              pagination: {
+                page: 1,
+                limit: blogs.length,
+                total: blogs.length,
+                totalPages: 1,
+              },
+            },
+          } as BlogListResponse;
+        }
+        if ('blogs' in response && !('success' in response)) {
+          // Direct format: { blogs: [] }
+          return {
+            success: true,
+            data: {
+              blogs: (response as { blogs: Blog[] }).blogs,
+              pagination: {
+                page: 1,
+                limit: (response as { blogs: Blog[] }).blogs.length,
+                total: (response as { blogs: Blog[] }).blogs.length,
+                totalPages: 1,
+              },
+            },
+          } as BlogListResponse;
+        }
+        return response as BlogListResponse;
+      },
       providesTags: ['Blog'],
     }),
 
@@ -109,12 +162,32 @@ export const blogsApi = baseApi.injectEndpoints({
     // Get blog by slug (SEO-friendly)
     getBlogBySlug: builder.query<{ success: boolean; data: Blog }, string>({
       query: (slug) => `/blogs/slug/${slug}`,
+      transformResponse: (response: { success: boolean; data: Blog } | Blog) => {
+        // Handle both wrapped and direct blog object
+        if ('id' in response || '_id' in response) {
+          return {
+            success: true,
+            data: response as Blog,
+          };
+        }
+        return response as { success: boolean; data: Blog };
+      },
       providesTags: (_result, _error, slug) => [{ type: 'Blog', id: slug }],
     }),
 
     // Get blog by ID
     getBlogById: builder.query<{ success: boolean; data: Blog }, string>({
       query: (id) => `/blogs/${id}`,
+      transformResponse: (response: { success: boolean; data: Blog } | Blog) => {
+        // Handle both wrapped and direct blog object
+        if ('id' in response || '_id' in response) {
+          return {
+            success: true,
+            data: response as Blog,
+          };
+        }
+        return response as { success: boolean; data: Blog };
+      },
       providesTags: (_result, _error, id) => [{ type: 'Blog', id }],
     }),
 

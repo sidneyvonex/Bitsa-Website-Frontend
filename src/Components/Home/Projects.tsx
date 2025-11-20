@@ -1,53 +1,86 @@
-import { ExternalLink, CheckCircle, Code2, Users } from 'lucide-react';
+import { ExternalLink, CheckCircle, Code2, Users, Github } from 'lucide-react';
+import { useGetFeaturedProjectsQuery, useGetAllProjectsQuery, type Project } from '../../features/api/projectsApi';
+
+const FeaturedProjectCard = ({ project }: { project: Project }) => {
+    const authorName =
+        [project.authorFirstName, project.authorLastName].filter(Boolean).join(' ') || project.authorEmail || 'BITSA Member';
+
+    return (
+        <article className="group rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col">
+            <div className="p-6 pb-4 flex-1">
+                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-blue-900 mb-4">
+                    <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-700">
+                        {project.status.replace('-', ' ')}
+                    </span>
+                    <span className="text-gray-400">•</span>
+                    <span className="text-gray-500">{project.techStack.split(',')[0]}</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-900 transition-colors">
+                    {project.title}
+                </h3>
+                <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">{project.description}</p>
+            </div>
+            <div className="px-6 pb-6 flex items-center justify-between text-sm text-gray-500">
+                <div>
+                    <p className="font-semibold text-gray-900">{authorName}</p>
+                    <p className="text-xs text-gray-400">{project.authorSchoolId}</p>
+                </div>
+                {project.githubUrl && (
+                    <a
+                        href={project.githubUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold text-blue-900 border border-blue-100 rounded-full hover:bg-blue-50"
+                    >
+                        <Github className="w-4 h-4" />
+                        GitHub
+                    </a>
+                )}
+            </div>
+        </article>
+    );
+};
 
 export const Projects = () => {
+    const { data: featuredData, isLoading: loadingFeatured } = useGetFeaturedProjectsQuery({ limit: 4 });
+    const { data: fallbackData, isLoading: loadingFallback } = useGetAllProjectsQuery({ limit: 4 });
+
+    const projects =
+        featuredData?.data?.projects?.slice(0, 4) ||
+        fallbackData?.data?.projects?.slice(0, 4) ||
+        [];
+
     return (
         <section className="py-20 bg-white relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid lg:grid-cols-2 gap-16 items-center">
+                <div className="grid lg:grid-cols-2 gap-16 items-start">
                     {/* Left Side - Content */}
                     <div className="order-2 lg:order-1">
-                        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 italic leading-tight">
-                            Discover more than a classroom — join a{' '}
-                            <span className="text-blue-900">tech community.</span>
+                        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-blue-900 mb-3">
+                            Student innovation
+                        </p>
+                        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+                            Discover real-world projects built by{' '}
+                            <span className="text-blue-900 italic">BITSA innovators.</span>
                         </h2>
 
                         <div className="space-y-4 mb-8">
                             <div className="flex items-start gap-3">
                                 <CheckCircle className="w-5 h-5 text-blue-900 mt-1 shrink-0" />
                                 <p className="text-gray-700 leading-relaxed">
-                                    Access world-class student projects from{' '}
-                                    <a href="/departments/software-engineering" className="text-blue-600 hover:underline font-medium">Software Engineering</a>,{' '}
-                                    <a href="/departments/bbit" className="text-blue-600 hover:underline font-medium">BBIT</a>, and{' '}
-                                    <a href="/departments/data-analytics" className="text-blue-600 hover:underline font-medium">Data Analytics</a> departments.
+                                    Learn from peer-built solutions across AI, Cyber Security, IoT, Mobile, and Web.
                                 </p>
                             </div>
-
                             <div className="flex items-start gap-3">
                                 <CheckCircle className="w-5 h-5 text-blue-900 mt-1 shrink-0" />
                                 <p className="text-gray-700 leading-relaxed">
-                                    Learn from innovative BITSA student solutions in Web Development, Mobile Apps, AI, IoT, and Cyber Security.
+                                    Every showcase includes GitHub source, tech stack, and the student behind the build.
                                 </p>
                             </div>
-
                             <div className="flex items-start gap-3">
                                 <CheckCircle className="w-5 h-5 text-blue-900 mt-1 shrink-0" />
                                 <p className="text-gray-700 leading-relaxed">
-                                    Connect with BITSA's network of ambitious student developers and tech innovators.
-                                </p>
-                            </div>
-
-                            <div className="flex items-start gap-3">
-                                <CheckCircle className="w-5 h-5 text-blue-900 mt-1 shrink-0" />
-                                <p className="text-gray-700 leading-relaxed">
-                                    Find a range of student projects covering diverse topics and technologies for all skill levels.
-                                </p>
-                            </div>
-
-                            <div className="flex items-start gap-3">
-                                <CheckCircle className="w-5 h-5 text-blue-900 mt-1 shrink-0" />
-                                <p className="text-gray-700 leading-relaxed">
-                                    Engage with student projects via searchable filters, detailed showcases, and GitHub repositories.
+                                    Filter hundreds of BITSA projects by status, technology, or author.
                                 </p>
                             </div>
                         </div>
@@ -61,61 +94,48 @@ export const Projects = () => {
                         </a>
                     </div>
 
-                    {/* Right Side - Image with Diagonal Crop */}
-                    <div className="order-1 lg:order-2 relative">
-                        {/* Diagonal cropped image container */}
-                        <div className="relative" style={{ clipPath: 'polygon(0 5%, 100% 0, 100% 95%, 0 100%)' }}>
-                            <div className="relative overflow-hidden shadow-2xl">
-                                <img
-                                    src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&q=80"
-                                    alt="BITSA students collaborating on projects"
-                                    className="w-full h-[500px] object-cover"
-                                />
-                                {/* Gradient Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-tr from-blue-900/60 via-transparent to-transparent"></div>
-
-                                {/* Stats Overlay */}
-                                <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/70 to-transparent">
-                                    <div className="flex items-center justify-between text-white">
-                                        <div>
-                                            <h3 className="text-2xl font-bold mb-1">Student Projects</h3>
-                                            <p className="text-blue-200 text-sm">Built by BITSA members</p>
-                                        </div>
-                                        <div className="flex gap-6">
-                                            <div className="text-center">
-                                                <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2 mb-2">
-                                                    <Code2 className="w-5 h-5 text-orange-400" />
-                                                    <span className="text-2xl font-bold">50+</span>
-                                                </div>
-                                                <p className="text-xs text-blue-200">Projects</p>
-                                            </div>
-                                            <div className="text-center">
-                                                <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2 mb-2">
-                                                    <Users className="w-5 h-5 text-orange-400" />
-                                                    <span className="text-2xl font-bold">100+</span>
-                                                </div>
-                                                <p className="text-xs text-blue-200">Students</p>
-                                            </div>
-                                        </div>
+                    {/* Featured projects list */}
+                    <div className="order-1 lg:order-2 relative w-full">
+                        <div className="rounded-[2rem] bg-gradient-to-br from-blue-900 to-black text-white p-8 shadow-2xl">
+                            <div className="flex items-center justify-between mb-6">
+                                <div>
+                                    <p className="text-sm text-blue-100 uppercase tracking-wide">Featured showcase</p>
+                                    <h3 className="text-2xl font-bold">BITSA Projects</h3>
+                                </div>
+                                <div className="flex gap-4 text-center">
+                                    <div>
+                                        <span className="text-3xl font-extrabold">50+</span>
+                                        <p className="text-xs text-blue-200">Projects</p>
+                                    </div>
+                                    <div>
+                                        <span className="text-3xl font-extrabold">100+</span>
+                                        <p className="text-xs text-blue-200">Contributors</p>
                                     </div>
                                 </div>
                             </div>
+
+                            {loadingFeatured || (projects.length === 0 && loadingFallback) ? (
+                                <div className="space-y-4">
+                                    {[...Array(3)].map((_, idx) => (
+                                        <div key={idx} className="h-28 rounded-2xl bg-white/10 animate-pulse" />
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="space-y-5">
+                                    {projects.map((project) => (
+                                        <FeaturedProjectCard key={project.id || project._id} project={project} />
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
-                        {/* Featured Projects Badge */}
-                        <div className="absolute -top-6 -right-6 bg-orange-500 text-white rounded-lg p-5 shadow-xl z-10">
-                            <div className="text-center">
-                                <Code2 className="w-8 h-8 mx-auto mb-2" />
-                                <p className="text-xs font-semibold">Featured</p>
-                                <p className="text-xs">Showcase</p>
+                        {/* Decorative accent */}
+                        <div className="absolute -bottom-6 -right-6 bg-orange-500 text-white rounded-2xl px-5 py-4 shadow-xl flex items-center gap-3">
+                            <Code2 className="w-8 h-8" />
+                            <div>
+                                <p className="text-xs uppercase tracking-wide">Live demos</p>
+                                <p className="text-sm font-semibold">Updated weekly</p>
                             </div>
-                        </div>
-
-                        {/* Decorative dots */}
-                        <div className="absolute -bottom-4 -left-4 w-24 h-24 grid grid-cols-4 gap-2 opacity-20">
-                            {[...Array(16)].map((_, i) => (
-                                <div key={i} className="w-2 h-2 bg-blue-900 rounded-full"></div>
-                            ))}
                         </div>
                     </div>
                 </div>

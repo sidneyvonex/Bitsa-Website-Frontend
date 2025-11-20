@@ -43,7 +43,8 @@ const formatTimeRange = (startDate?: string, endDate?: string) => {
 };
 
 export const EventDetails = () => {
-    const { eventId } = useParams();
+    // Route is defined as /events/:id in App.tsx, so we read `id` from params
+    const { id } = useParams();
     const navigate = useNavigate();
 
     const {
@@ -51,15 +52,15 @@ export const EventDetails = () => {
         isLoading,
         isError,
         refetch,
-    } = useGetEventByIdQuery(eventId ?? '', {
-        skip: !eventId,
+    } = useGetEventByIdQuery(id ?? '', {
+        skip: !id,
     });
 
     const {
         data: galleryData,
         isLoading: galleryLoading,
-    } = useGetEventGalleryQuery(eventId ?? '', {
-        skip: !eventId,
+    } = useGetEventGalleryQuery(id ?? '', {
+        skip: !id,
     });
 
     const galleryImages = galleryData?.data ?? [];
@@ -172,12 +173,63 @@ export const EventDetails = () => {
                                 </div>
                             </div>
 
-                            <div className="space-y-4">
-                                <h2 className="text-2xl font-bold text-gray-900">About this event</h2>
-                                <p className="text-gray-700 leading-relaxed">
-                                    {eventData?.description}
-                                </p>
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+                                <div className="space-y-4 lg:col-span-2">
+                                    <h2 className="text-2xl font-bold text-gray-900">About this event</h2>
+                                    <p className="text-gray-700 leading-relaxed">
+                                        {eventData?.description}
+                                    </p>
+                                </div>
+
+                                {(eventData?.latitude && eventData?.longitude) || eventData?.locationName ? (
+                                    <div className="space-y-3">
+                                        <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                                            <MapPin className="w-4 h-4 text-[#1e3a8a]" />
+                                            Location map
+                                        </h3>
+                                        <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-sm h-64">
+                                            <iframe
+                                                title="Event location map"
+                                                src={`https://www.google.com/maps?q=${encodeURIComponent(
+                                                    eventData?.latitude && eventData?.longitude
+                                                        ? `${eventData.latitude},${eventData.longitude}`
+                                                        : eventData?.locationName || ''
+                                                )}&output=embed`}
+                                                className="w-full h-full border-0"
+                                                loading="lazy"
+                                                referrerPolicy="no-referrer-when-downgrade"
+                                            />
+                                        </div>
+                                    </div>
+                                ) : null}
                             </div>
+
+                            {/* Location Map */}
+                            {(eventData?.latitude && eventData?.longitude) || eventData?.locationName ? (
+                                <div className="mt-8 space-y-4">
+                                    <h3 className="text-xl font-semibold text-gray-900">Location map</h3>
+                                    <p className="text-gray-600 text-sm">
+                                        {eventData.locationName || 'Event location on map'}
+                                    </p>
+                                    <div className="rounded-2xl overflow-hidden border border-gray-200 h-64">
+                                        <iframe
+                                            title="Event location map"
+                                            src={(() => {
+                                                if (eventData?.latitude && eventData?.longitude) {
+                                                    const lat = encodeURIComponent(eventData.latitude);
+                                                    const lng = encodeURIComponent(eventData.longitude);
+                                                    return `https://www.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
+                                                }
+                                                const query = encodeURIComponent(eventData?.locationName || '');
+                                                return `https://www.google.com/maps?q=${query}&z=15&output=embed`;
+                                            })()}
+                                            className="w-full h-full border-0"
+                                            loading="lazy"
+                                            referrerPolicy="no-referrer-when-downgrade"
+                                        />
+                                    </div>
+                                </div>
+                            ) : null}
                         </div>
                     </div>
                 )}

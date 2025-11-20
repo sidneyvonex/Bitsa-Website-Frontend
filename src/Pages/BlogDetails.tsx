@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Calendar, User, Clock } from 'lucide-react';
 import { Topbar } from '../Components/Topbar';
 import { Footer } from '../Components/Footer';
-import { useGetBlogBySlugQuery, useGetAllBlogsQuery } from '../features/api';
+import { useGetBlogBySlugQuery, useGetAllBlogsQuery, type Blog } from '../features/api';
 
 export const BlogDetails = () => {
     const { slug } = useParams();
@@ -25,7 +25,9 @@ export const BlogDetails = () => {
     const blog = useMemo(() => {
         if (blogBySlug?.data) return blogBySlug.data;
         if (allBlogs?.data?.blogs) {
-            const found = allBlogs.data.blogs.find((b: typeof allBlogs.data.blogs[0]) => b.id === slug || b.slug === slug);
+            const found = allBlogs.data.blogs.find(
+                (b: Blog) => b.id === slug || b._id === slug || b.slug === slug
+            );
             return found;
         }
         return undefined;

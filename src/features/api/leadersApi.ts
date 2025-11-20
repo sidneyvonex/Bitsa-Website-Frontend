@@ -51,6 +51,8 @@ export const leadersApi = baseApi.injectEndpoints({
     getAllLeaders: builder.query<LeaderListResponse, {
       year?: string;
       position?: string;
+      limit?: number;
+      offset?: number;
     } | void>({
       query: (params) => ({
         url: '/leaders',
@@ -61,10 +63,22 @@ export const leadersApi = baseApi.injectEndpoints({
 
     // Get current leaders only
     getCurrentLeaders: builder.query<LeaderListResponse, void>({
-      query: () => {
-        const url = '/leaders/current';
-        console.log('Fetching from:', `https://bitsabackendapi.azurewebsites.net/api${url}`);
-        return url;
+      query: () => '/leaders/current',
+      transformResponse: (response: LeaderListResponse | { success: boolean; data: Leader[] }) => {
+        // Handle both response formats: nested structure or direct array
+        if (Array.isArray((response as { success: boolean; data: Leader[] }).data)) {
+          const leaders = (response as { success: boolean; data: Leader[] }).data;
+          return {
+            success: true,
+            data: {
+              leaders,
+              total: leaders.length,
+              limit: leaders.length,
+              offset: 0,
+            },
+          } as LeaderListResponse;
+        }
+        return response as LeaderListResponse;
       },
       providesTags: ['Leader'],
     }),
@@ -72,11 +86,23 @@ export const leadersApi = baseApi.injectEndpoints({
     // Get past leaders
     getPastLeaders: builder.query<LeaderListResponse, void>({
       query: () => '/leaders/past',
-      providesTags: ['Leader'],
-      transformResponse: (response: LeaderListResponse) => {
-        console.log('getPastLeaders response:', response);
-        return response;
+      transformResponse: (response: LeaderListResponse | { success: boolean; data: Leader[] }) => {
+        // Handle both response formats: nested structure or direct array
+        if (Array.isArray((response as { success: boolean; data: Leader[] }).data)) {
+          const leaders = (response as { success: boolean; data: Leader[] }).data;
+          return {
+            success: true,
+            data: {
+              leaders,
+              total: leaders.length,
+              limit: leaders.length,
+              offset: 0,
+            },
+          } as LeaderListResponse;
+        }
+        return response as LeaderListResponse;
       },
+      providesTags: ['Leader'],
     }),
 
     // Get all academic years

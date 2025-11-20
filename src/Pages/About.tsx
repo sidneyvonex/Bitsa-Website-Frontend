@@ -34,18 +34,79 @@ export const About = () => {
   return (
     <div>
       <Topbar />
-      <main className="min-h-screen bg-gray-50 py-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Hero Section */}
-        <section className="text-center mb-16">
-          <p className="text-sm font-semibold text-blue-600 uppercase tracking-wide mb-4">About Us</p>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">About BITSA</h1>
-          <p className="text-gray-600 text-lg max-w-3xl mx-auto leading-relaxed">
-            The Bachelor of Information Technology Students Association (BITSA) is a dynamic student organization
-            dedicated to fostering excellence, innovation, and collaboration among IT students at the University of
-            Eastern Africa, Baraton (UEAB).
-          </p>
-        </section>
+      <main className="min-h-screen bg-gray-50 py-12 md:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Hero Section – inspired by CEIL layout */}
+          <section className="mb-20">
+            <div className="relative overflow-hidden rounded-3xl md:rounded-[2.5rem] bg-[#7b0202] text-white shadow-2xl">
+              {/* Decorative background shapes */}
+              <div className="pointer-events-none absolute -left-32 -top-32 h-72 w-72 rounded-full bg-gradient-to-br from-[#ff6b3d] to-[#b91c1c] opacity-40" />
+              <div className="pointer-events-none absolute -right-32 bottom-0 h-80 w-80 rounded-full bg-gradient-to-tr from-[#fbbf24] to-[#ef4444] opacity-30" />
+
+              <div className="relative grid gap-10 px-6 py-12 md:grid-cols-2 md:px-12 md:py-14 lg:px-16 lg:py-16 items-center">
+                {/* Image stack */}
+                <div className="flex justify-center gap-6">
+                  <div className="relative w-40 sm:w-52 md:w-64 lg:w-72 rounded-3xl overflow-hidden shadow-xl border-[6px] border-white/10 bg-black/10">
+                    <img
+                      src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=900&q=80"
+                      alt="BITSA summit session"
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="hidden sm:block relative w-32 sm:w-40 md:w-48 lg:w-56 mt-10 rounded-3xl overflow-hidden shadow-xl border-[6px] border-white/10 bg-black/10">
+                    <img
+                      src="https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=900&q=80"
+                      alt="Students collaborating on projects"
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div>
+                  <p className="text-xs font-semibold tracking-[0.25em] uppercase text-amber-300 mb-3">
+                    About BITSA
+                  </p>
+                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight mb-4">
+                    Building the next generation of{" "}
+                    <span className="text-amber-300">tech leaders</span> at UEAB.
+                  </h1>
+                  <p className="text-sm md:text-base text-amber-50/90 leading-relaxed mb-5 max-w-xl">
+                    The Bachelor of Information Technology Students Association (BITSA) is a vibrant community of
+                    innovators, builders, and problem solvers at the University of Eastern Africa, Baraton. We connect
+                    students across Software Engineering, BBIT, Networking, Cyber Security, and Data Analytics to turn
+                    ideas into impact.
+                  </p>
+                  <p className="text-sm md:text-base text-amber-50/90 leading-relaxed mb-8 max-w-xl">
+                    Through hackathons, tech talks, industry partnerships, and peer mentorship, BITSA bridges classroom
+                    learning with the real-world technology ecosystem in Kenya and beyond.
+                  </p>
+
+                  {/* Stats strip */}
+                  <div className="mt-4 pt-6 border-t border-white/15 grid grid-cols-2 sm:grid-cols-4 gap-5">
+                    <div>
+                      <p className="text-3xl md:text-4xl font-extrabold">250+</p>
+                      <p className="text-xs md:text-sm text-amber-100/80">Active members</p>
+                    </div>
+                    <div>
+                      <p className="text-3xl md:text-4xl font-extrabold">30+</p>
+                      <p className="text-xs md:text-sm text-amber-100/80">Tech events &amp; meetups</p>
+                    </div>
+                    <div>
+                      <p className="text-3xl md:text-4xl font-extrabold">15+</p>
+                      <p className="text-xs md:text-sm text-amber-100/80">Student-led projects</p>
+                    </div>
+                    <div>
+                      <p className="text-3xl md:text-4xl font-extrabold">10+</p>
+                      <p className="text-xs md:text-sm text-amber-100/80">Industry partners</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
 
         {/* Who We Are Section */}
         <section className="mb-16">

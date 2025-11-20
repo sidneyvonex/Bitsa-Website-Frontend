@@ -48,19 +48,6 @@ export const OurLeaders = () => {
         isFetching: isFetchingPast,
     } = useGetPastLeadersQuery();
 
-    // Debug logging
-    if (typeof window !== 'undefined') {
-        console.log('=== OurLeaders Debug ===');
-        console.log('currentData:', currentData);
-        console.log('currentData type:', typeof currentData);
-        console.log('currentData.data:', currentData?.data);
-        console.log('currentData.data.leaders:', currentData?.data?.leaders);
-        console.log('currentError:', currentError);
-        console.log('isLoadingCurrent:', isLoadingCurrent);
-        console.log('isErrorCurrent:', isErrorCurrent);
-        console.log('pastData:', pastData);
-    }
-
     const currentLeaders = useMemo(() => {
         if (!currentData) return [];
         // Handle both direct array and nested data structure
@@ -100,24 +87,15 @@ export const OurLeaders = () => {
             <Topbar />
             <main className="min-h-screen bg-gray-50 py-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    {/* Debug Section - Remove after testing */}
-                    {typeof window !== 'undefined' && (
-                        <div className="mb-6 p-4 bg-yellow-100 border border-yellow-300 rounded-lg text-sm">
-                            <p><strong>Debug Info:</strong></p>
-                            <p>isLoadingCurrent: {String(isLoadingCurrent)}</p>
-                            <p>isErrorCurrent: {String(isErrorCurrent)}</p>
-                            <p>currentLeaders length: {currentLeaders.length}</p>
-                            <p>currentData available: {Boolean(currentData)}</p>
-                        </div>
-                    )}
-
-                    {/* Header Section */}
+                    {/* Header Section styled like a speakers section */}
                     <section className="text-center mb-16">
-                        <p className="text-sm font-semibold text-blue-600 uppercase tracking-wide mb-4">Leadership</p>
-                        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Our Leadership Team</h1>
+                        <div className="inline-flex items-center px-8 py-2 rounded-full bg-gradient-to-r from-red-600 via-amber-500 to-yellow-400 text-white text-sm font-semibold tracking-wide uppercase shadow-md mb-5">
+                            Speakers & Leaders
+                        </div>
+                        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">Our Leadership Team</h1>
                         <p className="text-gray-600 text-lg max-w-3xl mx-auto">
-                            Meet the dedicated individuals leading BITSA forward. Our leadership team is committed to fostering
-                            innovation, collaboration, and excellence in technology.
+                            Meet the faces behind BITSA&apos;s vision. Hover over each leader to discover their role and
+                            contributions to our community.
                         </p>
                     </section>
 
