@@ -298,8 +298,8 @@ export const Blogs = () => {
                                             onClick={() => handleCategorySelect(value)}
                                             disabled={loadingCategories && category !== 'All'}
                                             className={`px-4 py-2 rounded-full border text-sm font-semibold transition-all ${isActive
-                                                    ? 'bg-blue-900 border-blue-900 text-white shadow-md'
-                                                    : 'bg-white border-gray-200 text-gray-700 hover:border-blue-900'
+                                                ? 'bg-blue-900 border-blue-900 text-white shadow-md'
+                                                : 'bg-white border-gray-200 text-gray-700 hover:border-blue-900'
                                                 }`}
                                         >
                                             {category}

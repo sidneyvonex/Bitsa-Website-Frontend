@@ -88,8 +88,8 @@ export default function Events() {
                         <button
                             onClick={() => setEventType('upcoming')}
                             className={`px-6 py-2.5 rounded-lg font-medium transition-all ${eventType === 'upcoming'
-                                    ? 'bg-blue-600 text-white shadow-lg'
-                                    : 'bg-white text-gray-700 border border-gray-200 hover:border-blue-300'
+                                ? 'bg-blue-600 text-white shadow-lg'
+                                : 'bg-white text-gray-700 border border-gray-200 hover:border-blue-300'
                                 }`}
                         >
                             Upcoming Events
@@ -97,8 +97,8 @@ export default function Events() {
                         <button
                             onClick={() => setEventType('past')}
                             className={`px-6 py-2.5 rounded-lg font-medium transition-all ${eventType === 'past'
-                                    ? 'bg-blue-600 text-white shadow-lg'
-                                    : 'bg-white text-gray-700 border border-gray-200 hover:border-blue-300'
+                                ? 'bg-blue-600 text-white shadow-lg'
+                                : 'bg-white text-gray-700 border border-gray-200 hover:border-blue-300'
                                 }`}
                         >
                             Past Events

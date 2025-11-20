@@ -94,12 +94,12 @@ export const EventCalendar = ({ events, onDateSelect, selectedDate }: EventCalen
                                 key={day}
                                 onClick={() => onDateSelect(new Date(year, month, day))}
                                 className={`p-2 rounded-lg text-center transition-colors relative group ${isSelected
-                                        ? 'bg-blue-600 text-white'
-                                        : isToday
-                                            ? 'bg-blue-50 text-blue-600 border border-blue-200'
-                                            : dayEvents.length > 0
-                                                ? 'bg-green-50 text-gray-900'
-                                                : 'text-gray-900 hover:bg-gray-50'
+                                    ? 'bg-blue-600 text-white'
+                                    : isToday
+                                        ? 'bg-blue-50 text-blue-600 border border-blue-200'
+                                        : dayEvents.length > 0
+                                            ? 'bg-green-50 text-gray-900'
+                                            : 'text-gray-900 hover:bg-gray-50'
                                     }`}
                             >
                                 <div className="text-sm font-semibold">{day}</div>
