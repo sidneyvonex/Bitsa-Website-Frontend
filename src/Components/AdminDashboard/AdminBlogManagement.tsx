@@ -76,6 +76,7 @@ export const AdminBlogManagement = () => {
             refetch();
         } catch (error) {
             toast.error('Failed to create blog');
+            console.error(error);
         }
     };
 
@@ -95,6 +96,7 @@ export const AdminBlogManagement = () => {
             refetch();
         } catch (error) {
             toast.error('Failed to update blog');
+            console.error(error);
         }
     };
 
@@ -107,6 +109,7 @@ export const AdminBlogManagement = () => {
             refetch();
         } catch (error) {
             toast.error('Failed to delete blog');
+            console.error(error);
         }
     };
 

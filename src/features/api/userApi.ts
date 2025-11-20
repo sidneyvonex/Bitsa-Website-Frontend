@@ -96,7 +96,12 @@ export const userApi = baseApi.injectEndpoints({
     }),
 
     // Admin: Get all users
-    getAllUsers: builder.query<{ success: boolean; data: User[] }, {
+    getAllUsers: builder.query<{ success: boolean; data: User[]; pagination?: {
+      page?: number;
+      limit?: number;
+      total?: number;
+      totalPages?: number;
+    } }, {
       page?: number;
       limit?: number;
       role?: string;
@@ -106,6 +111,47 @@ export const userApi = baseApi.injectEndpoints({
         url: '/users',
         params,
       }),
+      transformResponse: (
+        response:
+          | { success?: boolean; data: User[] }
+          | { success?: boolean; data: { users: User[]; pagination?: { page: number; limit: number; total: number; totalPages: number } } }
+          | { success?: boolean; users: User[]; pagination?: { page: number; limit: number; total: number; totalPages: number } }
+          | User[]
+      ) => {
+        const normalize = (users: User[]) => users.map((u) => ({ ...u }));
+
+        if (Array.isArray(response)) {
+          return { success: true, data: normalize(response) };
+        }
+
+        if ('users' in response && Array.isArray(response.users)) {
+          return {
+            success: response.success ?? true,
+            data: normalize(response.users),
+            pagination: response.pagination,
+          };
+        }
+
+        if ('data' in response && Array.isArray(response.data)) {
+          return {
+            success: response.success ?? true,
+            data: normalize(response.data),
+          };
+        }
+
+        if ('data' in response && Array.isArray(response.data.users)) {
+          return {
+            success: response.success ?? true,
+            data: normalize(response.data.users),
+            pagination: response.data.pagination,
+          };
+        }
+
+        return {
+          success: false,
+          data: [],
+        };
+      },
       providesTags: ['User'],
     }),
 

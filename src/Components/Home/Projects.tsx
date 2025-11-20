@@ -1,4 +1,4 @@
-import { ExternalLink, CheckCircle, Code2, Users, Github } from 'lucide-react';
+import { ExternalLink, CheckCircle, Code2, Github } from 'lucide-react';
 import { useGetFeaturedProjectsQuery, useGetAllProjectsQuery, type Project } from '../../features/api/projectsApi';
 
 const FeaturedProjectCard = ({ project }: { project: Project }) => {

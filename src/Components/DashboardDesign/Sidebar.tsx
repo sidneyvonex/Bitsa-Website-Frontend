@@ -59,6 +59,7 @@ const studentNavSections: NavSection[] = [
 
 const adminNavItems: NavItem[] = [
     { name: 'Dashboard', path: '/admin', icon: LayoutDashboard },
+    { name: 'Profile', path: '/admin/profile', icon: User },
     { name: 'Users', path: '/admin/users', icon: Users },
     { name: 'Events', path: '/admin/events', icon: Calendar },
     { name: 'Blogs', path: '/admin/blogs', icon: FileText },

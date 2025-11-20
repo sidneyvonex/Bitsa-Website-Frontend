@@ -8,14 +8,16 @@ const BASE_URL = 'https://bitsabackendapi.azurewebsites.net/api';
 const baseQuery = fetchBaseQuery({
   baseUrl: BASE_URL,
   prepareHeaders: (headers, { getState }) => {
-    // Get token from auth state
     const token = (getState() as RootState).auth.token;
-    
+
     if (token) {
       headers.set('Authorization', `Bearer ${token}`);
     }
-    
-    headers.set('Content-Type', 'application/json');
+
+    if (!headers.has('Accept')) {
+      headers.set('Accept', 'application/json');
+    }
+
     return headers;
   },
 });

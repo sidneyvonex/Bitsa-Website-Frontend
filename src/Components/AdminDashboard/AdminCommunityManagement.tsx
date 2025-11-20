@@ -61,6 +61,7 @@ export const AdminCommunityManagement = () => {
             refetch();
         } catch (error) {
             toast.error('Failed to create community');
+            console.error(error);
         }
     };
 
@@ -80,6 +81,7 @@ export const AdminCommunityManagement = () => {
             refetch();
         } catch (error) {
             toast.error('Failed to update community');
+            console.error(error);
         }
     };
 
@@ -92,6 +94,7 @@ export const AdminCommunityManagement = () => {
             refetch();
         } catch (error) {
             toast.error('Failed to delete community');
+            console.error(error);
         }
     };
 
@@ -167,7 +170,7 @@ export const AdminCommunityManagement = () => {
                     >
                         <div className="flex items-start justify-between mb-4">
                             <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 bg-linear-to-br from-[#5773da] to-[#4861c9] rounded-xl flex items-center justify-center text-white text-xl font-bold">
+                                <div className="w-12 h-12 bg-gradient-to-br from-[#5773da] to-[#4861c9] rounded-xl flex items-center justify-center text-white text-xl font-bold">
                                     {community.icon || community.name[0]}
                                 </div>
                                 <div>

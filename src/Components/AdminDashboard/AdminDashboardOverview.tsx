@@ -171,7 +171,7 @@ export const AdminDashboardOverview = () => {
                                     <tr key={user._id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
                                         <td className="py-4 px-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-linear-to-br from-[#5773da] to-[#4861c9] flex items-center justify-center text-white font-semibold text-sm">
+                                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#5773da] to-[#4861c9] flex items-center justify-center text-white font-semibold text-sm">
                                                     {user.firstName?.[0]}{user.lastName?.[0]}
                                                 </div>
                                                 <span className="font-medium text-gray-900">

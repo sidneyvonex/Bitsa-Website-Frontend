@@ -1,6 +1,6 @@
 import { baseApi } from './baseApi';
 
-interface Report {
+export interface Report {
   _id: string;
   title: string;
   description: string;

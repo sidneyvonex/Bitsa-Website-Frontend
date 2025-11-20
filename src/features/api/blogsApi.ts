@@ -76,7 +76,7 @@ export const blogsApi = baseApi.injectEndpoints({
         url: '/blogs',
         params: { page, limit, search, category, sortBy },
       }),
-      transformResponse: (response: BlogListResponse | { blogs: Blog[]; pagination: any }) => {
+      transformResponse: (response: BlogListResponse | { blogs: Blog[]; pagination: BlogListResponse['data']['pagination'] }) => {
         // Handle different response formats
         if ('blogs' in response && !('success' in response)) {
           // Direct format: { blogs: [], pagination: {} }

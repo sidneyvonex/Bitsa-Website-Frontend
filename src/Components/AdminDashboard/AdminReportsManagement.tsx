@@ -1,324 +1,624 @@
-import { useState } from 'react';
-import { Download, Calendar, TrendingUp } from 'lucide-react';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { useMemo, useState } from 'react';
+import {
+    AlertCircle,
+    CheckCircle2,
+    CloudUpload,
+    Download,
+    FileText,
+    Filter,
+    Link2,
+    Loader2,
+    RefreshCw,
+    Search,
+    ShieldCheck,
+    Tag,
+    Trash2,
+} from 'lucide-react';
+import { toast } from 'sonner';
+import {
+    type Report,
+    useCreateReportMutation,
+    useDeleteReportMutation,
+    useGetAllReportsQuery,
+    useGetReportStatsQuery,
+    useUpdateReportMutation,
+} from '../../features/api/reportsApi';
 
-// Sample data for charts
-const userGrowthData = [
-    { month: 'Jan', users: 400, active: 300 },
-    { month: 'Feb', users: 600, active: 450 },
-    { month: 'Mar', users: 800, active: 600 },
-    { month: 'Apr', users: 1100, active: 820 },
-    { month: 'May', users: 1600, active: 1200 },
-    { month: 'Jun', users: 2543, active: 1829 },
-];
+const formatDate = (value?: string) => {
+    if (!value) return '—';
+    return new Date(value).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+    });
+};
 
-const engagementData = [
-    { name: 'Events Attended', value: 45, fill: '#3b82f6' },
-    { name: 'Blogs Read', value: 32, fill: '#8b5cf6' },
-    { name: 'Communities Joined', value: 18, fill: '#ec4899' },
-    { name: 'Projects Viewed', value: 5, fill: '#f59e0b' },
-];
-
-const contentTypeData = [
-    { type: 'Blogs', count: 423, views: 12540 },
-    { type: 'Events', count: 156, views: 8920 },
-    { type: 'Projects', count: 89, views: 5630 },
-    { type: 'Communities', count: 12, views: 3200 },
-];
-
-const reportTypes = [
-    { id: 'user-growth', name: 'User Growth', description: 'Track user registration and active user trends' },
-    { id: 'engagement', name: 'User Engagement', description: 'Monitor how users interact with platform features' },
-    { id: 'content', name: 'Content Performance', description: 'Analyze content views and performance metrics' },
-    { id: 'events', name: 'Event Analytics', description: 'View event attendance and participation data' },
-];
+const MAX_FILE_SIZE = 15 * 1024 * 1024;
 
 export const AdminReportsManagement = () => {
-    const [selectedReport, setSelectedReport] = useState('user-growth');
-    const [dateRange, setDateRange] = useState('month');
+    const [searchTerm, setSearchTerm] = useState('');
+    const [categoryFilter, setCategoryFilter] = useState('all');
+    const [showUploadDrawer, setShowUploadDrawer] = useState(false);
+    const [isUploadingFile, setIsUploadingFile] = useState(false);
+    const [formState, setFormState] = useState({
+        title: '',
+        description: '',
+        category: '',
+        fileUrl: '',
+        fileType: 'application/pdf',
+        isPublished: true,
+    });
 
-    const handleExportReport = () => {
-        // In a real app, this would generate and download a PDF report
-        alert(`Exporting ${selectedReport} report for the last ${dateRange}`);
+    const {
+        data: reportsResponse,
+        isLoading: isLoadingReports,
+        isFetching: isFetchingReports,
+        refetch: refetchReports,
+    } = useGetAllReportsQuery();
+    const { data: statsResponse, refetch: refetchStats } = useGetReportStatsQuery();
+
+    const [createReport, { isLoading: isCreating }] = useCreateReportMutation();
+    const [updateReport] = useUpdateReportMutation();
+    const [deleteReport, { isLoading: isDeleting }] = useDeleteReportMutation();
+
+    const reports = useMemo<Report[]>(() => {
+        const payload = reportsResponse?.data;
+        return Array.isArray(payload) ? payload : [];
+    }, [reportsResponse]);
+
+    const categories = useMemo(() => {
+        const unique = new Set<string>();
+        reports.forEach((report) => {
+            if (report.category) unique.add(report.category);
+        });
+        return Array.from(unique).sort((a, b) => a.localeCompare(b));
+    }, [reports]);
+
+    const filteredReports = useMemo(() => {
+        return reports.filter((report) => {
+            const matchesSearch =
+                report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                report.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                `${report.creator?.firstName ?? ''} ${report.creator?.lastName ?? ''}`
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase());
+
+            const matchesCategory =
+                categoryFilter === 'all' || !categoryFilter || report.category === categoryFilter;
+
+            return matchesSearch && matchesCategory;
+        });
+    }, [reports, searchTerm, categoryFilter]);
+
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+    const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+    const canUploadFiles = Boolean(cloudName && uploadPreset);
+
+    const resetForm = () => {
+        setFormState({
+            title: '',
+            description: '',
+            category: '',
+            fileUrl: '',
+            fileType: 'application/pdf',
+            isPublished: true,
+        });
     };
+
+    const handleFileUpload = async (file: File) => {
+        if (file.size > MAX_FILE_SIZE) {
+            toast.error('File too large (max 15MB).');
+            return;
+        }
+
+        if (!canUploadFiles) {
+            toast.error('Cloudinary not configured', {
+                description: 'Set VITE_CLOUDINARY_* env vars or paste a hosted file URL instead.',
+            });
+            return;
+        }
+
+        setIsUploadingFile(true);
+        try {
+            const endpoint = `https://api.cloudinary.com/v1_1/${cloudName}/raw/upload`;
+            const payload = new FormData();
+            payload.append('file', file);
+            payload.append('upload_preset', uploadPreset as string);
+            payload.append('folder', 'bitsa/reports');
+
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                body: payload,
+            });
+            const data = await response.json();
+
+            if (!response.ok || !data.secure_url) {
+                throw new Error(data.error?.message || 'Upload failed');
+            }
+
+            setFormState((prev) => ({
+                ...prev,
+                fileUrl: data.secure_url,
+                fileType: file.type || prev.fileType,
+            }));
+            toast.success('File uploaded successfully');
+        } catch (error) {
+            console.error(error);
+            toast.error('Unable to upload file');
+        } finally {
+            setIsUploadingFile(false);
+        }
+    };
+
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        if (!formState.title.trim() || !formState.description.trim()) {
+            toast.error('A title and description are required.');
+            return;
+        }
+
+        if (!formState.category.trim()) {
+            toast.error('Select or enter a category.');
+            return;
+        }
+
+        if (!formState.fileUrl.trim()) {
+            toast.error('Attach a document or paste a secure file URL.');
+            return;
+        }
+
+        try {
+            await createReport({
+                title: formState.title.trim(),
+                description: formState.description.trim(),
+                category: formState.category.trim(),
+                fileUrl: formState.fileUrl.trim(),
+                fileType: formState.fileType,
+                isPublished: formState.isPublished,
+            }).unwrap();
+
+            toast.success('Report uploaded');
+            resetForm();
+            setShowUploadDrawer(false);
+            refetchReports();
+            refetchStats();
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to upload report');
+        }
+    };
+
+    const handleTogglePublish = async (report: Report) => {
+        try {
+            await updateReport({
+                id: report._id,
+                data: { isPublished: !report.isPublished },
+            }).unwrap();
+            toast.success('Report updated');
+            refetchReports();
+        } catch (error) {
+            console.error(error);
+            toast.error('Unable to update publish status');
+        }
+    };
+
+    const handleDeleteReport = async (report: Report) => {
+        if (!confirm(`Delete "${report.title}"? This action cannot be undone.`)) return;
+
+        try {
+            await deleteReport(report._id).unwrap();
+            toast.success('Report deleted');
+            refetchReports();
+            refetchStats();
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to delete report');
+        }
+    };
+
+    const stats = statsResponse?.data;
+    const statCards = [
+        {
+            label: 'Total Reports',
+            value: stats?.totalReports ?? 0,
+            accent: 'from-sky-500/15 to-sky-500/5 text-sky-900',
+            iconColor: 'text-sky-600 bg-sky-100',
+        },
+        {
+            label: 'Published Reports',
+            value: stats?.publishedReports ?? 0,
+            accent: 'from-emerald-500/15 to-emerald-500/5 text-emerald-900',
+            iconColor: 'text-emerald-600 bg-emerald-100',
+        },
+        {
+            label: 'Total Downloads',
+            value: stats?.totalDownloads ?? 0,
+            accent: 'from-indigo-500/15 to-indigo-500/5 text-indigo-900',
+            iconColor: 'text-indigo-600 bg-indigo-100',
+        },
+    ];
 
     return (
         <div className="space-y-6">
-            {/* Page Header */}
-            <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Reports & Analytics</h1>
-                <p className="text-gray-600">View comprehensive reports and analytics about your platform</p>
-            </div>
-
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-blue-600 text-sm font-semibold mb-1">Total Users</p>
-                            <p className="text-3xl font-bold text-blue-900">2,543</p>
-                            <p className="text-xs text-blue-600 mt-2">↑ 12% from last month</p>
-                        </div>
-                        <div className="bg-blue-600 p-3 rounded-lg">
-                            <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
-                            </svg>
-                        </div>
-                    </div>
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div>
+                    <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">Insights</p>
+                    <h1 className="text-3xl font-bold text-slate-900">Reports & Compliance</h1>
+                    <p className="text-slate-500">
+                        Track submissions, generate exports, and keep the board informed using real API data.
+                    </p>
                 </div>
-
-                <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-green-600 text-sm font-semibold mb-1">Active Users</p>
-                            <p className="text-3xl font-bold text-green-900">1,829</p>
-                            <p className="text-xs text-green-600 mt-2">↑ 8% from last month</p>
-                        </div>
-                        <div className="bg-green-600 p-3 rounded-lg">
-                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8L5.257 18.257a2 2 0 00.28 2.82l5.426 5.426a2 2 0 002.92-.28l10.9-15.251" />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-purple-600 text-sm font-semibold mb-1">Total Events</p>
-                            <p className="text-3xl font-bold text-purple-900">156</p>
-                            <p className="text-xs text-purple-600 mt-2">↑ 5 new this week</p>
-                        </div>
-                        <div className="bg-purple-600 p-3 rounded-lg">
-                            <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v2H4a2 2 0 00-2 2v2h16V7a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v2H7V3a1 1 0 00-1-1zm0 5a2 2 0 002 2h8a2 2 0 002-2H6z" clipRule="evenodd" />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 border border-orange-200">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-orange-600 text-sm font-semibold mb-1">Total Blogs</p>
-                            <p className="text-3xl font-bold text-orange-900">423</p>
-                            <p className="text-xs text-orange-600 mt-2">↑ 28 new this month</p>
-                        </div>
-                        <div className="bg-orange-600 p-3 rounded-lg">
-                            <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M5.5 13a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.3A4.5 4.5 0 1113.5 13H11V9.413l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13H5.5z" />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Report Selection and Controls */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                    <div>
-                        <h2 className="text-xl font-bold text-gray-900 mb-2">Generate Reports</h2>
-                        <p className="text-gray-600 text-sm">Select a report type to view detailed analytics</p>
-                    </div>
+                <div className="flex flex-wrap gap-3">
                     <button
-                        onClick={handleExportReport}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                        type="button"
+                        onClick={() => {
+                            refetchReports();
+                            refetchStats();
+                        }}
+                        className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-blue-200 hover:text-blue-600"
+                        disabled={isFetchingReports}
                     >
-                        <Download className="w-4 h-4" />
-                        Export Report
+                        {isFetchingReports ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                        Refresh
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setShowUploadDrawer(true)}
+                        className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700"
+                    >
+                        <CloudUpload className="h-4 w-4" />
+                        Upload Report
                     </button>
                 </div>
+            </div>
 
-                {/* Report Type Selection */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-                    {reportTypes.map((report) => (
-                        <button
-                            key={report.id}
-                            onClick={() => setSelectedReport(report.id)}
-                            className={`p-4 rounded-lg border-2 transition text-left ${
-                                selectedReport === report.id
-                                    ? 'border-blue-600 bg-blue-50'
-                                    : 'border-gray-200 bg-white hover:border-blue-300'
-                            }`}
-                        >
-                            <p className="font-semibold text-gray-900 text-sm">{report.name}</p>
-                            <p className="text-xs text-gray-600 mt-1">{report.description}</p>
-                        </button>
-                    ))}
-                </div>
-
-                {/* Date Range Filter */}
-                <div className="flex items-center gap-3">
-                    <Calendar className="w-4 h-4 text-gray-600" />
-                    <select
-                        value={dateRange}
-                        onChange={(e) => setDateRange(e.target.value)}
-                        className="px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                {statCards.map((card) => (
+                    <div
+                        key={card.label}
+                        className={`rounded-2xl border border-slate-100 bg-gradient-to-br ${card.accent} p-6`}
                     >
-                        <option value="week">Last 7 Days</option>
-                        <option value="month">Last Month</option>
-                        <option value="quarter">Last Quarter</option>
-                        <option value="year">Last Year</option>
-                    </select>
-                </div>
-            </div>
-
-            {/* User Growth Chart */}
-            {selectedReport === 'user-growth' && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h3 className="text-lg font-bold text-gray-900 mb-6">User Growth Trend</h3>
-                    <ResponsiveContainer width="100%" height={300}>
-                        <LineChart data={userGrowthData}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="month" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Line
-                                type="monotone"
-                                dataKey="users"
-                                stroke="#3b82f6"
-                                strokeWidth={2}
-                                name="Total Users"
-                            />
-                            <Line
-                                type="monotone"
-                                dataKey="active"
-                                stroke="#10b981"
-                                strokeWidth={2}
-                                name="Active Users"
-                            />
-                        </LineChart>
-                    </ResponsiveContainer>
-                </div>
-            )}
-
-            {/* Engagement Chart */}
-            {selectedReport === 'engagement' && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                        <h3 className="text-lg font-bold text-gray-900 mb-6">User Activity Distribution</h3>
-                        <ResponsiveContainer width="100%" height={300}>
-                            <PieChart>
-                                <Pie
-                                    data={engagementData}
-                                    cx="50%"
-                                    cy="50%"
-                                    labelLine={false}
-                                    label={({ name, value }: any) => `${name || 'Unknown'}: ${value || 0}%`}
-                                    outerRadius={80}
-                                    fill="#8884d8"
-                                    dataKey="value"
-                                >
-                                    {engagementData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.fill} />
-                                    ))}
-                                </Pie>
-                                <Tooltip />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </div>
-
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                        <h3 className="text-lg font-bold text-gray-900 mb-4">Engagement Breakdown</h3>
-                        <div className="space-y-4">
-                            {engagementData.map((item) => (
-                                <div key={item.name} className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div
-                                            className="w-3 h-3 rounded-full"
-                                            style={{ backgroundColor: item.fill }}
-                                        />
-                                        <span className="text-gray-700">{item.name}</span>
-                                    </div>
-                                    <span className="font-semibold text-gray-900">{item.value}%</span>
-                                </div>
-                            ))}
+                        <div className={`mb-4 inline-flex rounded-xl ${card.iconColor} p-3`}>
+                            <ShieldCheck className="h-5 w-5" />
                         </div>
+                        <p className="text-sm text-slate-500">{card.label}</p>
+                        <p className="mt-1 text-3xl font-bold text-slate-900">{card.value.toLocaleString()}</p>
                     </div>
-                </div>
-            )}
+                ))}
+            </div>
 
-            {/* Content Performance */}
-            {selectedReport === 'content' && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h3 className="text-lg font-bold text-gray-900 mb-6">Content Performance Metrics</h3>
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="border-b border-gray-200">
-                                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Content Type</th>
-                                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Total Count</th>
-                                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Total Views</th>
-                                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Avg Views</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {contentTypeData.map((item) => (
-                                    <tr key={item.type} className="border-b border-gray-100 hover:bg-gray-50">
-                                        <td className="py-3 px-4 text-gray-900 font-medium">{item.type}</td>
-                                        <td className="py-3 px-4 text-gray-700">{item.count}</td>
-                                        <td className="py-3 px-4 text-gray-700">{item.views.toLocaleString()}</td>
-                                        <td className="py-3 px-4 text-gray-700 font-semibold">{Math.round(item.views / item.count)}</td>
-                                    </tr>
+            <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div className="flex flex-1 items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 focus-within:border-blue-400">
+                        <Search className="h-4 w-4 text-slate-400" />
+                        <input
+                            type="text"
+                            placeholder="Search title, description, or author..."
+                            value={searchTerm}
+                            onChange={(event) => setSearchTerm(event.target.value)}
+                            className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
+                        />
+                    </div>
+                    <div className="flex gap-3">
+                        <div className="relative">
+                            <Filter className="pointer-events-none absolute inset-y-0 left-3 my-auto h-4 w-4 text-slate-400" />
+                            <select
+                                value={categoryFilter}
+                                onChange={(event) => setCategoryFilter(event.target.value)}
+                                className="h-11 w-full rounded-2xl border border-slate-200 bg-white pl-10 pr-10 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-400"
+                            >
+                                <option value="all">All categories</option>
+                                {categories.map((category) => (
+                                    <option key={category} value={category}>
+                                        {category}
+                                    </option>
                                 ))}
-                            </tbody>
-                        </table>
+                            </select>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() =>
+                                toast.message('API reference', {
+                                    description: 'Docs: https://bitsabackendapi.azurewebsites.net/api-docs/#/',
+                                })
+                            }
+                            className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-blue-200 hover:text-blue-600"
+                        >
+                            <FileText className="h-4 w-4" />
+                            API Docs
+                        </button>
                     </div>
-                </div>
-            )}
-
-            {/* Event Analytics */}
-            {selectedReport === 'events' && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h3 className="text-lg font-bold text-gray-900 mb-6">Event Analytics</h3>
-                    <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={contentTypeData}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="type" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Bar dataKey="count" fill="#8b5cf6" name="Total Items" />
-                            <Bar dataKey="views" fill="#3b82f6" name="Total Views" />
-                        </BarChart>
-                    </ResponsiveContainer>
-                </div>
-            )}
-
-            {/* Summary Statistics */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white rounded-lg border border-gray-200 p-4">
-                    <p className="text-gray-600 text-sm mb-2">Platform Health</p>
-                    <p className="text-2xl font-bold text-gray-900">94%</p>
-                    <p className="text-xs text-green-600 mt-2 flex items-center gap-1">
-                        <TrendingUp className="w-3 h-3" /> Excellent
-                    </p>
-                </div>
-                <div className="bg-white rounded-lg border border-gray-200 p-4">
-                    <p className="text-gray-600 text-sm mb-2">Avg Session Duration</p>
-                    <p className="text-2xl font-bold text-gray-900">12m 34s</p>
-                    <p className="text-xs text-green-600 mt-2 flex items-center gap-1">
-                        <TrendingUp className="w-3 h-3" /> +2m 15s vs last month
-                    </p>
-                </div>
-                <div className="bg-white rounded-lg border border-gray-200 p-4">
-                    <p className="text-gray-600 text-sm mb-2">Bounce Rate</p>
-                    <p className="text-2xl font-bold text-gray-900">24.5%</p>
-                    <p className="text-xs text-green-600 mt-2 flex items-center gap-1">
-                        <TrendingUp className="w-3 h-3" /> -3.2% improvement
-                    </p>
-                </div>
-                <div className="bg-white rounded-lg border border-gray-200 p-4">
-                    <p className="text-gray-600 text-sm mb-2">Conversion Rate</p>
-                    <p className="text-2xl font-bold text-gray-900">8.7%</p>
-                    <p className="text-xs text-green-600 mt-2 flex items-center gap-1">
-                        <TrendingUp className="w-3 h-3" /> +1.2% improvement
-                    </p>
                 </div>
             </div>
+
+            <div className="rounded-2xl border border-slate-100 bg-white shadow-sm">
+                <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-slate-100 text-sm">
+                        <thead className="bg-slate-50">
+                            <tr>
+                                <th className="px-6 py-4 text-left font-semibold text-slate-500">Report</th>
+                                <th className="px-6 py-4 text-left font-semibold text-slate-500">Category</th>
+                                <th className="px-6 py-4 text-left font-semibold text-slate-500">Status</th>
+                                <th className="px-6 py-4 text-left font-semibold text-slate-500">Downloads</th>
+                                <th className="px-6 py-4 text-left font-semibold text-slate-500">Created</th>
+                                <th className="px-6 py-4 text-right font-semibold text-slate-500">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                            {isLoadingReports ? (
+                                <tr>
+                                    <td colSpan={6} className="px-6 py-8">
+                                        <div className="flex items-center justify-center gap-3 text-slate-500">
+                                            <Loader2 className="h-5 w-5 animate-spin" />
+                                            Fetching reports...
+                                        </div>
+                                    </td>
+                                </tr>
+                            ) : filteredReports.length === 0 ? (
+                                <tr>
+                                    <td colSpan={6} className="px-6 py-16">
+                                        <div className="flex flex-col items-center justify-center gap-3 text-center text-slate-500">
+                                            <AlertCircle className="h-8 w-8 text-slate-400" />
+                                            <p className="font-semibold text-slate-700">No reports match your filters.</p>
+                                            <p className="text-sm">
+                                                Adjust the search query or try another category.
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ) : (
+                                filteredReports.map((report) => (
+                                    <tr key={report._id} className="hover:bg-slate-50/70">
+                                        <td className="px-6 py-4">
+                                            <div className="max-w-sm">
+                                                <p className="font-semibold text-slate-900">{report.title}</p>
+                                                <p className="text-xs text-slate-500">
+                                                    {report.creator
+                                                        ? `${report.creator.firstName} ${report.creator.lastName}`
+                                                        : 'Unknown author'}
+                                                </p>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+                                                <Tag className="h-3 w-3" />
+                                                {report.category || 'General'}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleTogglePublish(report)}
+                                                className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold transition ${
+                                                    report.isPublished
+                                                        ? 'bg-emerald-50 text-emerald-700'
+                                                        : 'bg-amber-50 text-amber-700'
+                                                }`}
+                                            >
+                                                {report.isPublished ? (
+                                                    <>
+                                                        <CheckCircle2 className="h-3.5 w-3.5" />
+                                                        Published
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <AlertCircle className="h-3.5 w-3.5" />
+                                                        Draft
+                                                    </>
+                                                )}
+                                            </button>
+                                        </td>
+                                        <td className="px-6 py-4 text-sm font-semibold text-slate-700">
+                                            {report.downloads?.toLocaleString() ?? '0'}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-slate-500">
+                                            {formatDate(report.createdAt)}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center justify-end gap-2">
+                                                <a
+                                                    href={report.fileUrl}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    className="inline-flex items-center gap-1 rounded-xl border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-blue-200 hover:text-blue-600"
+                                                >
+                                                    <Download className="h-3.5 w-3.5" />
+                                                    View
+                                                </a>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleDeleteReport(report)}
+                                                    className="inline-flex items-center gap-1 rounded-xl border border-slate-200 px-3 py-1 text-xs font-semibold text-rose-600 transition hover:border-rose-200 hover:bg-rose-50"
+                                                    disabled={isDeleting}
+                                                >
+                                                    <Trash2 className="h-3.5 w-3.5" />
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {showUploadDrawer && (
+                <div className="fixed inset-0 z-40 flex">
+                    <div
+                        className="flex-1 bg-slate-900/40 backdrop-blur-sm"
+                        onClick={() => {
+                            setShowUploadDrawer(false);
+                            resetForm();
+                        }}
+                    />
+                    <div className="h-full w-full max-w-xl overflow-y-auto bg-white p-8 shadow-2xl">
+                        <div className="mb-6 flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+                                    New Report
+                                </p>
+                                <h2 className="text-2xl font-bold text-slate-900">Upload documentation</h2>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setShowUploadDrawer(false);
+                                    resetForm();
+                                }}
+                                className="rounded-full border border-slate-200 p-2 text-slate-500 transition hover:border-slate-300 hover:text-slate-700"
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        <form className="space-y-5" onSubmit={handleSubmit}>
+                            <div>
+                                <label className="text-sm font-medium text-slate-700">Title</label>
+                                <input
+                                    type="text"
+                                    value={formState.title}
+                                    onChange={(event) => setFormState({ ...formState, title: event.target.value })}
+                                    placeholder="e.g., Q1 Program Impact Report"
+                                    className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="text-sm font-medium text-slate-700">Description</label>
+                                <textarea
+                                    value={formState.description}
+                                    onChange={(event) =>
+                                        setFormState({ ...formState, description: event.target.value })
+                                    }
+                                    rows={4}
+                                    placeholder="Brief summary that will help admins identify this file."
+                                    className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                <div>
+                                    <label className="text-sm font-medium text-slate-700">Category</label>
+                                    <input
+                                        type="text"
+                                        value={formState.category}
+                                        onChange={(event) =>
+                                            setFormState({ ...formState, category: event.target.value })
+                                        }
+                                        placeholder="Finance, Events, Compliance..."
+                                        className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                                        list="report-categories"
+                                    />
+                                    <datalist id="report-categories">
+                                        {categories.map((category) => (
+                                            <option key={category} value={category} />
+                                        ))}
+                                    </datalist>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-slate-700">File Type</label>
+                                    <select
+                                        value={formState.fileType}
+                                        onChange={(event) =>
+                                            setFormState({ ...formState, fileType: event.target.value })
+                                        }
+                                        className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                                    >
+                                        <option value="application/pdf">PDF</option>
+                                        <option value="application/vnd.ms-excel">Excel</option>
+                                        <option value="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+                                            Excel (xlsx)
+                                        </option>
+                                        <option value="application/vnd.openxmlformats-officedocument.presentationml.presentation">
+                                            Presentation
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="space-y-3 rounded-2xl border border-dashed border-slate-300 bg-slate-50/60 p-4">
+                                <p className="text-sm font-semibold text-slate-700">Attach document</p>
+                                <p className="text-xs text-slate-500">
+                                    {canUploadFiles
+                                        ? 'Upload up to 15MB. PDF is recommended for final copies.'
+                                        : 'Paste a hosted file URL below; Cloudinary credentials are not configured yet.'}
+                                </p>
+                                <label className="inline-flex w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-5 text-center text-sm font-medium text-slate-600 transition hover:border-blue-200 hover:text-blue-600">
+                                    <CloudUpload className="h-5 w-5" />
+                                    <span>{isUploadingFile ? 'Uploading...' : 'Select file to upload'}</span>
+                                    <input
+                                        type="file"
+                                        accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx"
+                                        className="hidden"
+                                        onChange={(event) => {
+                                            const file = event.target.files?.[0];
+                                            if (file) {
+                                                handleFileUpload(file);
+                                            }
+                                        }}
+                                        disabled={isUploadingFile}
+                                    />
+                                </label>
+                                <div>
+                                    <label className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                                        OR paste file URL
+                                    </label>
+                                    <div className="mt-2 flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2">
+                                        <Link2 className="h-4 w-4 text-slate-400" />
+                                        <input
+                                            type="url"
+                                            value={formState.fileUrl}
+                                            onChange={(event) =>
+                                                setFormState({ ...formState, fileUrl: event.target.value })
+                                            }
+                                            placeholder="https://files.bitsa.org/report.pdf"
+                                            className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700">
+                                <input
+                                    type="checkbox"
+                                    checked={formState.isPublished}
+                                    onChange={(event) =>
+                                        setFormState({ ...formState, isPublished: event.target.checked })
+                                    }
+                                    className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-2 focus:ring-blue-200"
+                                />
+                                Make report visible to other admins immediately
+                            </label>
+
+                            <div className="flex gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        resetForm();
+                                        setShowUploadDrawer(false);
+                                    }}
+                                    className="flex-1 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-600 transition hover:border-slate-300"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={isCreating}
+                                    className="flex-1 rounded-2xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
+                                >
+                                    {isCreating ? 'Saving...' : 'Save Report'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
 
 export default AdminReportsManagement;
+

@@ -11,7 +11,7 @@ export const Gallery = () => {
 
     const { data, isLoading, isError, refetch, isFetching } = useGetAllGalleryImagesQuery({ page, limit });
 
-    const images = data?.images ?? [];
+    const images = useMemo(() => data?.images ?? [], [data]);
     const pagination = data?.pagination;
 
     const groupedByEvent = useMemo(() => {

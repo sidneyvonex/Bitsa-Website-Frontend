@@ -18,6 +18,8 @@ import AdminBlogsPage from './Components/AdminDashboard/AdminBlogsPage'
 import AdminCommunitiesPage from './Components/AdminDashboard/AdminCommunitiesPage'
 import AdminInterestsPage from './Components/AdminDashboard/AdminInterestsPage'
 import AdminReportsPage from './Components/AdminDashboard/AdminReportsPage'
+import AdminProfilePage from './Components/AdminDashboard/AdminProfilePage'
+import AdminSettingsPage from './Components/AdminDashboard/AdminSettingsPage'
 import Help from './Pages/Help'
 import NotFoundPage from './Pages/NotFoundPage'
 import About from './Pages/About'
@@ -139,6 +141,22 @@ function App() {
           element={
             <ProtectedRoute requiredRole={['Admin', 'SuperAdmin']}>
               <AdminReportsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/profile"
+          element={
+            <ProtectedRoute requiredRole={['Admin', 'SuperAdmin']}>
+              <AdminProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/settings"
+          element={
+            <ProtectedRoute requiredRole={['Admin', 'SuperAdmin']}>
+              <AdminSettingsPage />
             </ProtectedRoute>
           }
         />
