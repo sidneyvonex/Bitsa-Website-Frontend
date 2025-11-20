@@ -38,6 +38,11 @@ export const SignInPage: React.FC = () => {
         try {
             const result = await login(formData).unwrap();
 
+            // DEBUG: Log the full response
+            console.log('🔍 LOGIN RESPONSE:', result);
+            console.log('🔍 USER ROLE:', result.userRole);
+            console.log('🔍 ROLE TYPE:', typeof result.userRole);
+
             // Validate required fields (backend returns flat structure)
             if (!result.token || !result.userId) {
                 console.error('Missing token or userId in response:', result);
@@ -55,12 +60,33 @@ export const SignInPage: React.FC = () => {
             // Handle emailVerified from either root level or nested data
             const emailVerified = result.emailVerified ?? userData.emailVerified ?? true;
 
+            // Normalize role - handle different backend formats
+            let normalizedRole: 'Student' | 'Admin' | 'SuperAdmin' = 'Student';
+            const rawRole = result.userRole || result.role || userData.role;
+            
+            console.log('🔍 RAW ROLE:', rawRole);
+            
+            if (rawRole) {
+                const roleLower = String(rawRole).toLowerCase().trim();
+                console.log('🔍 ROLE LOWER:', roleLower);
+                
+                if (roleLower === 'admin') {
+                    normalizedRole = 'Admin';
+                } else if (roleLower === 'superadmin' || roleLower === 'super admin') {
+                    normalizedRole = 'SuperAdmin';
+                } else {
+                    normalizedRole = 'Student';
+                }
+            }
+
+            console.log('🔍 NORMALIZED ROLE:', normalizedRole);
+
             const user = {
                 id: result.userId,
                 email: result.email,
                 firstName,
                 lastName,
-                role: (result.userRole?.charAt(0).toUpperCase() + result.userRole?.slice(1)) as 'Student' | 'Admin' | 'SuperAdmin',
+                role: normalizedRole,
                 schoolId,
                 major,
                 isEmailVerified: emailVerified,
@@ -68,16 +94,20 @@ export const SignInPage: React.FC = () => {
                 profilePicture: result.profileUrl || undefined,
             };
 
+            console.log('🔍 USER OBJECT:', user);
+
             dispatch(setCredentials({
                 user,
                 token: result.token,
                 refreshToken: result.refreshToken || result.token,
             }));
 
-            const roleLower = result.userRole?.toLowerCase();
-            if (roleLower === 'admin') {
+            // Redirect based on role
+            console.log('🔍 REDIRECTING TO:', normalizedRole === 'Admin' ? '/admin' : normalizedRole === 'SuperAdmin' ? '/superadmin' : '/dashboard');
+            
+            if (normalizedRole === 'Admin') {
                 navigate('/admin');
-            } else if (roleLower === 'superadmin') {
+            } else if (normalizedRole === 'SuperAdmin') {
                 navigate('/superadmin');
             } else {
                 navigate('/dashboard');

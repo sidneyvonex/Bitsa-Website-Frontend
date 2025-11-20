@@ -1,6 +1,6 @@
 import { baseApi } from './baseApi';
 
-interface Community {
+export interface Community {
   _id: string;
   name: string;
   description: string;
@@ -55,7 +55,7 @@ export const communitiesApi = baseApi.injectEndpoints({
     // Get community by ID
     getCommunityById: builder.query<{ success: boolean; data: Community }, string>({
       query: (id) => `/communities/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Community', id }],
+      providesTags: (_result, _error, id) => [{ type: 'Community', id }],
     }),
 
     // Admin: Get community statistics
@@ -83,7 +83,7 @@ export const communitiesApi = baseApi.injectEndpoints({
         method: 'PUT',
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Community', id }, 'Community'],
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'Community', id }, 'Community'],
     }),
 
     // Admin: Delete community

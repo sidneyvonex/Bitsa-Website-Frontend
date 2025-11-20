@@ -153,8 +153,8 @@ export const DashboardOverview = () => {
                 <div className="p-6">
                     {upcomingEvents.length > 0 ? (
                         <div className="space-y-3">
-                            {upcomingEvents.map((event: Event) => (
-                                <div key={event._id} className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-50 transition-all border border-gray-100">
+                            {upcomingEvents.map((event: Event, index: number) => (
+                                <div key={event._id || index} className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-50 transition-all border border-gray-100">
                                     <div className="shrink-0">
                                         <div className="w-10 h-10 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg flex items-center justify-center border border-blue-200">
                                             <Calendar className="w-5 h-5 text-[#4361c7]" />

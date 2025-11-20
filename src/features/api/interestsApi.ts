@@ -1,20 +1,22 @@
 import { baseApi } from './baseApi';
 
-interface Interest {
-  _id: string;
+export interface Interest {
+  _id?: string;
+  id: string;  // Backend uses id (not _id)
   name: string;
   description?: string;
   icon?: string;
-  category: string;
-  isActive: boolean;
-  userCount: number;
-  createdAt: string;
-  updatedAt: string;
+  category?: string;  // Optional - not always returned
+  isActive?: boolean;  // Optional - not always returned
+  userCount?: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 interface InterestListResponse {
-  success: boolean;
-  data: Interest[];
+  success?: boolean;
+  data?: Interest[];
+  interests?: Interest[];  // Alternative format
 }
 
 interface CreateInterestRequest {
@@ -77,7 +79,10 @@ export const interestsApi = baseApi.injectEndpoints({
     }),
 
     // Check if user has selected interests
-    checkMyInterests: builder.query<{ success: boolean; data: { hasInterests: boolean; count: number } }, void>({
+    checkMyInterests: builder.query<
+      { success?: boolean; data?: { hasInterests: boolean; count: number }; hasInterests?: boolean; count?: number },
+      void
+    >({
       query: () => '/interests/my/check',
     }),
 
@@ -109,7 +114,7 @@ export const interestsApi = baseApi.injectEndpoints({
     // Admin: Get interest by ID
     getInterestById: builder.query<{ success: boolean; data: Interest }, string>({
       query: (id) => `/interests/admin/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Interest', id }],
+      providesTags: (_result, _error, id) => [{ type: 'Interest', id }],
     }),
 
     // Admin: Create interest
@@ -132,7 +137,7 @@ export const interestsApi = baseApi.injectEndpoints({
         method: 'PUT',
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Interest', id }, 'Interest'],
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'Interest', id }, 'Interest'],
     }),
 
     // Admin: Delete interest

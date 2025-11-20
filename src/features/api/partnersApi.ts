@@ -56,7 +56,7 @@ export const partnersApi = baseApi.injectEndpoints({
     // Get partner by ID
     getPartnerById: builder.query<{ success: boolean; data: Partner }, string>({
       query: (id) => `/partners/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Partner', id }],
+      providesTags: (_result, _error, id) => [{ type: 'Partner', id }],
     }),
 
     // Admin: Get partner statistics
@@ -84,7 +84,7 @@ export const partnersApi = baseApi.injectEndpoints({
         method: 'PUT',
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Partner', id }, 'Partner'],
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'Partner', id }, 'Partner'],
     }),
 
     // Admin: Delete partner

@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { selectCurrentUser, logout } from '../../features/auth/authSlice';
-import { Menu, Search, Settings, LogOut, User, Clock } from 'lucide-react';
+import { Menu, Search, Settings, LogOut, User } from 'lucide-react';
 import { useState } from 'react';
 
 interface DashboardTopbarProps {

@@ -1,26 +1,30 @@
 import { baseApi } from './baseApi';
 
-interface Blog {
-  _id: string;
+export interface Blog {
+  id: string;
+  _id?: string;  // Some endpoints might return _id
   title: string;
   slug: string;
   content: string;
-  excerpt: string;
   category: string;
-  author: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    schoolId: string;
-  };
-  image?: string;
-  tags: string[];
-  views: number;
-  likes: number;
-  isPublished: boolean;
-  publishedAt?: string;
+  readTime: number;
+  coverImage?: string;
+  image?: string;  // Alternative property name for image
+  excerpt?: string;
+  authorId: string;
+  authorSchoolId?: string;
+  authorFirstName?: string;
+  authorLastName?: string;
+  author?: { firstName: string; lastName: string };
+  authorEmail?: string;
+  authorProfilePicture?: string;
+  authorRole?: string;
   createdAt: string;
   updatedAt: string;
+  isPublished?: boolean;
+  views?: number;
+  likes?: number;
+  tags?: string[];
 }
 
 interface BlogListResponse {
@@ -28,10 +32,10 @@ interface BlogListResponse {
   data: {
     blogs: Blog[];
     pagination: {
-      currentPage: number;
-      totalPages: number;
-      totalBlogs: number;
+      page: number;
       limit: number;
+      total: number;
+      totalPages: number;
     };
   };
 }
@@ -105,13 +109,13 @@ export const blogsApi = baseApi.injectEndpoints({
     // Get blog by slug (SEO-friendly)
     getBlogBySlug: builder.query<{ success: boolean; data: Blog }, string>({
       query: (slug) => `/blogs/slug/${slug}`,
-      providesTags: (result, error, slug) => [{ type: 'Blog', id: slug }],
+      providesTags: (_result, _error, slug) => [{ type: 'Blog', id: slug }],
     }),
 
     // Get blog by ID
     getBlogById: builder.query<{ success: boolean; data: Blog }, string>({
       query: (id) => `/blogs/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Blog', id }],
+      providesTags: (_result, _error, id) => [{ type: 'Blog', id }],
     }),
 
     // Admin: Get blog statistics
@@ -139,7 +143,7 @@ export const blogsApi = baseApi.injectEndpoints({
         method: 'PUT',
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Blog', id }, 'Blog'],
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'Blog', id }, 'Blog'],
     }),
 
     // Admin: Delete blog

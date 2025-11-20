@@ -1,22 +1,30 @@
 import { baseApi } from './baseApi';
 
-interface Event {
-  _id: string;
+export interface Event {
+  id: string;
+  _id?: string;  // Some endpoints might return _id
   title: string;
   description: string;
-  date: string;
-  time: string;
-  location: string;
-  category: string;
+  startDate: string;
+  endDate: string;
+  location?: string;
+  locationName?: string;
   image?: string;
-  capacity: number;
-  registeredCount: number;
-  organizerId: string;
-  status: 'upcoming' | 'ongoing' | 'completed' | 'cancelled';
-  tags?: string[];
-  gallery?: string[];
-  createdAt: string;
-  updatedAt: string;
+  latitude?: string;
+  longitude?: string;
+  createdBy?: string;
+  createdAt?: string;
+  creatorSchoolId?: string;
+  creatorFirstName?: string;
+  creatorLastName?: string;
+  creatorEmail?: string;
+  creatorRole?: string;
+  category?: string;
+  status?: string;
+  registeredCount?: number;
+  capacity?: number;
+  date?: string;
+  time?: string;
 }
 
 interface EventListResponse {
@@ -24,10 +32,10 @@ interface EventListResponse {
   data: {
     events: Event[];
     pagination: {
-      currentPage: number;
-      totalPages: number;
-      totalEvents: number;
+      page: number;
       limit: number;
+      total: number;
+      totalPages: number;
     };
   };
 }
@@ -55,7 +63,7 @@ interface EventStatsResponse {
   };
 }
 
-interface GalleryImage {
+export interface GalleryImage {
   _id: string;
   eventId: string;
   imageUrl: string;
@@ -102,13 +110,13 @@ export const eventsApi = baseApi.injectEndpoints({
     // Get event by ID (with gallery)
     getEventById: builder.query<{ success: boolean; data: Event }, string>({
       query: (id) => `/events/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Event', id }],
+      providesTags: (_result, _error, id) => [{ type: 'Event', id }],
     }),
 
     // Get event gallery images
     getEventGallery: builder.query<{ success: boolean; data: GalleryImage[] }, string>({
       query: (eventId) => `/events/${eventId}/gallery`,
-      providesTags: (result, error, eventId) => [{ type: 'Event', id: eventId }],
+      providesTags: (_result, _error, eventId) => [{ type: 'Event', id: eventId }],
     }),
 
     // Get all gallery images (across all events)
@@ -142,7 +150,7 @@ export const eventsApi = baseApi.injectEndpoints({
         method: 'PUT',
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Event', id }, 'Event'],
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'Event', id }, 'Event'],
     }),
 
     // Admin: Delete event

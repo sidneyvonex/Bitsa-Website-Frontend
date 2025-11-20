@@ -10,9 +10,34 @@ import { ResetPasswordPage } from './Pages/ResetPasswordPage'
 import { SignUpPage } from './Pages/SignUpPage'
 import { EmailVerificationPage } from './Pages/EmailVerificationPage'
 import StudentDashboard from './Pages/StudentDashboard'
-import AdminDashboard from './Pages/AdminDashboard'
+import StudentTimeSchedule from './Pages/StudentTimeSchedule'
+import StudentNotifications from './Pages/StudentNotifications'
+import StudentMessages from './Pages/StudentMessages'
+import StudentLearningPlan from './Pages/StudentLearningPlan'
+import StudentContact from './Pages/StudentContact'
+import AdminDashboard from './Components/AdminDashboard/AdminDashboard'
 import SuperAdminDashboard from './Pages/SuperAdminDasboard'
+import AdminUsersPage from './Components/AdminDashboard/AdminUsersPage'
+import AdminEventsPage from './Components/AdminDashboard/AdminEventsPage'
+import AdminBlogsPage from './Components/AdminDashboard/AdminBlogsPage'
+import AdminCommunitiesPage from './Components/AdminDashboard/AdminCommunitiesPage'
+import AdminInterestsPage from './Components/AdminDashboard/AdminInterestsPage'
 import Help from './Pages/Help'
+import NotFoundPage from './Pages/NotFoundPage'
+import About from './Pages/About'
+import MissionVision from './Pages/MissionVision'
+import OurLeaders from './Pages/OurLeaders'
+import Constitution from './Pages/Constitution'
+import Events from './Pages/Events'
+import EventDetails from './Pages/EventDetails'
+import Blogs from './Pages/Blogs'
+import BlogDetails from './Pages/BlogDetails'
+import Communities from './Pages/Communities'
+import Projects from './Pages/Projects'
+import ProjectDetails from './Pages/ProjectDetails'
+import Gallery from './Pages/Gallery'
+import Marketplace from './Pages/Marketplace'
+import Contact from './Pages/Contact'
 
 function App() {
   return (
@@ -29,12 +54,77 @@ function App() {
         <Route path="/verify-email" element={<EmailVerificationPage />} />
         <Route path="/help" element={<Help />} />
 
+        {/* About Us Pages */}
+        <Route path="/about" element={<About />} />
+        <Route path="/mission" element={<MissionVision />} />
+        <Route path="/leadership" element={<OurLeaders />} />
+        <Route path="/constitution" element={<Constitution />} />
+
+        {/* Events Pages */}
+        <Route path="/events" element={<Events />} />
+        <Route path="/events/upcoming" element={<Events />} />
+        <Route path="/events/past" element={<Events />} />
+        <Route path="/events/calendar-view" element={<Events />} />
+        <Route path="/events/:id" element={<EventDetails />} />
+
+        {/* Content Pages */}
+        <Route path="/blogs" element={<Blogs />} />
+        <Route path="/blogs/:slug" element={<BlogDetails />} />
+        <Route path="/communities" element={<Communities />} />
+        <Route path="/projects" element={<Projects />} />
+        <Route path="/projects/:id" element={<ProjectDetails />} />
+
+        {/* Resources Pages */}
+        <Route path="/gallery" element={<Gallery />} />
+        <Route path="/marketplace" element={<Marketplace />} />
+        <Route path="/contact" element={<Contact />} />
+
         {/* Protected Routes - Student Dashboard */}
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute requiredRole={['Student']}>
               <StudentDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/schedule"
+          element={
+            <ProtectedRoute requiredRole={['Student']}>
+              <StudentTimeSchedule />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/notifications"
+          element={
+            <ProtectedRoute requiredRole={['Student']}>
+              <StudentNotifications />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/messages"
+          element={
+            <ProtectedRoute requiredRole={['Student']}>
+              <StudentMessages />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/learning-plan"
+          element={
+            <ProtectedRoute requiredRole={['Student']}>
+              <StudentLearningPlan />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/contact"
+          element={
+            <ProtectedRoute requiredRole={['Student']}>
+              <StudentContact />
             </ProtectedRoute>
           }
         />
@@ -48,6 +138,46 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute requiredRole={['Admin', 'SuperAdmin']}>
+              <AdminUsersPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/events"
+          element={
+            <ProtectedRoute requiredRole={['Admin', 'SuperAdmin']}>
+              <AdminEventsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/blogs"
+          element={
+            <ProtectedRoute requiredRole={['Admin', 'SuperAdmin']}>
+              <AdminBlogsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/communities"
+          element={
+            <ProtectedRoute requiredRole={['Admin', 'SuperAdmin']}>
+              <AdminCommunitiesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/interests"
+          element={
+            <ProtectedRoute requiredRole={['Admin', 'SuperAdmin']}>
+              <AdminInterestsPage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Protected Routes - SuperAdmin Dashboard */}
         <Route
@@ -58,6 +188,9 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* Catch-all route for 404 - Must be last */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   )

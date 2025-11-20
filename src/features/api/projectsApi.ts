@@ -1,6 +1,6 @@
 import { baseApi } from './baseApi';
 
-interface Project {
+export interface Project {
   _id: string;
   title: string;
   description: string;
@@ -88,7 +88,7 @@ export const projectsApi = baseApi.injectEndpoints({
     // Get project by ID
     getProjectById: builder.query<{ success: boolean; data: Project }, string>({
       query: (id) => `/projects/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Project', id }],
+      providesTags: (_result, _error, id) => [{ type: 'Project', id }],
     }),
 
     // Student: Get my projects
@@ -117,7 +117,7 @@ export const projectsApi = baseApi.injectEndpoints({
         method: 'PUT',
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Project', id }, 'Project'],
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'Project', id }, 'Project'],
     }),
 
     // Student: Delete project
@@ -145,7 +145,7 @@ export const projectsApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: { status, isFeatured },
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Project', id }, 'Project'],
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'Project', id }, 'Project'],
     }),
 
     // Admin: Get all projects by a specific user

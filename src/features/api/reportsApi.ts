@@ -73,7 +73,7 @@ export const reportsApi = baseApi.injectEndpoints({
     // Get report by ID
     getReportById: builder.query<{ success: boolean; data: Report }, string>({
       query: (id) => `/reports/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Report', id }],
+      providesTags: (_result, _error, id) => [{ type: 'Report', id }],
     }),
 
     // Admin: Get report statistics
@@ -107,7 +107,7 @@ export const reportsApi = baseApi.injectEndpoints({
         method: 'PUT',
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Report', id }, 'Report'],
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'Report', id }, 'Report'],
     }),
 
     // Admin: Delete report

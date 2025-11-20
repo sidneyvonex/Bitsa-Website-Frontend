@@ -129,7 +129,7 @@ export const userApi = baseApi.injectEndpoints({
     // Get user by school ID
     getUserBySchoolId: builder.query<{ success: boolean; data: User }, string>({
       query: (schoolId) => `/users/${schoolId}`,
-      providesTags: (result, error, schoolId) => [{ type: 'User', id: schoolId }],
+      providesTags: (_result, _error, schoolId) => [{ type: 'User', id: schoolId }],
     }),
 
     // Admin: Update user by school ID
@@ -142,7 +142,7 @@ export const userApi = baseApi.injectEndpoints({
         method: 'PUT',
         body: data,
       }),
-      invalidatesTags: (result, error, { schoolId }) => [
+      invalidatesTags: (_result, _error, { schoolId }) => [
         { type: 'User', id: schoolId },
         'User',
       ],
@@ -167,7 +167,7 @@ export const userApi = baseApi.injectEndpoints({
         method: 'PUT',
         body: { role },
       }),
-      invalidatesTags: (result, error, { schoolId }) => [
+      invalidatesTags: (_result, _error, { schoolId }) => [
         { type: 'User', id: schoolId },
         'User',
       ],
@@ -179,7 +179,7 @@ export const userApi = baseApi.injectEndpoints({
         url: `/users/${schoolId}/deactivate`,
         method: 'PUT',
       }),
-      invalidatesTags: (result, error, schoolId) => [
+      invalidatesTags: (_result, _error, schoolId) => [
         { type: 'User', id: schoolId },
         'User',
       ],
@@ -191,7 +191,7 @@ export const userApi = baseApi.injectEndpoints({
         url: `/users/${schoolId}/activate`,
         method: 'PUT',
       }),
-      invalidatesTags: (result, error, schoolId) => [
+      invalidatesTags: (_result, _error, schoolId) => [
         { type: 'User', id: schoolId },
         'User',
       ],

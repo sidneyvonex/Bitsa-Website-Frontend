@@ -12,3 +12,8 @@ export * from './interestsApi';
 export * from './reportsApi';
 export * from './aiApi';
 export * from './auditApi';
+
+// Explicit exports for commonly used types
+export type { Leader } from './leadersApi';
+export type { Event } from './EventApi';
+export type { Blog } from './blogsApi';

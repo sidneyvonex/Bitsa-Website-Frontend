@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Moon, Sun, Globe, X, ChevronDown } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -48,7 +49,7 @@ export const Topbar = () => {
             <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center py-4">
                     {/* Logo Section */}
-                    <a href="/" className="flex items-center space-x-3 cursor-pointer hover:opacity-90 transition-opacity">
+                    <Link to="/" className="flex items-center space-x-3 cursor-pointer hover:opacity-90 transition-opacity">
                         <img
                             src="/bitsa-logo.png"
                             alt="BITSA Logo"
@@ -61,17 +62,17 @@ export const Topbar = () => {
                                 <div>Association (BITSA)</div>
                             </div>
                         </div>
-                    </a>
+                    </Link>
 
                     {/* Navigation Links */}
                     <div className="hidden md:flex items-center space-x-8">
-                        <a
-                            href="/"
+                        <Link
+                            to="/"
                             className="relative text-[#f59e0b] text-base font-semibold py-2"
                         >
                             {t('nav.home')}
                             <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#f59e0b]"></span>
-                        </a>
+                        </Link>
 
                         {/* About Us Dropdown */}
                         <div className="relative group">
@@ -83,10 +84,10 @@ export const Topbar = () => {
                                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#f59e0b] transition-all duration-300 group-hover:w-full"></span>
                             </button>
                             <div className="absolute left-0 mt-2 w-64 bg-white shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
-                                <a href="/about" className="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#f59e0b]">{t('nav.aboutBitsa')}</a>
-                                <a href="/mission" className="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#f59e0b]">{t('nav.missionVision')}</a>
-                                <a href="/leadership" className="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#f59e0b]">{t('nav.ourLeaders')}</a>
-                                <a href="/constitution" className="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#f59e0b]">{t('nav.constitution')}</a>
+                                <Link to="/about" className="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#f59e0b]">{t('nav.aboutBitsa')}</Link>
+                                <Link to="/mission" className="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#f59e0b]">{t('nav.missionVision')}</Link>
+                                <Link to="/leadership" className="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#f59e0b]">{t('nav.ourLeaders')}</Link>
+                                <Link to="/constitution" className="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#f59e0b]">{t('nav.constitution')}</Link>
                             </div>
                         </div>
 
@@ -100,19 +101,19 @@ export const Topbar = () => {
                                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#f59e0b] transition-all duration-300 group-hover:w-full"></span>
                             </button>
                             <div className="absolute left-0 mt-2 w-64 bg-white shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
-                                <a href="/events/upcoming" className="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#f59e0b]">{t('nav.upcomingEvents')}</a>
-                                <a href="/events/past" className="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#f59e0b]">{t('nav.pastEvents')}</a>
-                                <a href="/events/calendar-view" className="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#f59e0b]">{t('nav.calendarView')}</a>
+                                <Link to="/events/upcoming" className="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#f59e0b]">{t('nav.upcomingEvents')}</Link>
+                                <Link to="/events/past" className="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#f59e0b]">{t('nav.pastEvents')}</Link>
+                                <Link to="/events/calendar-view" className="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#f59e0b]">{t('nav.calendarView')}</Link>
                             </div>
                         </div>
 
-                        <a
-                            href="/blogs"
+                        <Link
+                            to="/blogs"
                             className="relative text-gray-800 text-base font-medium py-2 transition-colors hover:text-[#f59e0b] group"
                         >
                             {t('nav.blogs')}
                             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#f59e0b] transition-all duration-300 group-hover:w-full"></span>
-                        </a>
+                        </Link>
 
                         {/* Resources Dropdown */}
                         <div className="relative group">
@@ -124,19 +125,19 @@ export const Topbar = () => {
                                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#f59e0b] transition-all duration-300 group-hover:w-full"></span>
                             </button>
                             <div className="absolute left-0 mt-2 w-64 bg-white shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
-                                <a href="/gallery" className="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#f59e0b]">{t('nav.gallery')}</a>
-                                <a href="/marketplace" className="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#f59e0b]">{t('nav.marketplace')}</a>
-                                <a href="/projects" className="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#f59e0b]">{t('nav.projects')}</a>
+                                <Link to="/gallery" className="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#f59e0b]">{t('nav.gallery')}</Link>
+                                <Link to="/marketplace" className="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#f59e0b]">{t('nav.marketplace')}</Link>
+                                <Link to="/projects" className="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-[#f59e0b]">{t('nav.projects')}</Link>
                             </div>
                         </div>
 
-                        <a
-                            href="/communities"
+                        <Link
+                            to="/communities"
                             className="relative text-gray-800 text-base font-medium py-2 transition-colors hover:text-[#f59e0b] group"
                         >
                             {t('nav.communities')}
                             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#f59e0b] transition-all duration-300 group-hover:w-full"></span>
-                        </a>
+                        </Link>
                     </div>
 
 
@@ -208,20 +209,20 @@ export const Topbar = () => {
                         </div>
 
                         {/* Sign In Button */}
-                        <a
-                            href="/signin"
+                        <Link
+                            to="/signin"
                             className="hidden md:inline-block text-blue-600 font-semibold px-6 py-2 rounded-full border-2 border-blue-600 hover:bg-blue-50 transition-all"
                         >
                             {t('nav.signIn')}
-                        </a>
+                        </Link>
 
                         {/* Sign Up Button */}
-                        <a
-                            href="/signup"
+                        <Link
+                            to="/signup"
                             className="hidden md:inline-block bg-blue-600 text-white font-semibold px-6 py-2 rounded-full hover:bg-blue-700 transition-all shadow-md hover:shadow-lg"
                         >
                             {t('nav.signUp')}
-                        </a>
+                        </Link>
 
                         {/* Theme Switcher */}
                         <button

@@ -1,25 +1,25 @@
 import { baseApi } from './baseApi';
 
-interface Leader {
-  _id: string;
-  firstName: string;
-  lastName: string;
+export interface Leader {
+  id: string;
+  fullName: string;
   position: string;
   academicYear: string;
-  image?: string;
-  bio?: string;
+  profilePicture?: string;
   email?: string;
-  linkedIn?: string;
-  twitter?: string;
+  phone?: string;
   isCurrent: boolean;
-  order: number;
   createdAt: string;
-  updatedAt: string;
 }
 
 interface LeaderListResponse {
   success: boolean;
-  data: Leader[];
+  data: {
+    leaders: Leader[];
+    total: number;
+    limit: number;
+    offset: number;
+  };
 }
 
 interface CreateLeaderRequest {
@@ -61,7 +61,11 @@ export const leadersApi = baseApi.injectEndpoints({
 
     // Get current leaders only
     getCurrentLeaders: builder.query<LeaderListResponse, void>({
-      query: () => '/leaders/current',
+      query: () => {
+        const url = '/leaders/current';
+        console.log('Fetching from:', `https://bitsabackendapi.azurewebsites.net/api${url}`);
+        return url;
+      },
       providesTags: ['Leader'],
     }),
 
@@ -69,6 +73,10 @@ export const leadersApi = baseApi.injectEndpoints({
     getPastLeaders: builder.query<LeaderListResponse, void>({
       query: () => '/leaders/past',
       providesTags: ['Leader'],
+      transformResponse: (response: LeaderListResponse) => {
+        console.log('getPastLeaders response:', response);
+        return response;
+      },
     }),
 
     // Get all academic years
@@ -79,7 +87,7 @@ export const leadersApi = baseApi.injectEndpoints({
     // Get leader by ID
     getLeaderById: builder.query<{ success: boolean; data: Leader }, string>({
       query: (id) => `/leaders/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Leader', id }],
+      providesTags: (_result, _error, id) => [{ type: 'Leader', id }],
     }),
 
     // Admin: Get leader statistics
@@ -107,7 +115,7 @@ export const leadersApi = baseApi.injectEndpoints({
         method: 'PUT',
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Leader', id }, 'Leader'],
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'Leader', id }, 'Leader'],
     }),
 
     // Admin: Delete leader
