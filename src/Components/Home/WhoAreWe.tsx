@@ -1,8 +1,8 @@
 import { Code2, GraduationCap, Network, Shield, BarChart3, Target } from 'lucide-react';
-import { useLanguage } from '../../contexts/LanguageContext';
+
 
 export const WhoAreWe = () => {
-    const { t } = useLanguage();
+
     const programs = [
         {
             name: "Software Engineering",
@@ -40,13 +40,13 @@ export const WhoAreWe = () => {
                     <div className="order-1 lg:order-1">
                         <div className="sticky top-24">
                             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-                                <span className="border-l-4 border-[#f59e0b] pl-4">{t('whoAreWe.title')}</span>
+                                <span className="border-l-4 border-[#f59e0b] pl-4">Who Are We?</span>
                             </h2>
                             <p className="text-gray-600 text-lg leading-relaxed mb-6">
-                                {t('whoAreWe.description')}
+                                We are the Bachelor of Information Technology Students Association (BITSA), a vibrant community of passionate tech students dedicated to excellence in technology education and innovation.
                             </p>
                             <p className="text-gray-600 text-lg leading-relaxed mb-8">
-                                {t('whoAreWe.mission')}
+                                Our mission is to empower students through collaborative learning, industry partnerships, and hands-on projects that bridge the gap between academia and real-world tech challenges.
                             </p>
                             <a
                                 href="/about"

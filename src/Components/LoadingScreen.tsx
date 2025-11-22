@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import bitsaLogo from '../assets/bitsa-logo.png';
 
 export const LoadingScreen = () => {
     const [isVisible, setIsVisible] = useState(true);
@@ -16,7 +17,7 @@ export const LoadingScreen = () => {
 
     return (
         <div 
-            className="fixed inset-0 z-[9999] flex items-center justify-center bg-white animate-fade-out"
+            className="fixed inset-0 z-9999 flex items-center justify-center bg-white animate-fade-out"
             style={{
                 animation: 'fadeOut 0.5s ease-in-out 1.5s forwards'
             }}
@@ -25,7 +26,7 @@ export const LoadingScreen = () => {
                 {/* Logo with pulse animation */}
                 <div className="animate-pulse-slow mb-6">
                     <img
-                        src="/bitsa-logo.png"
+                        src={bitsaLogo}
                         alt="BITSA Logo"
                         className="h-32 w-auto mx-auto object-contain drop-shadow-2xl"
                     />

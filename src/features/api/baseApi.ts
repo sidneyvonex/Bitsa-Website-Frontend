@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { RootState } from '../../app/store';
+import type { RootState } from '../app/store';
 
 // Base API URL - update this to your backend URL
 const BASE_URL = 'https://bitsabackendapi.azurewebsites.net/api';

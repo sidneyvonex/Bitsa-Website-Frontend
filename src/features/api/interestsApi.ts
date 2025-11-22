@@ -1,4 +1,4 @@
-import { baseApi } from './baseApi';
+import { baseApi } from './BaseApi';
 
 export interface Interest {
   _id?: string;

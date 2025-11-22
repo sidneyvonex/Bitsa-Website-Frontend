@@ -10,14 +10,14 @@ import {
     User,
 } from 'lucide-react';
 
-import { Topbar } from '../Components/Topbar';
+import  Topbar  from '../Components/Topbar';
 import { Footer } from '../Components/Footer';
 import {
     type Blog,
     useGetAllBlogsQuery,
     useGetBlogCategoriesQuery,
     useGetLatestBlogsQuery,
-} from '../features/api';
+} from '../Features/api/BlogsApi';
 
 const FALLBACK_IMAGES: Record<string, string> = {
     'ai/ml': 'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?w=900&q=80',

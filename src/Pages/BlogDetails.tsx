@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Calendar, User, Clock } from 'lucide-react';
-import { Topbar } from '../Components/Topbar';
+import  Topbar  from '../Components/Topbar';
 import { Footer } from '../Components/Footer';
-import { useGetBlogBySlugQuery, useGetAllBlogsQuery, type Blog } from '../features/api';
+import { useGetBlogBySlugQuery, useGetAllBlogsQuery, type Blog } from '../Features/api/BlogsApi';
 
 export const BlogDetails = () => {
     const { slug } = useParams();

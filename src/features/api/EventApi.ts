@@ -1,4 +1,4 @@
-import { baseApi } from './baseApi';
+import { baseApi } from './BaseApi';
 
 export interface Event {
   id: string;
@@ -64,8 +64,10 @@ interface EventStatsResponse {
 }
 
 export interface GalleryImage {
+  caption: string;
   id?: string;
-  _id?: string; // Some endpoints might return _id
+  _id?: string;
+
   title?: string;
   imageUrl: string;
   eventId: string;

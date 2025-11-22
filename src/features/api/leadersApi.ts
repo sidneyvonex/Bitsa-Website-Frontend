@@ -1,6 +1,7 @@
-import { baseApi } from './baseApi';
+import { baseApi } from './BaseApi';
 
 export interface Leader {
+  _id: string;
   id: string;
   fullName: string;
   position: string;

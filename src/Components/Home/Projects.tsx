@@ -1,5 +1,18 @@
 import { ExternalLink, CheckCircle, Code2, Github } from 'lucide-react';
-import { useGetFeaturedProjectsQuery, useGetAllProjectsQuery, type Project } from '../../features/api/projectsApi';
+
+interface Project {
+    id?: string;
+    _id?: string;
+    title: string;
+    description: string;
+    status: string;
+    techStack: string;
+    authorFirstName?: string;
+    authorLastName?: string;
+    authorEmail?: string;
+    authorSchoolId?: string;
+    githubUrl?: string;
+}
 
 const FeaturedProjectCard = ({ project }: { project: Project }) => {
     const authorName =
@@ -42,13 +55,56 @@ const FeaturedProjectCard = ({ project }: { project: Project }) => {
 };
 
 export const Projects = () => {
-    const { data: featuredData, isLoading: loadingFeatured } = useGetFeaturedProjectsQuery({ limit: 4 });
-    const { data: fallbackData, isLoading: loadingFallback } = useGetAllProjectsQuery({ limit: 4 });
+    // Mock projects data
+    const projects: Project[] = [
+        {
+            id: '1',
+            title: 'AI Chat Assistant',
+            description: 'An intelligent chatbot built with NLP and machine learning.',
+            status: 'completed',
+            techStack: 'Python, TensorFlow',
+            authorFirstName: 'John',
+            authorLastName: 'Doe',
+            authorSchoolId: 'BIT001',
+            githubUrl: 'https://github.com'
+        },
+        {
+            id: '2',
+            title: 'Mobile Banking App',
+            description: 'Secure mobile application for financial transactions.',
+            status: 'in-progress',
+            techStack: 'React Native, Node.js',
+            authorFirstName: 'Jane',
+            authorLastName: 'Smith',
+            authorSchoolId: 'BIT002',
+            githubUrl: 'https://github.com'
+        },
+        {
+            id: '3',
+            title: 'IoT Climate Monitor',
+            description: 'Real-time environmental monitoring system with IoT sensors.',
+            status: 'completed',
+            techStack: 'Arduino, Python',
+            authorFirstName: 'Mike',
+            authorLastName: 'Johnson',
+            authorSchoolId: 'BIT003',
+            githubUrl: 'https://github.com'
+        },
+        {
+            id: '4',
+            title: 'Cybersecurity Dashboard',
+            description: 'Advanced threat detection and monitoring dashboard.',
+            status: 'completed',
+            techStack: 'React, Node.js',
+            authorFirstName: 'Sarah',
+            authorLastName: 'Williams',
+            authorSchoolId: 'BIT004',
+            githubUrl: 'https://github.com'
+        }
+    ];
 
-    const projects =
-        featuredData?.data?.projects?.slice(0, 4) ||
-        fallbackData?.data?.projects?.slice(0, 4) ||
-        [];
+    const loadingFeatured = false;
+    const loadingFallback = false;
 
     return (
         <section className="py-20 bg-white relative overflow-hidden">
@@ -122,7 +178,7 @@ export const Projects = () => {
                                 </div>
                             ) : (
                                 <div className="space-y-5">
-                                    {projects.map((project) => (
+                                    {projects.map((project: Project) => (
                                         <FeaturedProjectCard key={project.id || project._id} project={project} />
                                     ))}
                                 </div>
