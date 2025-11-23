@@ -1,6 +1,6 @@
 import { Calendar, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import type { Event } from '../../Features/api/EventApi';
+import type { Event } from '../../features/api/eventApi';
 
 const categoryStyles: Record<
     string,

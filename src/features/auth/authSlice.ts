@@ -1,7 +1,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../app/store';
 
-interface User {
+export interface User {
   id: string;
   email: string;
   firstName: string;
@@ -71,7 +71,7 @@ const authSlice = createSlice({
 export const { setCredentials, logout, updateUser } = authSlice.actions;
 
 
- export const authReducer = authSlice.reducer;
+export const authReducer = authSlice.reducer;
 
 
 export const selectCurrentUser = (state: RootState) => (state.auth as AuthState).user;

@@ -3,9 +3,9 @@ import { PuffLoader } from 'react-spinners';
 import { Calendar, Search, Filter, MapPin } from 'lucide-react';
 import Topbar from '../Components/Topbar';
 import { Footer } from '../Components/Footer';
-import { useGetAllEventsQuery } from '../Features/api/EventApi';
+import { useGetAllEventsQuery } from '../features/api/eventApi';
 import { Link } from 'react-router-dom';
-import type { Event as EventType } from '../Features/api/EventApi';
+import type { Event as EventType } from '../features/api/eventApi';
 
 
 const EmptyState = () => (
@@ -72,7 +72,7 @@ export default function Events() {
             <Topbar />
             <main className="flex flex-col items-center justify-center py-8 min-h-[80vh]">
                 <div className="w-full max-w-6xl bg-white rounded-3xl shadow-md px-4 sm:px-8 py-8 mt-6 mb-12 relative z-10">
-                    <h1 className="text-4xl md:text-5xl font-extrabold text-center mb-8 tracking-tight text-gray-900" style={{fontFamily: 'Montserrat, sans-serif'}}>Events</h1>
+                    <h1 className="text-4xl md:text-5xl font-extrabold text-center mb-8 tracking-tight text-gray-900" style={{ fontFamily: 'Montserrat, sans-serif' }}>Events</h1>
                     {/* Tabs for Upcoming/Past */}
                     <div className="flex gap-4 mb-8 justify-center">
                         <button
@@ -102,7 +102,7 @@ export default function Events() {
                                 type="text"
                                 placeholder="Search"
                                 value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)} 
+                                onChange={(e) => setSearchQuery(e.target.value)}
                                 className="w-full pl-10 pr-4 py-2 border-2 border-[#1e40af] focus:border-[#1e40af] rounded-lg focus:ring-2 focus:ring-[#1e40af]/80 text-lg bg-white text-gray-900 placeholder-gray-400"
                             />
                         </div>
@@ -130,7 +130,7 @@ export default function Events() {
                                             className="w-28 h-28 sm:w-36 sm:h-36 rounded-xl object-cover mb-4 sm:mb-0"
                                         />
                                         <div className="flex-1 flex flex-col gap-2">
-                                            <h2 className="text-2xl font-extrabold mb-1 text-gray-900" style={{fontFamily: 'Montserrat, sans-serif'}}>{event.title}</h2>
+                                            <h2 className="text-2xl font-extrabold mb-1 text-gray-900" style={{ fontFamily: 'Montserrat, sans-serif' }}>{event.title}</h2>
                                             <p className="text-gray-700 text-base mb-1 line-clamp-2">{event.description}</p>
                                             <div className="flex flex-wrap items-center gap-4 text-gray-600 text-sm mb-1">
                                                 <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> {new Date(event.startDate).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}{event.endDate ? ` - ${new Date(event.endDate).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}` : ''}</span>

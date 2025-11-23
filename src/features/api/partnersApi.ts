@@ -1,4 +1,4 @@
-import { baseApi } from './BaseApi';
+import { baseApi } from './baseApi';
 
 interface Partner {
   _id: string;

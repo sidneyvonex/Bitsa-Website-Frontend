@@ -80,7 +80,7 @@ export default function Topbar() {
           <div className="hidden lg:flex items-center space-x-4 xl:space-x-6">
             <Link
               to="/"
-              className={`relative text-sm xl:text-base font-semibold py-2 whitespace-nowrap ${
+              className={`relative text-sm xl:text-base font-medium py-2 whitespace-nowrap ${
                 isActive("/") ? "text-[#f59e0b]" : "text-gray-800"
               }`}
             >
@@ -209,7 +209,7 @@ export default function Topbar() {
             <div className="relative group">
               <button
                 className={`relative text-sm xl:text-base font-medium py-2 transition-colors flex items-center gap-1 whitespace-nowrap ${
-                  isActive("/gallery") || isActive("/projects")
+                  isActive("/gallery") || isActive("/shop") || isActive("/projects")
                     ? "text-[#f59e0b]"
                     : "text-gray-800"
                 }`}
@@ -228,7 +228,7 @@ export default function Topbar() {
                     d="M19 9l-7 7-7-7"
                   />
                 </svg>
-                {(isActive("/gallery") || isActive("/projects")) && (
+                {(isActive("/gallery") || isActive("/shop")|| isActive("/projects")) && (
                   <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#f59e0b]"></span>
                 )}
               </button>
@@ -240,7 +240,7 @@ export default function Topbar() {
                   Gallery
                 </a>
                 <a
-                  href="/marketplace"
+                  href="/shop"
                   className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#f59e0b]"
                 >
                   Marketplace
@@ -271,7 +271,7 @@ export default function Topbar() {
           <div className="flex items-center space-x-2 xl:space-x-4">
             {/* Sign In Button - Hidden on medium, shown on xl */}
             <a
-              href="/signin"
+              href="/login"
               className="hidden xl:inline-block text-blue-600 font-semibold px-4 py-2 rounded-full border-2 border-blue-600 hover:bg-blue-50 transition-all text-sm whitespace-nowrap"
             >
               Sign In
@@ -458,7 +458,7 @@ export default function Topbar() {
                       Gallery
                     </Link>
                     <Link
-                      to="/marketplace"
+                      to="/shop"
                       className="block py-2 text-gray-700 hover:text-[#f59e0b] transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
@@ -490,7 +490,7 @@ export default function Topbar() {
               {/* Auth Buttons */}
               <div className="space-y-3">
                 <Link
-                  to="/signin"
+                  to="/login"
                   className="block w-full text-center text-blue-600 font-semibold px-6 py-3 rounded-full border-2 border-blue-600 hover:bg-blue-50 transition-all"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >

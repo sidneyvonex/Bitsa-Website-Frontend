@@ -1,19 +1,19 @@
 // Export all API hooks and types for easy importing
-export * from './BaseApi';
+export * from './baseApi';
 export * from '../auth/authApi';
 export * from './userApi';
-export * from './EventApi';
-export * from './BlogsApi';
-export * from './CommunitiesApi';
+export * from './eventApi';
+export * from './blogsApi';
+export * from './communitiesApi';
 export * from './projectApi';
 export * from './leadersApi';
 export * from './partnersApi';
 export * from './interestsApi';
 export * from './reportsApi';
-export * from './AiApi';
-export * from './AuditApi';
+export * from './aiApi';
+export * from './auditApi';
 
 // Explicit exports for commonly used types
 export type { Leader } from './leadersApi';
-export type { Event } from './EventApi';
+export type { Event } from './eventApi';
 export type { Blog } from './blogsApi';

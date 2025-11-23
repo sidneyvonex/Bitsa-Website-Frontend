@@ -1,11 +1,12 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+// Lightbox state for gallery
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Calendar, MapPin, RefreshCw } from 'lucide-react';
-import Topbar  from '../Components/Topbar';
+import Topbar from '../Components/Topbar';
 import { Footer } from '../Components/Footer';
-import { useGetEventByIdQuery, useGetEventGalleryQuery } from '../Features/api/EventApi';
+import { useGetEventByIdQuery, useGetEventGalleryQuery } from '../features/api/eventApi';
 
-import type { Event, GalleryImage } from '../Features/api/EventApi';
+import type { Event, GalleryImage } from '../features/api/eventApi';
 
 const formatDateRange = (startDate?: string, endDate?: string) => {
     if (!startDate && !endDate) return 'Date to be announced';
@@ -44,29 +45,22 @@ const formatTimeRange = (startDate?: string, endDate?: string) => {
 };
 
 export const EventDetails = () => {
-    // Route is defined as /events/:eventId in App.tsx, so we read `eventId` from params
+
+    // Lightbox state for gallery
+    const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
+
     const { eventId } = useParams();
     const navigate = useNavigate();
-
     const {
         data: event,
         isLoading,
         isError,
-        refetch,
-        error: apiError
-
+        refetch
     } = useGetEventByIdQuery(eventId ?? '', {
         skip: !eventId,
     });
 
-    // Debugging logs
-    console.log('EventDetails Debug:', {
-        eventId,
-        event,
-        isLoading,
-        isError,
-        apiError
-    });
+
 
     const {
         data: galleryData,
@@ -144,7 +138,7 @@ export const EventDetails = () => {
                             {/* Left: Event Info */}
                             <div className="flex-1 p-10 flex flex-col justify-between min-w-[320px]">
                                 <div>
-                                    <h1 className="text-4xl font-extrabold mb-4 text-gray-900" style={{fontFamily: 'Montserrat, sans-serif'}}>{eventData?.title}</h1>
+                                    <h1 className="text-4xl font-extrabold mb-4 text-gray-900" style={{ fontFamily: 'Montserrat, sans-serif' }}>{eventData?.title}</h1>
                                     <h2 className="text-xl font-bold mb-4 text-blue-800">Date & Location</h2>
                                     <div className="flex items-center text-gray-700 mb-2">
                                         <Calendar className="w-5 h-5 mr-2 text-[#1e3a8a]" />
@@ -241,8 +235,9 @@ export const EventDetails = () => {
                                         key={image._id}
                                         src={image.imageUrl}
                                         alt={image.caption || 'Event gallery'}
-                                        className="h-32 w-full object-cover rounded-xl hover:scale-[1.02] transition-transform"
+                                        className="h-32 w-full object-cover rounded-xl hover:scale-[1.02] transition-transform cursor-pointer"
                                         loading="lazy"
+                                        onClick={() => setSelectedImage(image)}
                                     />
                                 ))}
                             </div>
@@ -255,6 +250,47 @@ export const EventDetails = () => {
                 )}
             </main>
 
+            {/* Lightbox Modal for Event Gallery - outside <main> for valid JSX structure */}
+            {selectedImage && (() => {
+                const currentIndex = galleryImages.findIndex((img) => img._id === selectedImage._id);
+                const showPrev = currentIndex > 0;
+                const showNext = currentIndex < galleryImages.length - 1;
+                return (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 px-4">
+                        <div className="relative max-w-3xl w-full flex items-center justify-center">
+                            <button
+                                onClick={() => setSelectedImage(null)}
+                                className="absolute top-3 right-3 z-10 rounded-full bg-black/70 text-white px-4 py-2 text-lg hover:bg-black/90"
+                            >
+                                ×
+                            </button>
+                            {showPrev && (
+                                <button
+                                    onClick={() => setSelectedImage(galleryImages[currentIndex - 1])}
+                                    className="absolute left-2 md:left-4 z-10 rounded-full bg-black/70 text-white px-3 py-2 text-2xl hover:bg-black/90"
+                                    aria-label="Previous image"
+                                >
+                                    &#8592;
+                                </button>
+                            )}
+                            <img
+                                src={selectedImage.imageUrl}
+                                alt="Gallery preview"
+                                className="w-full h-auto max-h-[80vh] object-contain rounded-2xl shadow-2xl mx-auto"
+                            />
+                            {showNext && (
+                                <button
+                                    onClick={() => setSelectedImage(galleryImages[currentIndex + 1])}
+                                    className="absolute right-10 md:right-16 z-10 rounded-full bg-black/70 text-white px-3 py-2 text-2xl hover:bg-black/90"
+                                    aria-label="Next image"
+                                >
+                                    &#8594;
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                );
+            })()}
             <Footer />
         </div>
     );

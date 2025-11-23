@@ -1,4 +1,4 @@
-import { baseApi } from './BaseApi';
+import { baseApi } from './baseApi';
 
 export interface Community {
   _id: string;
@@ -14,7 +14,14 @@ export interface Community {
 
 interface CommunityListResponse {
   success: boolean;
-  data: Community[];
+  data: {
+    communities: Community[];
+    total?: number;
+    limit?: number;
+    offset?: number;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [key: string]: any;
+  };
 }
 
 interface CreateCommunityRequest {

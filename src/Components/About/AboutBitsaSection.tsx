@@ -184,76 +184,69 @@ const About = () => {
       </section>
 
             {/* Programs Section */}
-            <section className="py-20 bg-gradient-to-br from-gray-50 to-white">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-16">
-                  <div className="inline-block mb-4">
-                    <span className="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm font-semibold">
-                      Our Programs
-                    </span>
+<section className="mb-16">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Programs & Specializations</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              BITSA encompasses students from various IT disciplines, each contributing unique perspectives and expertise
+              to our community.
+            </p>
+          </div>
+
+          <div className="relative">
+            {/* Root - BITSA Club */}
+            <div className="flex justify-center mb-12">
+              <div className="relative group">
+                <div className="bg-white border-2 border-blue-600 px-12 py-8 rounded-lg text-center shadow-sm hover:shadow-md transition-all duration-300">
+                  <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-blue-600 p-4 rounded-full shadow-md">
+                    <Target className="w-8 h-8 text-white" />
                   </div>
-                  <h2 className="text-4xl md:text-5xl font-bold text-[#1e1b4b] mb-4">
-                    Diverse Tech Specializations
-                  </h2>
-                  <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-                    BITSA brings together students from five cutting-edge technology programs
-                  </p>
+                  <h3 className="text-2xl font-bold text-blue-600 mb-2 mt-2">BITSA CLUB</h3>
+                  <p className="text-sm text-gray-600 font-medium">Bachelor of IT Students Association</p>
                 </div>
-
-                <div className="max-w-4xl mx-auto">
-                  {/* Root - BITSA Club */}
-                  <div className="flex justify-center mb-12">
-                    <div className="relative group">
-                      <div className="bg-white border-2 border-blue-600 px-12 py-8 rounded-2xl text-center shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-                        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gradient-to-br from-blue-600 to-blue-700 p-5 rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
-                          <Target className="w-10 h-10 text-white" />
-                        </div>
-                        <h3 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2 mt-4">BITSA CLUB</h3>
-                        <p className="text-sm text-gray-600 font-medium">Bachelor of IT Students Association</p>
-                      </div>
-                      {/* Vertical Line Down */}
-                      <div className="absolute left-1/2 -bottom-12 w-1 h-12 bg-gradient-to-b from-blue-600 to-[#f59e0b] transform -translate-x-1/2"></div>
-                    </div>
-                  </div>
-
-                  {/* Connector Node */}
-                  <div className="flex justify-center mb-12">
-                    <div className="w-5 h-5 bg-[#f59e0b] rounded-full shadow-lg animate-pulse"></div>
-                  </div>
-
-                  {/* Redesigned Programs/Specializations Section - Responsive */}
-                  <div className="w-full flex flex-col items-center mt-10 mb-10">
-                    {/* Horizontal connector line */}
-                    <div className="relative w-full flex justify-center" style={{ minHeight: '40px' }}>
-                      <div className="absolute left-0 right-0 top-1/2 h-0.5 bg-[#f59e0b] z-0" style={{ width: '100%' }}></div>
-                      <div className="flex flex-row justify-center items-center w-full gap-6 md:gap-8 lg:gap-12 xl:gap-16 z-10 flex-wrap">
-                        {programs.map((program, idx) => {
-                          const Icon = program.icon;
-                          return (
-                            <div key={idx} className="relative flex flex-col items-center flex-1 min-w-[220px] max-w-[260px] mb-8 md:mb-0">
-                              {/* Vertical connector above card */}
-                              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-0.5 h-8 bg-[#f59e0b]" style={{ zIndex: 2 }}></div>
-                              {/* Card */}
-                              <div className="bg-white rounded-xl shadow-md hover:shadow-lg border border-gray-100 px-6 py-7 text-center group transition-all duration-300 w-full">
-                                <div className="bg-blue-50 group-hover:bg-blue-600 transition-colors duration-300 w-14 h-14 rounded-lg flex items-center justify-center mx-auto mb-3">
-                                  <Icon className="w-8 h-8 text-blue-600 group-hover:text-white transition-colors duration-300" />
-                                </div>
-                                <h4 className="font-bold text-gray-900 mb-2 text-lg">{program.name}</h4>
-                                <p className="text-sm text-gray-600 leading-relaxed">{program.description}</p>
-                              </div>
-                              {/* Horizontal connector overlays for responsiveness */}
-                              {idx < programs.length - 1 && (
-                                <div className="absolute top-1/2 right-0 transform -translate-y-1/2 h-0.5 w-6 md:w-8 lg:w-12 xl:w-16 bg-[#f59e0b] z-0"></div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                {/* Vertical Line Down */}
+                <div className="absolute left-1/2 -bottom-12 w-0.5 h-12 bg-gradient-to-b from-blue-600 to-orange-500 transform -translate-x-1/2"></div>
               </div>
-            </section>
+            </div>
+
+            {/* Connector Node */}
+            <div className="flex justify-center mb-12">
+              <div className="w-4 h-4 bg-[#f59e0b] rounded-full"></div>
+            </div>
+
+            {/* Programs/Specializations */}
+            <div className="relative">
+              {/* Horizontal Line */}
+              <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#f59e0b] to-transparent"></div>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 pt-8">
+                {programs.map((program, index) => {
+                  const Icon = program.icon;
+                  return (
+                    <div key={index} className="relative">
+                      {/* Vertical Line Up */}
+                      <div className="absolute left-1/2 -top-8 w-0.5 h-8 bg-[#f59e0b] transform -translate-x-1/2"></div>
+
+                      {/* Program Card */}
+                      <div className="bg-white rounded-lg shadow-sm hover:shadow-md border border-gray-100 p-4 text-center group transition-all duration-300 h-full relative overflow-hidden">
+                        {/* Accent Line */}
+                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 to-orange-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
+
+                        <div className="relative z-10">
+                          <div className="bg-blue-50 group-hover:bg-blue-600 transition-colors duration-300 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-3">
+                            <Icon className="w-6 h-6 text-blue-600 group-hover:text-white transition-colors duration-300" />
+                          </div>
+                          <h4 className="font-bold text-gray-900 mb-1 text-sm">{program.name}</h4>
+                          <p className="text-xs text-gray-600 leading-relaxed">{program.description}</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </section>
 
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-br from-[#1e1b4b] via-[#312e81] to-[#1e3a8a] text-white relative overflow-hidden">

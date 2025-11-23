@@ -1,4 +1,4 @@
-import { baseApi } from '../api/BaseApi';
+import { baseApi } from '../api/baseApi';
 
 interface LoginRequest {
   email: string;
@@ -29,6 +29,7 @@ interface VerifyEmailRequest {
 }
 
 interface LoginResponse {
+  role: string;
   // Actual backend response (flat structure)
   token: string;
   userId: string;

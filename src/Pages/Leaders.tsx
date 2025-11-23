@@ -1,9 +1,9 @@
 import { Footer } from "../Components/Footer";
 import Topbar from "../Components/Topbar";
 import { LeaderCard } from "../Components/About/OurLeaders";
-import type { Leader } from "../Features/api/leadersApi";
+import type { Leader } from "../features/api/leadersApi";
 
-import { useGetAllLeadersQuery } from "../Features/api/leadersApi";
+import { useGetAllLeadersQuery } from "../features/api/leadersApi";
 import { PuffLoader } from "react-spinners";
 
 

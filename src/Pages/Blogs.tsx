@@ -10,14 +10,14 @@ import {
     User,
 } from 'lucide-react';
 
-import  Topbar  from '../Components/Topbar';
+import Topbar from '../Components/Topbar';
 import { Footer } from '../Components/Footer';
 import {
     type Blog,
     useGetAllBlogsQuery,
     useGetBlogCategoriesQuery,
     useGetLatestBlogsQuery,
-} from '../Features/api/BlogsApi';
+} from '../features/api/blogsApi';
 
 const FALLBACK_IMAGES: Record<string, string> = {
     'ai/ml': 'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?w=900&q=80',
@@ -73,45 +73,43 @@ const BlogCard = ({ blog }: { blog: Blog }) => {
         [blog.authorFirstName, blog.authorLastName].filter(Boolean).join(' ') || 'BITSA Editorial';
 
     return (
-        <Link to={`/blogs/${blog.slug || blog.id}`} className="group">
-            <article className="group bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col h-full">
-                <div className="relative h-48 overflow-hidden bg-gray-100">
-                    <img
-                        src={getImage(blog)}
-                        alt={blog.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        loading="lazy"
-                    />
-                    {blog.category && (
-                        <span className="absolute top-4 left-4 bg-blue-900 text-white text-xs font-semibold px-3 py-1 rounded">
-                            {blog.category}
-                        </span>
-                    )}
-                </div>
-                <div className="p-6 flex-1 flex flex-col">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-blue-700 transition-colors line-clamp-2">
-                        {blog.title}
-                    </h3>
-                    <p className="text-gray-600 text-sm line-clamp-3 flex-1">{blog.content?.substring(0, 120) || ''}</p>
-                    <div className="pt-5 border-t border-gray-100 mt-5 space-y-3">
-                        <div className="flex items-center gap-2 text-sm text-gray-800">
-                            <User className="w-4 h-4 text-gray-400" />
-                            <span className="font-medium">{authorName}</span>
+        <article className="group bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col h-full">
+            <div className="relative h-48 overflow-hidden bg-gray-100">
+                <img
+                    src={getImage(blog)}
+                    alt={blog.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                />
+                {blog.category && (
+                    <span className="absolute top-4 left-4 bg-blue-900 text-white text-xs font-semibold px-3 py-1 rounded">
+                        {blog.category}
+                    </span>
+                )}
+            </div>
+            <div className="p-6 flex-1 flex flex-col">
+                <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-blue-700 transition-colors line-clamp-2">
+                    {blog.title}
+                </h3>
+                <p className="text-gray-600 text-sm line-clamp-3 flex-1">{blog.content?.substring(0, 120) || ''}</p>
+                <div className="pt-5 border-t border-gray-100 mt-5 space-y-3">
+                    <div className="flex items-center gap-2 text-sm text-gray-800">
+                        <User className="w-4 h-4 text-gray-400" />
+                        <span className="font-medium">{authorName}</span>
+                    </div>
+                    <div className="flex items-center gap-6 text-xs text-gray-500">
+                        <div className="flex items-center gap-1">
+                            <Calendar className="w-3.5 h-3.5" />
+                            <span>{formatDate(blog.createdAt)}</span>
                         </div>
-                        <div className="flex items-center gap-6 text-xs text-gray-500">
-                            <div className="flex items-center gap-1">
-                                <Calendar className="w-3.5 h-3.5" />
-                                <span>{formatDate(blog.createdAt)}</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                                <Clock className="w-3.5 h-3.5" />
-                                <span>{blog.readTime} min read</span>
-                            </div>
+                        <div className="flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5" />
+                            <span>{blog.readTime} min read</span>
                         </div>
                     </div>
                 </div>
-            </article>
-        </Link>
+            </div>
+        </article>
     );
 };
 
@@ -186,9 +184,24 @@ export const Blogs = () => {
     };
 
     return (
-        <div className="bg-gray-50 min-h-screen flex flex-col">
+        <div className="min-h-screen flex flex-col bg-gray-50 relative overflow-hidden">
+            {/* Subtle SVG background to match Leaders page */}
+            <svg className="absolute inset-0 w-full h-full z-0" viewBox="0 0 1440 1200" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ pointerEvents: 'none' }}>
+                <defs>
+                    <radialGradient id="bg1" cx="50%" cy="30%" r="60%" fx="50%" fy="30%" gradientTransform="rotate(30)">
+                        <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.12" />
+                        <stop offset="100%" stopColor="#fff" stopOpacity="0" />
+                    </radialGradient>
+                </defs>
+                <rect width="1440" height="1200" fill="url(#bg1)" />
+                <ellipse cx="200" cy="200" rx="180" ry="80" fill="#60a5fa" opacity="0.08" />
+                <ellipse cx="1240" cy="1000" rx="140" ry="60" fill="#818cf8" opacity="0.09" />
+                <path d="M0 900 Q 360 1100 720 900 T 1440 900" stroke="#f59e0b" strokeWidth="3" fill="none" opacity="0.13" />
+                <circle cx="900" cy="300" r="90" fill="#f59e0b" opacity="0.07" />
+                <circle cx="400" cy="1000" r="60" fill="#60a5fa" opacity="0.07" />
+            </svg>
             <Topbar />
-            <main className="flex-1">
+            <main className="flex-1 relative z-10">
                 <section className="py-16 bg-white">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
                         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
@@ -212,7 +225,7 @@ export const Blogs = () => {
                                         value={searchTerm}
                                         onChange={(e) => handleSearchChange(e.target.value)}
                                         placeholder="Search articles..."
-                                        className="pl-12 pr-4 py-3 w-full sm:w-80 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                                        className="pl-12 pr-4 py-3 w-full sm:w-80 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white placeholder-gray-500 text-gray-900"
                                     />
                                 </div>
                                 <a
@@ -243,11 +256,13 @@ export const Blogs = () => {
                                     <p className="text-gray-600">No blogs have been published yet.</p>
                                 </div>
                             ) : (
-                                latestBlogs.map((blog) => (
-                                    <Link key={blog.id} to={`/blogs/${blog.slug}`} className="block h-full">
-                                        <BlogCard blog={blog} />
-                                    </Link>
-                                ))
+                                latestBlogs
+                                    .filter((blog) => blog.slug && blog.slug !== 'string')
+                                    .map((blog) => (
+                                        <Link key={blog.id} to={`/blogs/${blog.slug}`} className="block h-full">
+                                            <BlogCard blog={blog} />
+                                        </Link>
+                                    ))
                             )}
                         </div>
                     </div>
@@ -318,11 +333,13 @@ export const Blogs = () => {
                         ) : blogs.length > 0 ? (
                             <>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {blogs.map((blog) => (
-                                        <Link key={blog.id} to={`/blogs/${blog.slug}`} className="block h-full">
-                                            <BlogCard blog={blog} />
-                                        </Link>
-                                    ))}
+                                    {blogs
+                                        .filter((blog) => blog.slug && blog.slug !== 'string')
+                                        .map((blog) => (
+                                            <Link key={blog.id} to={`/blogs/${blog.slug}`} className="block h-full">
+                                                <BlogCard blog={blog} />
+                                            </Link>
+                                        ))}
                                 </div>
                                 <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-6">
                                     <p className="text-sm text-gray-500">

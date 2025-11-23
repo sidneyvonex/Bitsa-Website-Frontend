@@ -1,5 +1,5 @@
 
-import { useGetAllEventsQuery } from '../../Features/api/EventApi';
+import { useGetAllEventsQuery } from '../../features/api/eventApi';
 
 export const UpcomingEvents = () => {
     const { data, isLoading } = useGetAllEventsQuery({ page: 1, limit: 50 });

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import type { Event } from '../../Features/api/EventApi';
+import type { Event } from '../../features/api/eventApi';
 
 interface EventCalendarProps {
     events: Event[];
