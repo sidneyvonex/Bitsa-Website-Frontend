@@ -1,234 +1,315 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Link } from 'react-router-dom';
-import { useAppSelector } from '../../app/hooks';
+import { useAppSelector } from '../../features/app/hooks';
 import { selectCurrentUser } from '../../features/auth/authSlice';
 import {
     useGetAllEventsQuery,
     useGetAllCommunitiesQuery,
     useGetAllBlogsQuery,
     useGetMyInterestsQuery,
+    useGetAllProjectsQuery,
     type Event,
 } from '../../features/api';
 import {
     FileText,
-    MessageSquare,
     Calendar,
     Heart,
-    Trophy,
     BookOpen,
     Users,
     TrendingUp,
-    Award,
-    HelpCircle
+    Loader2,
+    Sparkles,
+    Target,
+    BookMarked
 } from 'lucide-react';
 import { CalendarWidget } from './CalendarWidget';
 
 export const StudentDashboardOverview = () => {
     const user = useAppSelector(selectCurrentUser);
 
-    const { data: eventsData } = useGetAllEventsQuery({ page: 1, limit: 10 });
-    const { data: communitiesData } = useGetAllCommunitiesQuery();
-    const { data: blogsData } = useGetAllBlogsQuery({ page: 1, limit: 10 });
+    const { data: eventsData, isLoading: eventsLoading } = useGetAllEventsQuery({ page: 1, limit: 5 });
+    const { data: communitiesData, isLoading: communitiesLoading } = useGetAllCommunitiesQuery();
+    const { data: blogsData, isLoading: blogsLoading } = useGetAllBlogsQuery({ page: 1, limit: 5 });
     const { data: myInterestsData } = useGetMyInterestsQuery();
+    const { data: projectsData, isLoading: projectsLoading } = useGetAllProjectsQuery({ page: 1, limit: 5 });
 
     const userName = user?.firstName || 'Student';
-    const myInterests = myInterestsData?.interests || myInterestsData?.data || [];
+    
+    // Normalize interests data from API - handle both {interestName} and {name} structures
+    const rawInterests = myInterestsData?.interests || myInterestsData?.data || [];
+  
+    const myInterests = rawInterests.map((interest: any) => {
+        // If it's already a string, return it
+        if (typeof interest === 'string') return interest;
+        // Otherwise extract the name from the object (interestName, name, or the whole object)
+        return interest.interestName || interest.name || '';
+    }).filter(Boolean); // Remove any empty strings
 
-    const overallProgress = 80;
-    const eventsCount = eventsData?.data?.events?.length || 3;
+    const eventsCount = eventsData?.data?.events?.length || 0;
     const blogsCount = blogsData?.data?.blogs?.length || 0;
     const communitiesCount = communitiesData?.data?.length || 0;
-
-    const quickLinks = [
-        { title: 'Blogs', description: 'Read latest articles', icon: FileText, path: '/blogs', iconBg: 'bg-blue-600' },
-        { title: 'Events', description: 'Upcoming activities', icon: Calendar, path: '/events', iconBg: 'bg-purple-600' },
-        { title: 'Communities', description: 'Join groups', icon: Users, path: '/communities', iconBg: 'bg-green-600' },
-        { title: 'Projects', description: 'View all projects', icon: TrendingUp, path: '/projects', iconBg: 'bg-orange-600' },
-        { title: 'Learning Resources', description: 'Study materials', icon: BookOpen, path: '/resources', iconBg: 'bg-indigo-600' },
-        { title: 'Messages', description: 'Check messages', icon: MessageSquare, path: '/messages', iconBg: 'bg-pink-600' },
-        { title: 'Achievements', description: 'Your progress', icon: Award, path: '/achievements', iconBg: 'bg-yellow-600' },
-        { title: 'Help Center', description: 'Get support', icon: HelpCircle, path: '/help', iconBg: 'bg-gray-600' },
-    ];
+    const projectsCount = projectsData?.data?.projects?.length || 0;
 
     return (
-        <div className="space-y-6">
-            <div className="bg-linear-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-sm border border-blue-100 p-6 md:p-8 flex items-center justify-between flex-wrap gap-6">
-                <div className="flex-1">
-                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Welcome back, {userName}!</h1>
-                    <p className="text-gray-600 text-sm md:text-base mb-1">
-                        You have learned <span className="font-bold text-[#5773da]">{overallProgress}%</span> of your course
-                    </p>
-                    <p className="text-gray-500 text-sm mb-4">Continue learning and achieve your goals</p>
-                    <button className="px-6 py-2.5 bg-[#5773da] hover:bg-[#4861c9] text-white rounded-lg font-medium transition-colors">Continue Learning</button>
-                </div>
-                <div className="flex items-center justify-center">
-                    <div className="w-32 h-32 md:w-40 md:h-40 bg-[#5773da] rounded-full flex items-center justify-center shadow-lg">
-                        <Trophy className="w-16 h-16 md:w-20 md:h-20 text-white" />
-                    </div>
-                </div>
-            </div>
-
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Quick Links</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {quickLinks.map((link) => (
-                        <Link key={link.path} to={link.path} className="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-200 hover:border-[#5773da] hover:shadow-md transition-all group">
-                            <div className={`w-12 h-12 ${link.iconBg} rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
-                                <link.icon className="w-6 h-6 text-white" />
-                            </div>
-                            <p className="font-semibold text-gray-900 text-sm text-center mb-1">{link.title}</p>
-                            <p className="text-xs text-gray-500 text-center">{link.description}</p>
+        <div className="space-y-4 sm:space-y-6">
+            {/* Welcome Hero Section */}
+            <div className="bg-gradient-to-br from-[#5773da] to-[#4861c9] rounded-xl sm:rounded-2xl shadow-lg p-6 sm:p-8 text-white">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />
+                            <h1 className="text-2xl sm:text-3xl font-bold">Welcome back, {userName}!</h1>
+                        </div>
+                        <p className="text-white/90 text-sm sm:text-base mb-4">
+                            Ready to continue your learning journey? Explore events, join communities, and grow your skills.
+                        </p>
+                        <Link to="/dashboard/events" className="inline-block px-6 py-2.5 bg-white text-[#5773da] hover:bg-gray-100 rounded-lg font-medium transition-colors shadow-md">
+                            Explore Events
                         </Link>
-                    ))}
+                    </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-1">
+            {/* Stats Overview Cards */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <Link to="/dashboard/events" className="group bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5 hover:shadow-md hover:border-[#5773da] transition-all">
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
+                        </div>
+                        {eventsLoading && <Loader2 className="w-4 h-4 animate-spin text-gray-400" />}
+                    </div>
+                    <p className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">{eventsCount}</p>
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">Events Available</p>
+                </Link>
+
+                <Link to="/dashboard/blogs" className="group bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5 hover:shadow-md hover:border-[#5773da] transition-all">
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
+                        </div>
+                        {blogsLoading && <Loader2 className="w-4 h-4 animate-spin text-gray-400" />}
+                    </div>
+                    <p className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">{blogsCount}</p>
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">Blogs to Read</p>
+                </Link>
+
+                <Link to="/dashboard/communities" className="group bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5 hover:shadow-md hover:border-[#5773da] transition-all">
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <Users className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
+                        </div>
+                        {communitiesLoading && <Loader2 className="w-4 h-4 animate-spin text-gray-400" />}
+                    </div>
+                    <p className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">{communitiesCount}</p>
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">Communities</p>
+                </Link>
+
+                <Link to="/dashboard/projects" className="group bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5 hover:shadow-md hover:border-[#5773da] transition-all">
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600" />
+                        </div>
+                        {projectsLoading && <Loader2 className="w-4 h-4 animate-spin text-gray-400" />}
+                    </div>
+                    <p className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">{projectsCount}</p>
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">Projects</p>
+                </Link>
+            </div>
+
+            {/* Main Content Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+                {/* Left Sidebar - Calendar & Quick Stats */}
+                <div className="lg:col-span-1 space-y-4 sm:space-y-6">
                     <CalendarWidget />
-                    <div className="mt-6 space-y-4">
-                        <div className="bg-blue-50 rounded-2xl shadow-sm p-5 border border-blue-100">
-                            <div className="flex items-center justify-between">
-                                <div className="flex-1">
-                                    <p className="text-3xl font-bold text-gray-900 mb-1">{eventsCount}</p>
-                                    <p className="text-sm font-medium text-gray-600">Events</p>
-                                </div>
-                                <div className="w-14 h-14 bg-blue-600 rounded-xl flex items-center justify-center shadow-md">
-                                    <Calendar className="w-7 h-7 text-white" />
-                                </div>
+                    
+                    {/* My Interests Card */}
+                    {myInterests.length > 0 && (
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5">
+                            <div className="flex items-center gap-2 mb-3">
+                                <Heart className="w-5 h-5 text-rose-600" />
+                                <h3 className="text-base sm:text-lg font-bold text-gray-900">My Interests</h3>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {myInterests.slice(0, 6).map((interest: string, idx: number) => (
+                                    <span key={idx} className="px-3 py-1.5 bg-rose-50 text-rose-700 rounded-full text-xs sm:text-sm font-medium">
+                                        {interest}
+                                    </span>
+                                ))}
+                                {myInterests.length > 6 && (
+                                    <span className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-full text-xs sm:text-sm font-medium">
+                                        +{myInterests.length - 6} more
+                                    </span>
+                                )}
                             </div>
                         </div>
-                        <div className="bg-green-50 rounded-2xl shadow-sm p-5 border border-green-100">
-                            <div className="flex items-center justify-between">
-                                <div className="flex-1">
-                                    <p className="text-3xl font-bold text-gray-900 mb-1">{blogsCount}</p>
-                                    <p className="text-sm font-medium text-gray-600">Blogs</p>
-                                </div>
-                                <div className="w-14 h-14 bg-green-600 rounded-xl flex items-center justify-center shadow-md">
-                                    <FileText className="w-7 h-7 text-white" />
-                                </div>
-                            </div>
+                    )}
+
+                    {/* Quick Actions */}
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5">
+                        <div className="flex items-center gap-2 mb-4">
+                            <Target className="w-5 h-5 text-[#5773da]" />
+                            <h3 className="text-base sm:text-lg font-bold text-gray-900">Quick Actions</h3>
                         </div>
-                        <div className="bg-purple-50 rounded-2xl shadow-sm p-5 border border-purple-100">
-                            <div className="flex items-center justify-between">
-                                <div className="flex-1">
-                                    <p className="text-3xl font-bold text-gray-900 mb-1">{communitiesCount}</p>
-                                    <p className="text-sm font-medium text-gray-600">Communities</p>
+                        <div className="space-y-2">
+                            <Link to="/dashboard/blogs" className="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors group">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <BookOpen className="w-4 h-4 text-blue-600" />
+                                    </div>
+                                    <span className="text-sm font-medium text-gray-900">Browse Blogs</span>
                                 </div>
-                                <div className="w-14 h-14 bg-purple-600 rounded-xl flex items-center justify-center shadow-md">
-                                    <MessageSquare className="w-7 h-7 text-white" />
+                                <span className="text-gray-400 group-hover:text-[#5773da]">→</span>
+                            </Link>
+                            <Link to="/dashboard/help" className="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors group">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <BookMarked className="w-4 h-4 text-indigo-600" />
+                                    </div>
+                                    <span className="text-sm font-medium text-gray-900">Get Help</span>
                                 </div>
-                            </div>
-                        </div>
-                        <div className="bg-orange-50 rounded-2xl shadow-sm p-5 border border-orange-100">
-                            <div className="flex items-center justify-between">
-                                <div className="flex-1">
-                                    <p className="text-3xl font-bold text-gray-900 mb-1">{myInterests.length}</p>
-                                    <p className="text-sm font-medium text-gray-600">Interests</p>
-                                </div>
-                                <div className="w-14 h-14 bg-orange-600 rounded-xl flex items-center justify-center shadow-md">
-                                    <Heart className="w-7 h-7 text-white" />
-                                </div>
-                            </div>
+                                <span className="text-gray-400 group-hover:text-[#5773da]">→</span>
+                            </Link>
                         </div>
                     </div>
                 </div>
 
-                <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-lg font-bold text-gray-900">Upcoming Events</h3>
-                            <Link to="/events" className="text-sm text-[#5773da] hover:text-[#4861c9] font-medium">View All →</Link>
+                {/* Right Content - Events & Activity Feed */}
+                <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+                    {/* Upcoming Events */}
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                                <Calendar className="w-5 h-5 text-purple-600" />
+                                <h3 className="text-base sm:text-lg font-bold text-gray-900">Upcoming Events</h3>
+                            </div>
+                            <Link to="/dashboard/events" className="text-sm text-[#5773da] hover:text-[#4861c9] font-medium flex items-center gap-1">
+                                View All <span className="hidden sm:inline">→</span>
+                            </Link>
                         </div>
-                        {eventsData?.data?.events && eventsData.data.events.length > 0 ? (
-                            <div className="space-y-3">
-                                {eventsData.data.events.slice(0, 3).map((event: Event) => (
-                                    <div key={event.id} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors">
-                                        <div className="w-2 h-2 bg-[#5773da] rounded-full"></div>
-                                        <div className="flex-1">
-                                            <p className="font-medium text-gray-900 text-sm">{event.title}</p>
-                                            <p className="text-xs text-gray-500">{new Date(event.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
+                        {eventsLoading ? (
+                            <div className="flex items-center justify-center py-8">
+                                <Loader2 className="w-6 h-6 animate-spin text-[#5773da]" />
+                            </div>
+                        ) : eventsData?.data?.events && eventsData.data.events.length > 0 ? (
+                            <div className="space-y-2 sm:space-y-3">
+                                {eventsData.data.events.slice(0, 4).map((event: Event) => (
+                                    <Link 
+                                        key={event.id} 
+                                        to={`/dashboard/events/${event.id}`}
+                                        className="flex items-start gap-3 p-3 rounded-lg bg-gray-50 hover:bg-purple-50 hover:border-purple-200 border border-transparent transition-all group"
+                                    >
+                                        <div className="w-12 h-12 sm:w-14 sm:h-14 bg-purple-100 rounded-lg flex flex-col items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                            <span className="text-xs sm:text-sm font-bold text-purple-600">
+                                                {new Date(event.startDate).toLocaleDateString('en-US', { month: 'short' })}
+                                            </span>
+                                            <span className="text-lg sm:text-xl font-bold text-purple-900">
+                                                {new Date(event.startDate).getDate()}
+                                            </span>
                                         </div>
-                                    </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="font-semibold text-gray-900 text-sm sm:text-base line-clamp-1 group-hover:text-purple-700">{event.title}</p>
+                                            <p className="text-xs sm:text-sm text-gray-500 line-clamp-1 mt-1">{event.location || 'Online'}</p>
+                                        </div>
+                                    </Link>
                                 ))}
                             </div>
                         ) : (
-                            <p className="text-gray-500 text-sm text-center py-4">No upcoming events</p>
+                            <div className="text-center py-8">
+                                <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                                <p className="text-gray-500 text-sm">No upcoming events at the moment</p>
+                                <Link to="/dashboard/events" className="text-sm text-[#5773da] hover:text-[#4861c9] font-medium mt-2 inline-block">
+                                    Explore All Events →
+                                </Link>
+                            </div>
                         )}
                     </div>
 
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
-                                    <BookOpen className="w-6 h-6 text-indigo-600" />
-                                </div>
-                                <div>
-                                    <h4 className="font-semibold text-gray-900">Learning Resources</h4>
-                                    <p className="text-sm text-gray-500">Study materials</p>
-                                </div>
+                    {/* Latest Blogs */}
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                                <FileText className="w-5 h-5 text-blue-600" />
+                                <h3 className="text-base sm:text-lg font-bold text-gray-900">Latest Blogs</h3>
                             </div>
-                            <Link to="/resources" className="text-[#5773da] hover:text-[#4861c9]">→</Link>
+                            <Link to="/dashboard/blogs" className="text-sm text-[#5773da] hover:text-[#4861c9] font-medium flex items-center gap-1">
+                                View All <span className="hidden sm:inline">→</span>
+                            </Link>
                         </div>
+                        {blogsLoading ? (
+                            <div className="flex items-center justify-center py-8">
+                                <Loader2 className="w-6 h-6 animate-spin text-[#5773da]" />
+                            </div>
+                        ) : blogsData?.data?.blogs && blogsData.data.blogs.length > 0 ? (
+                            <div className="space-y-2 sm:space-y-3">
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                {blogsData.data.blogs.slice(0, 3).map((blog: any) => (
+                                    <Link 
+                                        key={blog._id} 
+                                        to={`/dashboard/blogs/${blog.slug || blog._id}`}
+                                        className="flex items-start gap-3 p-3 rounded-lg bg-gray-50 hover:bg-blue-50 hover:border-blue-200 border border-transparent transition-all group"
+                                    >
+                                        <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 shrink-0"></div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="font-medium text-gray-900 text-sm sm:text-base line-clamp-2 group-hover:text-blue-700">{blog.title}</p>
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                {new Date(blog.createdAt || blog.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                            </p>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-8">
+                                <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                                <p className="text-gray-500 text-sm">No blogs available yet</p>
+                                <Link to="/dashboard/blogs" className="text-sm text-[#5773da] hover:text-[#4861c9] font-medium mt-2 inline-block">
+                                    Explore Blogs →
+                                </Link>
+                            </div>
+                        )}
                     </div>
 
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 bg-pink-100 rounded-xl flex items-center justify-center">
-                                    <MessageSquare className="w-6 h-6 text-pink-600" />
-                                </div>
-                                <div>
-                                    <h4 className="font-semibold text-gray-900">Messages</h4>
-                                    <p className="text-sm text-gray-500">Check messages</p>
-                                </div>
+                    {/* Active Communities */}
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                                <Users className="w-5 h-5 text-green-600" />
+                                <h3 className="text-base sm:text-lg font-bold text-gray-900">Communities</h3>
                             </div>
-                            <Link to="/messages" className="text-[#5773da] hover:text-[#4861c9]">→</Link>
+                            <Link to="/dashboard/communities" className="text-sm text-[#5773da] hover:text-[#4861c9] font-medium flex items-center gap-1">
+                                View All <span className="hidden sm:inline">→</span>
+                            </Link>
                         </div>
-                    </div>
-
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
-                                    <Award className="w-6 h-6 text-yellow-600" />
-                                </div>
-                                <div>
-                                    <h4 className="font-semibold text-gray-900">Achievements</h4>
-                                    <p className="text-sm text-gray-500">Your progress</p>
-                                </div>
+                        {communitiesLoading ? (
+                            <div className="flex items-center justify-center py-8">
+                                <Loader2 className="w-6 h-6 animate-spin text-[#5773da]" />
                             </div>
-                            <Link to="/achievements" className="text-[#5773da] hover:text-[#4861c9]">→</Link>
-                        </div>
-                    </div>
-
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-                                    <HelpCircle className="w-6 h-6 text-gray-600" />
-                                </div>
-                                <div>
-                                    <h4 className="font-semibold text-gray-900">Help Center</h4>
-                                    <p className="text-sm text-gray-500">Get support</p>
-                                </div>
+                        ) : communitiesData?.data && communitiesData.data.length > 0 ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-explicit-any
+                                {communitiesData.data.slice(0, 4).map((community: any) => (
+                                    <Link 
+                                        key={community._id} 
+                                        to="/dashboard/communities"
+                                        className="p-3 rounded-lg bg-gray-50 hover:bg-green-50 hover:border-green-200 border border-transparent transition-all group"
+                                    >
+                                        <p className="font-medium text-gray-900 text-sm group-hover:text-green-700 line-clamp-1">{community.name}</p>
+                                        <p className="text-xs text-gray-500 mt-1">{community.membersCount || 0} members</p>
+                                    </Link>
+                                ))}
                             </div>
-                            <Link to="/help" className="text-[#5773da] hover:text-[#4861c9]">→</Link>
-                        </div>
+                        ) : (
+                            <div className="text-center py-8">
+                                <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                                <p className="text-gray-500 text-sm">No communities available</p>
+                                <Link to="/dashboard/communities" className="text-sm text-[#5773da] hover:text-[#4861c9] font-medium mt-2 inline-block">
+                                    Explore Communities →
+                                </Link>
+                            </div>
+                        )}
                     </div>
                 </div>
-            </div>
-
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <FileText className="w-5 h-5 text-blue-600" />
-                    </div>
-                    <div>
-                        <p className="font-semibold text-gray-900 text-sm">Leave</p>
-                        <p className="text-xs text-gray-500">Submit absence request</p>
-                    </div>
-                </div>
-                <button className="text-[#5773da] hover:text-[#4861c9]">→</button>
             </div>
         </div>
     );

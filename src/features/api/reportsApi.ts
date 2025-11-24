@@ -22,16 +22,18 @@ export interface Report {
 
 interface ReportListResponse {
   success: boolean;
-  data: Report[];
+  data: {
+    reports: Report[];
+    total: number;
+    limit: number;
+    offset: number;
+  };
 }
 
 interface CreateReportRequest {
   title: string;
-  description: string;
+  content: string;
   fileUrl: string;
-  fileType: string;
-  category: string;
-  isPublished?: boolean;
 }
 
 interface ReportStatsResponse {

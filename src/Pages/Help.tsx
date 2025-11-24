@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { Topbar } from '../Components/Topbar';
-import { Footer } from '../Components/Footer';
 import { AIAssistant } from '../Components/AIAssistant';
 import {
   MessageCircle,
@@ -14,7 +12,10 @@ import {
   ChevronDown,
   ChevronUp,
   Search,
-  Bot
+  Bot,
+  Lightbulb,
+  Zap,
+  HelpCircle
 } from 'lucide-react';
 
 interface FAQItem {
@@ -134,35 +135,45 @@ export const Help: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <Topbar />
-
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 to-white">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16 px-4">
-        <div className="max-w-7xl mx-auto text-center">
+      <div className="bg-gradient-to-br from-[#5773da] via-[#4861c9] to-[#3d4fb8] text-white py-16 px-4 relative overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 right-10 w-72 h-72 bg-white rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-20 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto text-center relative z-10">
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <HelpCircle className="w-8 h-8" />
+            <span className="text-sm font-semibold uppercase tracking-widest text-indigo-100">Help & Support</span>
+          </div>
+
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             How Can We Help You?
           </h1>
-          <p className="text-xl text-blue-100 mb-8">
-            Find answers to common questions or chat with our AI assistant
+          <p className="text-lg text-indigo-100 mb-8 max-w-2xl mx-auto">
+            Find answers to your questions, explore our resources, or chat with our AI assistant for instant support
           </p>
 
           {/* Search Bar */}
-          <div className="max-w-2xl mx-auto relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <div className="max-w-2xl mx-auto relative group">
+            <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 rounded-xl blur group-focus-within:blur-lg transition-all pointer-events-none"></div>
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 w-5 h-5 group-focus-within:text-white transition-colors" />
             <input
               type="text"
               placeholder="Search for help..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-300"
+              className="relative w-full pl-12 pr-6 py-4 rounded-xl bg-white/15 backdrop-blur-md text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-white/25 transition-all shadow-2xl border border-white/20 hover:border-white/40"
             />
           </div>
 
           {/* AI Assistant Button */}
           <button
             onClick={() => setIsAIOpen(true)}
-            className="mt-6 bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors inline-flex items-center gap-2"
+            className="mt-6 bg-white text-[#5773da] px-8 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-all transform hover:scale-105 inline-flex items-center gap-2 shadow-lg"
           >
             <Bot className="w-5 h-5" />
             Ask AI Assistant
@@ -171,65 +182,108 @@ export const Help: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-12 w-full">
+      <div className="max-w-7xl mx-auto px-4 py-16 w-full">
+        {/* Quick Help Cards */}
+        <div className="grid md:grid-cols-3 gap-6 mb-16">
+          <div className="bg-white rounded-xl shadow-md border-l-4 border-[#5773da] p-6 hover:shadow-lg transition-shadow">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Zap className="w-6 h-6 text-[#5773da]" />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900 mb-2">Quick Start</h3>
+                <p className="text-sm text-gray-600">Get started with BITSA in just a few minutes. Sign up and explore communities.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-md border-l-4 border-[#5773da] p-6 hover:shadow-lg transition-shadow">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Lightbulb className="w-6 h-6 text-[#5773da]" />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900 mb-2">Learn & Grow</h3>
+                <p className="text-sm text-gray-600">Access tutorials, resources, and join learning communities tailored to you.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-md border-l-4 border-[#5773da] p-6 hover:shadow-lg transition-shadow">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Users className="w-6 h-6 text-[#5773da]" />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900 mb-2">Connect</h3>
+                <p className="text-sm text-gray-600">Network with peers, attend events, and build meaningful relationships.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Category Filter */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Browse by Category</h2>
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Browse by Category</h2>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             {categories.map((category) => (
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`p-4 rounded-lg border-2 transition-all ${selectedCategory === category.id
-                    ? 'border-blue-600 bg-blue-50 text-blue-600'
-                    : 'border-gray-200 hover:border-blue-300 text-gray-700'
+                className={`p-4 rounded-xl border-2 transition-all transform hover:scale-105 ${selectedCategory === category.id
+                    ? 'border-[#5773da] bg-indigo-50 text-[#5773da] shadow-md'
+                    : 'border-gray-200 hover:border-[#5773da] text-gray-700 bg-white'
                   }`}
               >
                 <category.icon className="w-6 h-6 mx-auto mb-2" />
-                <span className="text-sm font-medium">{category.name}</span>
+                <span className="text-sm font-medium block">{category.name}</span>
               </button>
             ))}
           </div>
         </div>
 
         {/* FAQ Section */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
-            Frequently Asked Questions
-            <span className="text-blue-600 text-lg ml-2">({filteredFAQs.length})</span>
-          </h2>
+        <div className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">
+              Frequently Asked Questions
+            </h2>
+            <span className="text-sm bg-indigo-100 text-[#5773da] font-semibold px-4 py-1 rounded-full">
+              {filteredFAQs.length} results
+            </span>
+          </div>
 
           {filteredFAQs.length === 0 ? (
-            <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
+            <div className="text-center py-12 bg-white rounded-xl border-2 border-gray-200">
               <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500">No results found. Try a different search or category.</p>
+              <p className="text-gray-500 text-lg">No results found. Try a different search or category.</p>
             </div>
           ) : (
             <div className="space-y-4">
               {filteredFAQs.map((faq, index) => (
                 <div
                   key={index}
-                  className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow"
+                  className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all"
                 >
                   <button
                     onClick={() => toggleFAQ(index)}
-                    className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+                    className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-indigo-50 transition-colors"
                   >
-                    <span className="font-semibold text-gray-900 pr-4">{faq.question}</span>
+                    <span className="font-semibold text-gray-900 pr-4 text-lg">{faq.question}</span>
                     {expandedFAQ === index ? (
-                      <ChevronUp className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                      <ChevronUp className="w-5 h-5 text-[#5773da] flex-shrink-0" />
                     ) : (
                       <ChevronDown className="w-5 h-5 text-gray-400 flex-shrink-0" />
                     )}
                   </button>
 
                   {expandedFAQ === index && (
-                    <div className="px-6 pb-4 text-gray-600">
-                      <div className="pt-2 border-t border-gray-100">
-                        {faq.answer}
+                    <div className="px-6 pb-5 bg-indigo-50 text-gray-700">
+                      <div className="pt-3 border-t border-indigo-200">
+                        <p className="leading-relaxed">{faq.answer}</p>
                       </div>
-                      <span className="inline-block mt-3 text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
-                        {faq.category}
+                      <span className="inline-block mt-4 text-xs bg-white text-[#5773da] font-semibold px-4 py-2 rounded-full border border-[#5773da]">
+                        {faq.category.charAt(0).toUpperCase() + faq.category.slice(1)}
                       </span>
                     </div>
                   )}
@@ -240,22 +294,22 @@ export const Help: React.FC = () => {
         </div>
 
         {/* Contact Section */}
-        <div className="bg-white rounded-lg border border-gray-200 p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+        <div className="bg-gradient-to-br from-white to-indigo-50 rounded-2xl border-2 border-gray-200 p-10">
+          <h2 className="text-3xl font-bold text-gray-900 mb-3 text-center">
             Still Need Help?
           </h2>
-          <p className="text-gray-600 text-center mb-8">
-            Can't find what you're looking for? Reach out to us directly!
+          <p className="text-gray-600 text-center mb-10 text-lg">
+            Can't find what you're looking for? Reach out to our support team directly!
           </p>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-8">
             {contactMethods.map((method, index) => (
-              <div key={index} className="text-center p-6 rounded-lg bg-gray-50 hover:bg-blue-50 transition-colors">
-                <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <method.icon className="w-6 h-6 text-white" />
+              <div key={index} className="text-center p-8 rounded-xl bg-white border-2 border-gray-200 hover:border-[#5773da] hover:shadow-lg transition-all transform hover:scale-105">
+                <div className="w-14 h-14 bg-gradient-to-br from-[#5773da] to-[#4861c9] rounded-full flex items-center justify-center mx-auto mb-5 shadow-lg">
+                  <method.icon className="w-7 h-7 text-white" />
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">{method.title}</h3>
-                <p className="text-blue-600 font-medium mb-1">{method.value}</p>
+                <h3 className="font-bold text-gray-900 mb-2 text-lg">{method.title}</h3>
+                <p className="text-[#5773da] font-semibold mb-2 text-lg">{method.value}</p>
                 <p className="text-sm text-gray-500">{method.description}</p>
               </div>
             ))}
@@ -263,7 +317,6 @@ export const Help: React.FC = () => {
         </div>
       </div>
 
-      <Footer />
       <AIAssistant isOpen={isAIOpen} onClose={() => setIsAIOpen(false)} />
     </div>
   );

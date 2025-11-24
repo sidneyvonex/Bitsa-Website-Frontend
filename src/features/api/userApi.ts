@@ -117,41 +117,47 @@ export const userApi = baseApi.injectEndpoints({
           | { success?: boolean; data: { users: User[]; pagination?: { page: number; limit: number; total: number; totalPages: number } } }
           | { success?: boolean; users: User[]; pagination?: { page: number; limit: number; total: number; totalPages: number } }
           | User[]
-      ) => {
-        const normalize = (users: User[]) => users.map((u) => ({ ...u }));
+        ) => {
+          const normalize = (users: User[]) => users.map((u) => ({ ...u }));
 
-        if (Array.isArray(response)) {
-          return { success: true, data: normalize(response) };
-        }
+          if (Array.isArray(response)) {
+            return { success: true, data: normalize(response) };
+          }
 
-        if ('users' in response && Array.isArray(response.users)) {
+          if (typeof response === 'object' && response !== null) {
+            // Case: { users: User[], pagination? }
+            if ('users' in response && Array.isArray((response as { users?: unknown }).users)) {
+              const r = response as { success?: boolean; users: User[]; pagination?: { page: number; limit: number; total: number; totalPages: number } };
+              return {
+                success: r.success ?? true,
+                data: normalize(r.users),
+                pagination: r.pagination,
+              };
+            }
+            // Case: { data: User[] }
+            if ('data' in response && Array.isArray((response as { data?: unknown }).data)) {
+              const r = response as { success?: boolean; data: User[] };
+              return {
+                success: r.success ?? true,
+                data: normalize(r.data),
+              };
+            }
+            // Case: { data: { users: User[], pagination? } }
+            if ('data' in response && typeof (response as { data?: unknown }).data === 'object' && (response as { data: { users?: unknown } }).data !== null && 'users' in (response as { data: { users?: unknown } }).data && Array.isArray((response as { data: { users: User[]; pagination?: { page: number; limit: number; total: number; totalPages: number } } }).data.users)) {
+              const r = response as { success?: boolean; data: { users: User[]; pagination?: { page: number; limit: number; total: number; totalPages: number } } };
+              return {
+                success: r.success ?? true,
+                data: normalize(r.data.users),
+                pagination: r.data.pagination,
+              };
+            }
+          }
+
           return {
-            success: response.success ?? true,
-            data: normalize(response.users),
-            pagination: response.pagination,
+            success: false,
+            data: [],
           };
-        }
-
-        if ('data' in response && Array.isArray(response.data)) {
-          return {
-            success: response.success ?? true,
-            data: normalize(response.data),
-          };
-        }
-
-        if ('data' in response && Array.isArray(response.data.users)) {
-          return {
-            success: response.success ?? true,
-            data: normalize(response.data.users),
-            pagination: response.data.pagination,
-          };
-        }
-
-        return {
-          success: false,
-          data: [],
-        };
-      },
+        },
       providesTags: ['User'],
     }),
 

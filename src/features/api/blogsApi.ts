@@ -1,15 +1,16 @@
 import { baseApi } from './baseApi';
 
 export interface Blog {
+  _id: string | undefined;
   id: string;
-  _id?: string;  // Some endpoints might return _id
+
   title: string;
   slug: string;
   content: string;
   category: string;
   readTime: number;
   coverImage?: string;
-  image?: string;  // Alternative property name for image
+
   excerpt?: string;
   authorId: string;
   authorSchoolId?: string;
@@ -46,6 +47,7 @@ interface CreateBlogRequest {
   excerpt: string;
   category: string;
   image?: string;
+  coverImage?: string;
   tags?: string[];
   isPublished?: boolean;
 }

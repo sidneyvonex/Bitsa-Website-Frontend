@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Send, Minimize2, Maximize2, Bot, User, Loader2 } from 'lucide-react';
-import { useChatWithAIMutation } from '../features/api';
+import { useChatWithAIMutation } from '../features/api/aiApi';
 
 interface Message {
   role: 'user' | 'assistant';

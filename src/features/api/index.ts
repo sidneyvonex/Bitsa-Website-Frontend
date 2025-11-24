@@ -2,10 +2,10 @@
 export * from './baseApi';
 export * from '../auth/authApi';
 export * from './userApi';
-export * from './EventApi';
+export * from './eventApi';
 export * from './blogsApi';
 export * from './communitiesApi';
-export * from './projectsApi';
+export * from './projectApi';
 export * from './leadersApi';
 export * from './partnersApi';
 export * from './interestsApi';
@@ -15,5 +15,5 @@ export * from './auditApi';
 
 // Explicit exports for commonly used types
 export type { Leader } from './leadersApi';
-export type { Event } from './EventApi';
+export type { Event } from './eventApi';
 export type { Blog } from './blogsApi';

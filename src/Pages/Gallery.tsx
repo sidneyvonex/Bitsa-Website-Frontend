@@ -1,12 +1,13 @@
 import { Image, Camera, Calendar, Users } from 'lucide-react';
-import { Topbar } from '../Components/Topbar';
+import Topbar from '../Components/Topbar';
 import { Footer } from '../Components/Footer';
-import { useGetAllGalleryImagesQuery, type GalleryImage } from '../features/api/EventApi';
+import { useGetAllGalleryImagesQuery, type GalleryImage } from '../features/api/eventApi';
 import { useMemo, useState } from 'react';
 
 export const Gallery = () => {
     const [page, setPage] = useState(1);
     const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
+    const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
     const limit = 12;
 
     const { data, isLoading, isError, refetch, isFetching } = useGetAllGalleryImagesQuery({ page, limit });
@@ -31,9 +32,24 @@ export const Gallery = () => {
     }, [images]);
 
     return (
-        <div>
+        <div className="min-h-screen flex flex-col bg-gray-50 relative overflow-hidden">
+            {/* Subtle SVG background to match Leaders page */}
+            <svg className="absolute inset-0 w-full h-full z-0" viewBox="0 0 1440 1200" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ pointerEvents: 'none' }}>
+                <defs>
+                    <radialGradient id="bg1" cx="50%" cy="30%" r="60%" fx="50%" fy="30%" gradientTransform="rotate(30)">
+                        <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.12" />
+                        <stop offset="100%" stopColor="#fff" stopOpacity="0" />
+                    </radialGradient>
+                </defs>
+                <rect width="1440" height="1200" fill="url(#bg1)" />
+                <ellipse cx="200" cy="200" rx="180" ry="80" fill="#60a5fa" opacity="0.08" />
+                <ellipse cx="1240" cy="1000" rx="140" ry="60" fill="#818cf8" opacity="0.09" />
+                <path d="M0 900 Q 360 1100 720 900 T 1440 900" stroke="#f59e0b" strokeWidth="3" fill="none" opacity="0.13" />
+                <circle cx="900" cy="300" r="90" fill="#f59e0b" opacity="0.07" />
+                <circle cx="400" cy="1000" r="60" fill="#60a5fa" opacity="0.07" />
+            </svg>
             <Topbar />
-            <main className="min-h-screen bg-gray-50 py-16">
+            <main className="min-h-screen py-16 relative z-1">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Header Section */}
                     <section className="text-center mb-12">
@@ -112,34 +128,22 @@ export const Gallery = () => {
                                             <figure
                                                 key={img.id}
                                                 className="group relative aspect-square overflow-hidden rounded-2xl bg-gray-100 cursor-pointer hover:shadow-lg transition-all duration-300"
+                                                onClick={() => {
+                                                    setSelectedImage(img);
+                                                    setSelectedEventId(img.eventId || 'unknown');
+                                                }}
                                             >
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setSelectedImage(img)}
-                                                    className="absolute inset-0"
-                                                >
-                                                    <span className="sr-only">
-                                                        Open {img.title || group.eventTitle} photo
-                                                    </span>
-                                                </button>
                                                 <img
                                                     src={`${img.imageUrl}?w=800&q=80`}
                                                     alt={img.title || group.eventTitle}
                                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                                     loading="lazy"
                                                 />
+                                                {/* Only show the image title as caption, no 'By ...' */}
                                                 <figcaption className="absolute bottom-0 left-0 right-0 bg-black/60 text-white p-3 text-sm">
                                                     <p className="font-semibold line-clamp-1">
                                                         {img.title || group.eventTitle}
                                                     </p>
-                                                    {(img.uploaderFirstName || img.uploaderLastName) && (
-                                                        <p className="text-xs text-white/80">
-                                                            By{' '}
-                                                            {[img.uploaderFirstName, img.uploaderLastName]
-                                                                .filter(Boolean)
-                                                                .join(' ')}
-                                                        </p>
-                                                    )}
                                                 </figcaption>
                                             </figure>
                                         ))}
@@ -181,69 +185,56 @@ export const Gallery = () => {
                 </div>
             </main>
 
-            {/* Lightbox Modal */}
-            {selectedImage && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4">
-                    <div className="relative max-w-5xl w-full bg-white rounded-3xl overflow-hidden shadow-2xl">
-                        <button
-                            onClick={() => setSelectedImage(null)}
-                            className="absolute top-3 right-3 z-10 rounded-full bg-black/60 text-white px-3 py-1 text-sm hover:bg-black/80"
-                        >
-                            Close
-                        </button>
-                        <div className="grid md:grid-cols-2 gap-0">
-                            <div className="bg-gray-900">
-                                <img
-                                    src={`${selectedImage.imageUrl}?w=1400&q=90`}
-                                    alt={selectedImage.title || selectedImage.eventTitle}
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                            <div className="p-6 md:p-8 space-y-4">
-                                <div className="text-xs font-semibold uppercase text-blue-600">
-                                    {selectedImage.eventTitle || 'BITSA Event'}
-                                </div>
-                                <h3 className="text-2xl font-bold text-gray-900">
-                                    {selectedImage.title || selectedImage.eventTitle}
-                                </h3>
-                                {selectedImage.eventDate && (
-                                    <p className="text-sm text-gray-500">
-                                        {new Date(selectedImage.eventDate).toLocaleDateString('en-US', {
-                                            month: 'long',
-                                            day: 'numeric',
-                                            year: 'numeric',
-                                        })}
-                                    </p>
-                                )}
-                                <p className="text-sm text-gray-600 leading-relaxed">
-                                    Captured by{' '}
-                                    {[selectedImage.uploaderFirstName, selectedImage.uploaderLastName]
-                                        .filter(Boolean)
-                                        .join(' ') || 'BITSA Media Team'}
-                                    {selectedImage.uploaderSchoolId ? ` (${selectedImage.uploaderSchoolId})` : ''}
-                                </p>
-                                {selectedImage.uploadedAt && (
-                                    <p className="text-xs text-gray-400">
-                                        Uploaded {new Date(selectedImage.uploadedAt).toLocaleDateString()}
-                                    </p>
-                                )}
-                                <div className="pt-4">
-                                    <a
-                                        href={`/events/${selectedImage.eventId}`}
-                                        className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-800"
-                                        onClick={() => setSelectedImage(null)}
-                                    >
-                                        View event highlights →
-                                    </a>
-                                </div>
-                            </div>
+
+            {/* Lightbox Modal - Only Image, No Captions, With Navigation */}
+            {selectedImage && selectedEventId && (() => {
+                // Find all images for the selected event
+                const eventImages = Object.values(groupedByEvent).find(
+                    (g) => (selectedImage.eventId || 'unknown') === (g.images[0]?.eventId || 'unknown')
+                )?.images || [];
+                const currentIndex = eventImages.findIndex((img) => img.id === selectedImage.id);
+                const showPrev = currentIndex > 0;
+                const showNext = currentIndex < eventImages.length - 1;
+                return (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 px-4">
+                        <div className="relative max-w-3xl w-full flex items-center justify-center">
+                            <button
+                                onClick={() => setSelectedImage(null)}
+                                className="absolute top-3 right-3 z-10 rounded-full bg-black/70 text-white px-4 py-2 text-lg hover:bg-black/90"
+                            >
+                                ×
+                            </button>
+                            {showPrev && (
+                                <button
+                                    onClick={() => setSelectedImage(eventImages[currentIndex - 1])}
+                                    className="absolute left-2 md:left-4 z-10 rounded-full bg-black/70 text-white px-3 py-2 text-2xl hover:bg-black/90"
+                                    aria-label="Previous image"
+                                >
+                                    &#8592;
+                                </button>
+                            )}
+                            <img
+                                src={`${selectedImage.imageUrl}?w=1400&q=90`}
+                                alt="Gallery preview"
+                                className="w-full h-auto max-h-[80vh] object-contain rounded-2xl shadow-2xl mx-auto"
+                            />
+                            {showNext && (
+                                <button
+                                    onClick={() => setSelectedImage(eventImages[currentIndex + 1])}
+                                    className="absolute right-10 md:right-16 z-10 rounded-full bg-black/70 text-white px-3 py-2 text-2xl hover:bg-black/90"
+                                    aria-label="Next image"
+                                >
+                                    &#8594;
+                                </button>
+                            )}
                         </div>
                     </div>
-                </div>
-            )}
+                );
+            })()}
             <Footer />
         </div>
     );
 };
+
 
 export default Gallery;

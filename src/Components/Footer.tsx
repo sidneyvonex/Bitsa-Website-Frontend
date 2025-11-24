@@ -1,12 +1,14 @@
 export const Footer = () => {
-  return (
+  
+  
+    return (
     <footer className="bg-linear-to-r from-[#1e3a8a] to-[#1e40af] text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <div className="flex items-center space-x-3 mb-4">
               <img
-                src="/bitsa-logo.png"
+                src="/src/assets/bitsa-logo.png"
                 alt="BITSA Logo"
                 className="h-12 w-auto object-contain brightness-0 invert"
               />

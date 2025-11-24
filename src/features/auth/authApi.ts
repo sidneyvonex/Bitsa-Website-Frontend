@@ -29,6 +29,7 @@ interface VerifyEmailRequest {
 }
 
 interface LoginResponse {
+  role: string;
   // Actual backend response (flat structure)
   token: string;
   userId: string;
