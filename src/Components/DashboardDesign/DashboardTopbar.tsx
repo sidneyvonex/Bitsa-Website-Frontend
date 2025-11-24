@@ -1,101 +1,122 @@
-import { Bell, LogOut, Menu, Settings } from "lucide-react";
-import { useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import { logout } from "../../features/auth/authSlice";
-import { useGetCurrentUserQuery } from "../../features/api/userApi";
+import React, { useState } from 'react';
+import { Menu, Settings, LogOut, User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAppSelector, useAppDispatch } from '../../features/app/hooks';
+import { selectCurrentUser, logout } from '../../features/auth/authSlice';
 
-interface TopbarProps {
-  toggleSidebar: () => void;
-  toggleMobileSidebar: () => void;
+interface DashboardTopbarProps {
+  // new prop names
+  onToggleSidebar?: () => void;
+  isSidebarCollapsed?: boolean;
+  isMobileView?: boolean;
+  onToggleMobileMenu?: () => void;
+  // legacy/alternate prop names used across the codebase
+  toggleSidebar?: () => void;
+  toggleMobileSidebar?: () => void;
 }
 
-export const Topbar = ({ toggleSidebar, toggleMobileSidebar }: TopbarProps) => {
-  const dispatch = useDispatch();
+export const DashboardTopbar: React.FC<DashboardTopbarProps> = ({
+  onToggleSidebar,
+  isMobileView = false,
+  onToggleMobileMenu,
+  toggleSidebar,
+  toggleMobileSidebar,
+}) => {
+  const user = useAppSelector(selectCurrentUser);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-
-  // Fetch logged-in user from backend
-  const { data, isLoading } = useGetCurrentUserQuery();
-
-  const user = data?.data || null;
-
-  const profileImage = user?.profilePicture;
-
-  const getInitials = () => {
-    if (!user) return "U";
-
-    const fullName = `${user.firstName || ""} ${user.lastName || ""}`.trim();
-    if (!fullName) return "U";
-
-    return fullName
-      .split(" ")
-      .map((n) => n.charAt(0).toUpperCase())
-      .slice(0, 2)
-      .join("");
-  };
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate("/login");
+    navigate('/login');
   };
 
+  const userName = user?.firstName && user?.lastName
+    ? `${user.firstName} ${user.lastName}`
+    : user?.email?.split('@')[0] || 'User';
+
+  const userAvatar = user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=6366f1&color=fff&size=128`;
+
+  // resolve handler aliases so callers can pass either name
+  const resolvedToggleSidebar = onToggleSidebar ?? toggleSidebar;
+  const resolvedToggleMobile = onToggleMobileMenu ?? toggleMobileSidebar;
+
   return (
-    <header className="w-full bg-white px-6 py-4 flex items-center justify-between border-b border-gray-200 shadow-sm z-10 sticky top-0">
-      {/* Left */}
-      <div className="flex items-center gap-4">
-        <button onClick={toggleSidebar} className="hidden lg:block">
-          <Menu className="w-6 h-6 text-gray-600" />
-        </button>
-
-        <button onClick={toggleMobileSidebar} className="block lg:hidden">
-          <Menu className="w-6 h-6 text-gray-600" />
-        </button>
-
-        <h1 className="text-lg font-semibold text-gray-800">Dashboard</h1>
-      </div>
-
-      {/* Right */}
-      <div className="flex items-center gap-4">
-        <button className="btn btn-ghost border-0 btn-circle">
-          <Bell className="w-5 h-5 text-gray-500" />
-        </button>
-
-        <div className="dropdown dropdown-end">
-          <div
-            tabIndex={0}
-            role="button"
-            className={`btn btn-ghost btn-circle avatar border-0 ${
-              !profileImage ? "bg-[#ED3500]" : ""
-            } ${isLoading ? "loading" : ""}`}
+    <header className="fixed top-0 right-0 left-0 z-40 bg-white border-b border-gray-100 shadow-sm">
+      <div className="flex items-center justify-between h-16 px-4 lg:px-6">
+        {/* Left Section */}
+        <div className="flex items-center gap-4">
+          <button
+            onClick={isMobileView && resolvedToggleMobile ? resolvedToggleMobile : resolvedToggleSidebar}
+            className="p-2 hover:bg-gray-50 rounded-lg transition-colors"
+            aria-label="Toggle sidebar"
           >
-            <div className="w-10 rounded-full overflow-hidden flex items-center justify-center text-white font-bold">
-              {profileImage ? (
-                <img
-                  src={profileImage}
-                  alt="Profile"
-                  className="object-cover w-full h-full"
-                />
-              ) : (
-                getInitials()
-              )}
-            </div>
+            <Menu className="w-5 h-5 text-gray-600" />
+          </button>
+
+          {/* Dashboard Title */}
+          <h1 className="text-lg font-bold text-gray-900 hidden sm:block">Dashboard</h1>
+        </div>
+
+        {/* Right Section */}
+        <div className="flex items-center gap-2">
+          <button className="p-2 hover:bg-gray-50 rounded-lg transition-colors">
+            <Settings className="w-5 h-5 text-gray-600" />
+          </button>
+
+          {/* Profile Dropdown */}
+          <div className="relative ml-2">
+            <button
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+              className="flex items-center gap-3 hover:bg-gray-50 rounded-lg transition-colors p-1.5"
+            >
+              <img
+                src={userAvatar}
+                alt={userName}
+                className="w-9 h-9 rounded-full object-cover border-2 border-gray-200"
+              />
+              <div className="hidden lg:block text-left pr-2">
+                <p className="text-sm font-semibold text-gray-900">{userName}</p>
+                <p className="text-xs text-gray-500">{user?.role}</p>
+              </div>
+            </button>
+
+            {/* Dropdown Menu */}
+            {showProfileMenu && (
+              <>
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setShowProfileMenu(false)}
+                ></div>
+                <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-20">
+                  <div className="p-3 border-b border-gray-100">
+                    <p className="text-sm font-medium text-gray-900">{userName}</p>
+                    <p className="text-xs text-gray-500">{user?.email}</p>
+                  </div>
+                  <div className="p-2">
+                    <button className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+                      <User className="w-4 h-4" />
+                      Profile
+                    </button>
+                    <button className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+                      <Settings className="w-4 h-4" />
+                      Settings
+                    </button>
+                  </div>
+                  <div className="p-2 border-t border-gray-100">
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center gap-3 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
-
-          {/* Dropdown Menu */}
-          {!isLoading && (
-            <ul className="dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
-              <li>
-                <Link to="/profile">
-                  <Settings size={16} /> Profile Settings
-                </Link>
-              </li>
-
-              <li>
-                <button onClick={handleLogout}>
-                  <LogOut size={16} /> Logout
-                </button>
-              </li>
-            </ul>
-          )}
         </div>
       </div>
     </header>

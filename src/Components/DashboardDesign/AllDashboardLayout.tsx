@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { ReactNode } from 'react';
-import { Topbar } from './DashboardTopbar';
+import { DashboardTopbar } from './DashboardTopbar';
 import { StudentSidebar } from './StudentSideNav';
 import { AdminSideNav } from './AdminSideNav';
 import { SuperAdminSideNav } from './SuperAdminSideNav';
@@ -32,7 +32,7 @@ export const DashboardLayout = ({ children, userRole }: DashboardLayoutProps) =>
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f9fafb' }}>
       {/* Topbar */}
-      <Topbar toggleSidebar={toggleSidebar} toggleMobileSidebar={toggleSidebar} />
+      <DashboardTopbar toggleSidebar={toggleSidebar} toggleMobileSidebar={toggleSidebar} />
 
       <div className="flex">
         {/* Sidebar */}
