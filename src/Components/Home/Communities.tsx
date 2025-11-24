@@ -60,10 +60,10 @@ export const Communities = () => {
                 {/* Communities Grid - New Layout */}
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {communities.map((community) => {
-                        const Icon = iconMap[community.icon] || Globe;
+                        const Icon = (community.icon && iconMap[community.icon]) || Globe;
                         return (
                             <div
-                                key={community._id}
+                                key={(community.id || '') as string}
                                 className="bg-white rounded-lg shadow-sm hover:shadow-md p-6 group cursor-pointer transition-all duration-300 border border-gray-100 overflow-hidden relative"
                             >
                                 {/* Gradient Background Accent */}

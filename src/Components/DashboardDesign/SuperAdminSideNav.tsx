@@ -1,160 +1,173 @@
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import { useAppSelector } from '../../features/app/hooks';
+import { selectCurrentUser } from '../../features/auth/authSlice';
 import {
   LayoutDashboard,
   Users,
-  Shield,
-  CalendarDays,
-  FileText,
-  Database,
   Activity,
+  Award,
+  Building2,
   Settings,
   LogOut,
-} from "lucide-react";
-import type { ReactNode } from "react";
-import { useDispatch } from "react-redux";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { logout } from "../../features/auth/authSlice";
+} from 'lucide-react';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../features/auth/authSlice';
+import { useNavigate } from 'react-router-dom';
 
-interface NavLinkProps {
-  to?: string;
-  icon: ReactNode;
-  label: string;
-  active?: boolean;
-  collapsed?: boolean;
-  onClick?: () => void;
-}
-
-interface SuperAdminSideNavProps {
+interface SidebarProps {
   isCollapsed: boolean;
-  userRole: 'SuperAdmin';
+  userRole?: 'SuperAdmin';
+  isMobileMenuOpen?: boolean;
+  onMobileMenuClose?: () => void;
+  onToggle?: () => void;
 }
 
-export const SuperAdminSideNav = ({ isCollapsed }: SuperAdminSideNavProps) => {
+interface NavItem {
+  name: string;
+  path: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+interface NavSection {
+  title: string;
+  items: NavItem[];
+}
+
+const superAdminNavSections: NavSection[] = [
+  {
+    title: 'System Management',
+    items: [
+      { name: 'Overview', path: '/superadmin', icon: LayoutDashboard },
+      { name: 'Users', path: '/superadmin/users', icon: Users },
+      { name: 'Audit Logs', path: '/superadmin/logs', icon: Activity },
+      { name: 'Leaders', path: '/superadmin/leaders', icon: Award },
+      { name: 'Partners', path: '/superadmin/partners', icon: Building2 },
+    ],
+  },
+  {
+    title: 'Account',
+    items: [
+      { name: 'Settings', path: '/superadmin/settings', icon: Settings },
+    ],
+  },
+];
+
+export const SuperAdminSideNav: React.FC<SidebarProps> = ({
+  isCollapsed,
+  isMobileMenuOpen = false,
+  onMobileMenuClose,
+  onToggle,
+}) => {
+  const user = useAppSelector(selectCurrentUser);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate("/login");
+  const userName = user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.email?.split('@')[0] || 'SuperAdmin';
+  const userAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=5773da&color=ffffff&size=128`;
+
+  const handleLinkClick = () => {
+    if (isMobileMenuOpen) {
+      if (onMobileMenuClose) onMobileMenuClose();
+      else if (onToggle) onToggle();
+    }
   };
 
-  const isActive = (path: string) => {
-    return (
-      location.pathname === path ||
-      location.pathname.startsWith(path + "/")
-    );
+  const handleLogout = () => {
+    if (isMobileMenuOpen) {
+      if (onMobileMenuClose) onMobileMenuClose();
+      else if (onToggle) onToggle();
+    }
+    dispatch(logout());
+    navigate('/login');
   };
 
   return (
-    <div className="flex flex-col h-full p-4 text-sm text-gray-100 bg-[#093FB4]">
-      <div
-        className={`text-xl font-bold text-orange-500 mb-6 ${
-          isCollapsed ? "text-center" : ""
-        }`}
+    <>
+      {/* Mobile overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => {
+            if (onMobileMenuClose) onMobileMenuClose();
+            else if (onToggle) onToggle();
+          }}
+        />
+      )}
+
+      <aside
+        className={`fixed left-0 top-16 bottom-0 bg-[#5773da] transition-all duration-300 ease-in-out shadow-xl ${isCollapsed ? 'w-20' : 'w-64'
+          } ${isMobileMenuOpen ? 'translate-x-0 z-50' : '-translate-x-full md:translate-x-0 z-30'} md:z-30`}
       >
-        {!isCollapsed ? "TicKenya" : "TK"}
-      </div>
+        <div className="flex flex-col h-full overflow-y-auto">
+          {/* User profile */}
+          <div className="px-4 py-4">
+            <div className="flex items-center gap-3">
+              {!isCollapsed ? (
+                <>
+                  <div className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden border-2 border-gray-700">
+                    <img src={userAvatar} alt={userName} className="w-full h-full object-cover" />
+                  </div>
+                  <div>
+                    <p className="text-white font-semibold text-sm">{userName}</p>
+                    <p className="text-white/60 text-xs">{user?.role || 'SuperAdmin'}</p>
+                  </div>
+                </>
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden border-2 border-gray-700 mx-auto">
+                  <img src={userAvatar} alt={userName} className="w-full h-full object-cover" />
+                </div>
+              )}
+            </div>
+          </div>
 
-      <nav className="flex-1 space-y-2">
-        <NavItem
-          to="/superadmin"
-          icon={<LayoutDashboard size={20} />}
-          label="Dashboard"
-          active={
-            isActive("/superadmin") &&
-            location.pathname === "/superadmin"
-          }
-          collapsed={isCollapsed}
-        />
-        <NavItem
-          to="/superadmin/users"
-          icon={<Users size={20} />}
-          label="User Management"
-          active={isActive("/superadmin/users")}
-          collapsed={isCollapsed}
-        />
-        <NavItem
-          to="/superadmin/admins"
-          icon={<Shield size={20} />}
-          label="Admin Management"
-          active={isActive("/superadmin/admins")}
-          collapsed={isCollapsed}
-        />
-        <NavItem
-          to="/superadmin/events"
-          icon={<CalendarDays size={20} />}
-          label="Events"
-          active={isActive("/superadmin/events")}
-          collapsed={isCollapsed}
-        />
-        <NavItem
-          to="/superadmin/content"
-          icon={<FileText size={20} />}
-          label="Content"
-          active={isActive("/superadmin/content")}
-          collapsed={isCollapsed}
-        />
-        <NavItem
-          to="/superadmin/database"
-          icon={<Database size={20} />}
-          label="Database"
-          active={isActive("/superadmin/database")}
-          collapsed={isCollapsed}
-        />
-        <NavItem
-          to="/superadmin/analytics"
-          icon={<Activity size={20} />}
-          label="Analytics"
-          active={isActive("/superadmin/analytics")}
-          collapsed={isCollapsed}
-        />
-        <NavItem
-          to="/superadmin/settings"
-          icon={<Settings size={20} />}
-          label="System Settings"
-          active={isActive("/superadmin/settings")}
-          collapsed={isCollapsed}
-        />
-      </nav>
+          {/* Nav sections */}
+          <nav className="flex-1 overflow-y-auto px-0 pt-2">
+            {superAdminNavSections.map((section, idx) => (
+              <div key={section.title} className={idx > 0 ? 'mt-6' : 'mt-2'}>
+                {!isCollapsed && (
+                  <h3 className="px-4 mb-3 text-white/50 text-xs font-semibold uppercase tracking-wide">{section.title}</h3>
+                )}
 
-      {/* LOGOUT BUTTON */}
-      <div className="pt-4 border-t border-white/10">
-        <NavItem
-          icon={<LogOut size={20} />}
-          label="Logout"
-          collapsed={isCollapsed}
-          onClick={handleLogout}
-        />
-      </div>
-    </div>
+                <ul className="space-y-0.5">
+                  {section.items.map((item) => (
+                    <li key={item.path}>
+                      <NavLink
+                        to={item.path}
+                        onClick={handleLinkClick}
+                        className={({ isActive }) =>
+                          `flex items-center gap-3 px-6 py-3 transition-all relative ${isActive
+                            ? 'bg-white/10 text-white font-medium border-l-4 border-white'
+                            : 'text-white/80 hover:bg-white/5 hover:text-white border-l-4 border-transparent'
+                          }`
+                        }
+                      >
+                        {({ isActive }) => (
+                          <>
+                            <item.icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-white/70'}`} />
+                            {!isCollapsed && <span className="text-sm font-medium">{item.name}</span>}
+                          </>
+                        )}
+                      </NavLink>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </nav>
+
+          {/* Logout area */}
+          <div className="p-4 mx-4 mb-4">
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 justify-center bg-white/5 hover:bg-white/10 text-white text-sm font-semibold py-3 px-4 rounded-xl transition-colors border border-white/10"
+            >
+              <LogOut className="w-4 h-4 text-white/90" />
+              {!isCollapsed && <span>Logout</span>}
+            </button>
+          </div>
+        </div>
+      </aside>
+    </>
   );
-};
-
-const NavItem = ({
-  to,
-  icon,
-  label,
-  active,
-  collapsed,
-  onClick,
-}: NavLinkProps) => {
-  const content = (
-    <div
-      className={`flex items-center gap-3 p-2 rounded-lg transition-colors ${
-        active
-          ? "bg-white/20 text-white"
-          : "hover:bg-white/10 text-gray-200"
-      }`}
-      onClick={onClick}
-    >
-      {icon}
-      {!collapsed && <span>{label}</span>}
-    </div>
-  );
-
-  if (to) {
-    return <Link to={to}>{content}</Link>;
-  }
-
-  return <button className="w-full text-left">{content}</button>;
 };

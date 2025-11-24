@@ -47,6 +47,7 @@ interface CreateBlogRequest {
   excerpt: string;
   category: string;
   image?: string;
+  coverImage?: string;
   tags?: string[];
   isPublished?: boolean;
 }

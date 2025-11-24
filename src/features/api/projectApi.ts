@@ -1,37 +1,59 @@
 import { baseApi } from './baseApi';
 
 export interface Project {
-  _id: string;
+  id?: string;
+  _id?: string;
+  userId?: string;
+  studentId?: string;
   title: string;
   description: string;
-  studentId: string;
-  student: {
+  problemStatement?: string;
+  proposedSolution?: string;
+  techStack?: string;
+  technologies?: string[];
+  githubUrl?: string;
+  liveUrl?: string;
+  images?: string[];
+  image?: string;
+  category?: string;
+  status?: 'in-progress' | 'submitted' | 'completed' | 'pending' | 'approved' | 'rejected';
+  isFeatured?: boolean;
+  views?: number;
+  likes?: number;
+  createdAt: string;
+  updatedAt?: string;
+  student?: {
     schoolId: string;
     firstName: string;
     lastName: string;
   };
-  technologies: string[];
-  githubUrl?: string;
-  liveUrl?: string;
-  images: string[];
-  category: string;
-  status: 'pending' | 'approved' | 'rejected';
-  isFeatured: boolean;
-  views: number;
-  likes: number;
-  createdAt: string;
-  updatedAt: string;
+  authorSchoolId?: string;
+  authorFirstName?: string;
+  authorLastName?: string;
+  authorEmail?: string;
+  authorProfilePicture?: string;
 }
 
 interface ProjectListResponse {
-  success: boolean;
-  data: {
+  success?: boolean;
+  projects?: Project[];
+  pagination?: {
+    page?: number;
+    currentPage?: number;
+    totalPages?: number;
+    total?: number;
+    totalProjects?: number;
+    limit?: number;
+  };
+  data?: {
     projects: Project[];
     pagination: {
-      currentPage: number;
-      totalPages: number;
-      totalProjects: number;
-      limit: number;
+      page?: number;
+      currentPage?: number;
+      totalPages?: number;
+      total?: number;
+      totalProjects?: number;
+      limit?: number;
     };
   };
 }
@@ -73,6 +95,44 @@ export const projectsApi = baseApi.injectEndpoints({
         url: '/projects',
         params: { page, limit, search, category, status, sortBy },
       }),
+      transformResponse: (response: any) => {
+        // Normalize different response formats
+        if (response.projects && Array.isArray(response.projects)) {
+          return {
+            success: true,
+            data: {
+              projects: (response.projects as any[]).map(p => ({
+                id: p.id || p._id,
+                _id: p._id || p.id,
+                title: p.title,
+                description: p.description,
+                techStack: p.techStack,
+                technologies: p.technologies || (p.techStack ? p.techStack.split(',').map((t: string) => t.trim()) : []),
+                githubUrl: p.githubUrl,
+                liveUrl: p.liveUrl,
+                images: p.images,
+                status: p.status,
+                createdAt: p.createdAt,
+                authorFirstName: p.authorFirstName,
+                authorLastName: p.authorLastName,
+                authorEmail: p.authorEmail,
+                authorSchoolId: p.authorSchoolId
+              })),
+              pagination: {
+                page: response.pagination?.page || 1,
+                currentPage: response.pagination?.page || 1,
+                total: response.pagination?.total || response.projects.length,
+                totalPages: response.pagination?.totalPages || 1,
+                limit: response.pagination?.limit || 20
+              }
+            }
+          };
+        }
+        return {
+          success: response.success || true,
+          data: response.data || { projects: [], pagination: { page: 1, limit: 10, total: 0, totalPages: 0 } }
+        };
+      },
       providesTags: ['Project'],
     }),
 

@@ -21,11 +21,21 @@ interface AuthState {
   isAuthenticated: boolean;
 }
 
+// Helper to get user from localStorage
+const getStoredUser = (): User | null => {
+  try {
+    const storedUser = localStorage.getItem('user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  } catch {
+    return null;
+  }
+};
+
 const initialState: AuthState = {
-  user: null,
+  user: getStoredUser(),
   token: localStorage.getItem('token'),
   refreshToken: localStorage.getItem('refreshToken'),
-  isAuthenticated: !!localStorage.getItem('token'),
+  isAuthenticated: !!localStorage.getItem('token') && !!getStoredUser(),
 };
 
 const authSlice = createSlice({
@@ -49,7 +59,9 @@ const authSlice = createSlice({
         localStorage.setItem('refreshToken', action.payload.refreshToken);
       }
 
+      // Store both token and user data
       localStorage.setItem('token', action.payload.token);
+      localStorage.setItem('user', JSON.stringify(action.payload.user));
     },
     logout: (state) => {
       state.user = null;
@@ -57,8 +69,10 @@ const authSlice = createSlice({
       state.refreshToken = null;
       state.isAuthenticated = false;
 
+      // Clear all auth-related data from localStorage
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
     },
     updateUser: (state, action: PayloadAction<Partial<User>>) => {
       if (state.user) {

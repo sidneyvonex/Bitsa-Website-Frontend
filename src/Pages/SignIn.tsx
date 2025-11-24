@@ -114,7 +114,7 @@ export const SignInPage: React.FC = () => {
 
             toast.success(`Welcome back${firstName ? ', ' + firstName : ''}! You have successfully logged in.`);
             if (normalizedRole === 'Admin') {
-                navigate('/admin');
+                navigate('/admindashboard');
             } else if (normalizedRole === 'SuperAdmin') {
                 navigate('/superadmin');
             } else {

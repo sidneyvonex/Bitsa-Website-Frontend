@@ -1,11 +1,11 @@
 import { DashboardLayout } from "../Components/DashboardDesign/AllDashboardLayout"
-import { StudentDashboardOverview } from "../Components/StudentDashboard/StudentDashboardOverview"
+import { Outlet } from "react-router-dom"
 
 
 export const StudentDashboard = () => {
   return (
     <DashboardLayout userRole="Student">
-      <StudentDashboardOverview />
+      <Outlet />
     </DashboardLayout>
   )
 }

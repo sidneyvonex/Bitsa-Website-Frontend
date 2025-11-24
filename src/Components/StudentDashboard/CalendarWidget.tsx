@@ -50,13 +50,14 @@ export const CalendarWidget = () => {
 
     // Generate calendar days
     const calendarDays = [];
+    const monthKey = `${currentYear}-${currentMonth}`;
     for (let i = 0; i < firstDay; i++) {
-        calendarDays.push(<div key={`empty-${i}`} className="h-10"></div>);
+        calendarDays.push(<div key={`${monthKey}-empty-${i}`} className="h-10"></div>);
     }
     for (let day = 1; day <= daysInMonth; day++) {
         calendarDays.push(
             <div
-                key={day}
+                key={`${monthKey}-day-${day}`}
                 className={`
           h-10 flex items-center justify-center rounded-lg text-sm font-medium cursor-pointer
           transition-all relative

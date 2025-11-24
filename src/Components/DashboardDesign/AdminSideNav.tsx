@@ -1,160 +1,178 @@
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import { useAppSelector } from '../../features/app/hooks';
+import { selectCurrentUser } from '../../features/auth/authSlice';
 import {
   LayoutDashboard,
-  CalendarDays,
-  LogOut,
-  Mail,
-  Newspaper,
-  CreditCard,
+  Calendar,
   Users,
-  MapPin,
+  FileText,
+  Tag,
   BarChart3,
-} from "lucide-react";
-import type { ReactNode } from "react";
-import { useDispatch } from "react-redux";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { logout } from "../../features/auth/authSlice";
+  Settings,
+  User,
+  LogOut,
+} from 'lucide-react';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../features/auth/authSlice';
+import { useNavigate } from 'react-router-dom';
 
-interface NavLinkProps {
-  to?: string;
-  icon: ReactNode;
-  label: string;
-  active?: boolean;
-  collapsed?: boolean;
-  onClick?: () => void;
-}
-
-interface AdminSideNavProps {
+interface SidebarProps {
   isCollapsed: boolean;
-  userRole: 'Admin';
+  userRole?: 'Admin';
+  isMobileMenuOpen?: boolean;
+  onMobileMenuClose?: () => void;
+  onToggle?: () => void;
 }
 
-export const AdminSideNav = ({ isCollapsed }: AdminSideNavProps) => {
+interface NavItem {
+  name: string;
+  path: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+interface NavSection {
+  title: string;
+  items: NavItem[];
+}
+
+const adminNavSections: NavSection[] = [
+  {
+    title: 'Management',
+    items: [
+      { name: 'Overview', path: '/admindashboard', icon: LayoutDashboard },
+      { name: 'Blogs', path: '/admindashboard/blogs', icon: FileText },
+      { name: 'Events', path: '/admindashboard/events', icon: Calendar },
+      { name: 'Communities', path: '/admindashboard/communities', icon: Users },
+      { name: 'Projects', path: '/admindashboard/projects', icon: BarChart3 },
+      { name: 'Interests', path: '/admindashboard/interests', icon: Tag },
+      { name: 'Reports', path: '/admindashboard/reports', icon: FileText },
+    ],
+  },
+  {
+    title: 'Account',
+    items: [
+      { name: 'Profile', path: '/admindashboard/profile', icon: User },
+      { name: 'Settings', path: '/admindashboard/settings', icon: Settings },
+    ],
+  },
+];
+
+export const AdminSideNav: React.FC<SidebarProps> = ({
+  isCollapsed,
+  isMobileMenuOpen = false,
+  onMobileMenuClose,
+  onToggle,
+}) => {
+  const user = useAppSelector(selectCurrentUser);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate("/login");
+  const userName = user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.email?.split('@')[0] || 'Admin';
+  const userAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=667eea&color=ffffff&size=128`;
+
+  const handleLinkClick = () => {
+    if (isMobileMenuOpen) {
+      if (onMobileMenuClose) onMobileMenuClose();
+      else if (onToggle) onToggle();
+    }
   };
 
-  const isActive = (path: string) => {
-    return (
-      location.pathname === path ||
-      location.pathname.startsWith(path + "/")
-    );
+  const handleLogout = () => {
+    if (isMobileMenuOpen) {
+      if (onMobileMenuClose) onMobileMenuClose();
+      else if (onToggle) onToggle();
+    }
+    dispatch(logout());
+    navigate('/login');
   };
 
   return (
-    <div className="flex flex-col h-full p-4 text-sm text-gray-100 bg-[#093FB4]">
-      <div
-        className={`text-xl font-bold text-orange-500 mb-6 ${
-          isCollapsed ? "text-center" : ""
-        }`}
+    <>
+      {/* Mobile overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => {
+            if (onMobileMenuClose) onMobileMenuClose();
+            else if (onToggle) onToggle();
+          }}
+        />
+      )}
+
+      <aside
+        className={`fixed left-0 top-16 bottom-0 bg-[#5773da] transition-all duration-300 ease-in-out shadow-xl ${isCollapsed ? 'w-20' : 'w-64'
+          } ${isMobileMenuOpen ? 'translate-x-0 z-50' : '-translate-x-full md:translate-x-0 z-30'} md:z-30`}
       >
-        {!isCollapsed ? "TicKenya" : "TK"}
-      </div>
+        <div className="flex flex-col h-full overflow-y-auto">
+          {/* User profile */}
+          <div className="px-4 py-4">
+            <div className="flex items-center gap-3">
+              {!isCollapsed ? (
+                <>
+                  <div className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden border-2 border-gray-700">
+                    <img src={userAvatar} alt={userName} className="w-full h-full object-cover" />
+                  </div>
+                  <div>
+                    <p className="text-white font-semibold text-sm">{userName}</p>
+                    <p className="text-white/60 text-xs">{user?.role || 'Admin'}</p>
+                  </div>
+                </>
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden border-2 border-gray-700 mx-auto">
+                  <img src={userAvatar} alt={userName} className="w-full h-full object-cover" />
+                </div>
+              )}
+            </div>
+          </div>
 
-      <nav className="flex-1 space-y-2">
-        <NavItem
-          to="/admindashboard"
-          icon={<LayoutDashboard size={20} />}
-          label="Dashboard"
-          active={
-            isActive("/admindashboard") &&
-            location.pathname === "/admindashboard"
-          }
-          collapsed={isCollapsed}
-        />
-        <NavItem
-          to="/admindashboard/bookings"
-          icon={<CalendarDays size={20} />}
-          label="All Bookings"
-          active={isActive("/admindashboard/bookings")}
-          collapsed={isCollapsed}
-        />
-        <NavItem
-          to="/admindashboard/events"
-          icon={<Newspaper size={20} />}
-          label="All Events"
-          active={isActive("/admindashboard/events")}
-          collapsed={isCollapsed}
-        />
-        <NavItem
-          to="/admindashboard/venues"
-          icon={<MapPin size={20} />}
-          label="All Venues"
-          active={isActive("/admindashboard/venues")}
-          collapsed={isCollapsed}
-        />
-        <NavItem
-          to="/admindashboard/payments"
-          icon={<CreditCard size={20} />}
-          label="Payments"
-          active={isActive("/admindashboard/payments")}
-          collapsed={isCollapsed}
-        />
-        <NavItem
-          to="/admindashboard/support"
-          icon={<Mail size={20} />}
-          label="Support Tickets"
-          active={isActive("/admindashboard/support")}
-          collapsed={isCollapsed}
-        />
-        <NavItem
-          to="/admindashboard/users"
-          icon={<Users size={20} />}
-          label="All Users"
-          active={isActive("/admindashboard/users")}
-          collapsed={isCollapsed}
-        />
-        <NavItem
-          to="/admindashboard/reports"
-          icon={<BarChart3 size={20} />}
-          label="Sales Reports"
-          active={isActive("/admindashboard/reports")}
-          collapsed={isCollapsed}
-        />
-      </nav>
+          {/* Nav sections */}
+          <nav className="flex-1 overflow-y-auto px-0 pt-2">
+            {adminNavSections.map((section, idx) => (
+              <div key={section.title} className={idx > 0 ? 'mt-6' : 'mt-2'}>
+                {!isCollapsed && (
+                  <h3 className="px-4 mb-3 text-white/50 text-xs font-semibold uppercase tracking-wide">{section.title}</h3>
+                )}
 
-      {/* LOGOUT BUTTON */}
-      <div className="pt-4 border-t border-white/10">
-        <NavItem
-          icon={<LogOut size={20} />}
-          label="Logout"
-          collapsed={isCollapsed}
-          onClick={handleLogout}
-        />
-      </div>
-    </div>
+                <ul className="space-y-0.5">
+                  {section.items.map((item) => (
+                    <li key={item.path}>
+                      <NavLink
+                        to={item.path}
+                        onClick={handleLinkClick}
+                        className={({ isActive }) =>
+                          `flex items-center gap-3 px-6 py-3 transition-all relative ${isActive
+                            ? 'bg-white/10 text-white font-medium border-l-4 border-white'
+                            : 'text-white/80 hover:bg-white/5 hover:text-white border-l-4 border-transparent'
+                          }`
+                        }
+                      >
+                        {({ isActive }) => (
+                          <>
+                            <item.icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-white/70'}`} />
+                            {!isCollapsed && <span className="text-sm font-medium">{item.name}</span>}
+                          </>
+                        )}
+                      </NavLink>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </nav>
+
+          {/* Logout area */}
+          <div className="p-4 mx-4 mb-4">
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 justify-center bg-white/5 hover:bg-white/10 text-white text-sm font-semibold py-3 px-4 rounded-xl transition-colors border border-white/10"
+            >
+              <LogOut className="w-4 h-4 text-white/90" />
+              {!isCollapsed && <span>Logout</span>}
+            </button>
+          </div>
+        </div>
+      </aside>
+    </>
   );
-};
-
-const NavItem = ({
-  to,
-  icon,
-  label,
-  active,
-  collapsed,
-  onClick,
-}: NavLinkProps) => {
-  const content = (
-    <div
-      className={`flex items-center gap-3 p-2 rounded-lg transition-colors ${
-        active
-          ? "bg-white/20 text-white"
-          : "hover:bg-white/10 text-gray-200"
-      }`}
-      onClick={onClick}
-    >
-      {icon}
-      {!collapsed && <span>{label}</span>}
-    </div>
-  );
-
-  if (to) {
-    return <Link to={to}>{content}</Link>;
-  }
-
-  return <button className="w-full text-left">{content}</button>;
 };

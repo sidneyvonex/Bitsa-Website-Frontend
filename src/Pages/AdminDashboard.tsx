@@ -1,12 +1,12 @@
+import { Outlet } from 'react-router-dom';
 import { DashboardLayout } from '../Components/DashboardDesign/AllDashboardLayout'
-import { AdminDashboardOverview } from '../Components/AdminDasboard/AdminDashboardOverview';
 
 const AdminDashboard = () => {
   console.log('🔵 AdminDashboard component rendering');
 
   return (
     <DashboardLayout userRole="Admin">
-      <AdminDashboardOverview />
+      <Outlet />
     </DashboardLayout>
   );
 };

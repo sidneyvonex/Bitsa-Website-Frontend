@@ -103,6 +103,23 @@ export const interestsApi = baseApi.injectEndpoints({
     // Admin: Get all interests
     getAdminInterests: builder.query<InterestListResponse, void>({
       query: () => '/interests/admin/all',
+      transformResponse: (response: any) => {
+        // Handle different response formats from backend
+        if (Array.isArray(response)) {
+          return { success: true, data: response };
+        }
+        if (response.data && Array.isArray(response.data)) {
+          return { success: true, data: response.data };
+        }
+        if (response.interests && Array.isArray(response.interests)) {
+          return { success: true, data: response.interests };
+        }
+        if (Array.isArray(response.interests)) {
+          return { success: true, data: response.interests };
+        }
+        // Fallback - return as is if already in correct format
+        return response;
+      },
       providesTags: ['Interest'],
     }),
 

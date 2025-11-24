@@ -98,7 +98,7 @@ export const DashboardRouter = () => {
                     {/* Sidebar */}
                     <Sidebar
                         isCollapsed={isSidebarCollapsed}
-                        userRole={user?.role as 'Student' | 'Admin' | 'SuperAdmin' || 'Student'}
+                        userRole={(user?.role as 'Student' | undefined) || 'Student'}
                         isMobileMenuOpen={isMobileMenuOpen}
                         onMobileMenuClose={closeMobileMenu}
                     />

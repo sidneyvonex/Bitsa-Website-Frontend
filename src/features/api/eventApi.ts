@@ -25,6 +25,7 @@ export interface Event {
   capacity?: number;
   date?: string;
   time?: string;
+  gallery?: GalleryImage[];
 }
 
 interface EventListResponse {
@@ -43,12 +44,14 @@ interface EventListResponse {
 interface CreateEventRequest {
   title: string;
   description: string;
-  date: string;
-  time: string;
-  location: string;
-  category: string;
   image?: string;
-  capacity: number;
+  startDate: string;
+  endDate: string;
+  locationName: string;
+  latitude?: string;
+  longitude?: string;
+  category?: string;
+  capacity?: number;
   tags?: string[];
 }
 

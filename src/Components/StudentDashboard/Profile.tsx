@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
-import { User, Mail, IdCard, Loader2, Check, Upload, X } from 'lucide-react';
-import { useAppSelector } from '../../app/hooks';
+import { Loader2, Check, X, Camera, Mail, Briefcase, BookOpen } from 'lucide-react';
+import { useAppSelector } from '../../features/app/hooks';
 import { selectCurrentUser } from '../../features/auth/authSlice';
 import { useUpdateCurrentUserMutation, useUpdateProfilePictureMutation } from '../../features/api';
 import { toast } from 'sonner';
@@ -13,14 +13,14 @@ export const StudentProfile = () => {
     const [uploadingImage, setUploadingImage] = useState(false);
 
     const [updateUser, { isLoading: isUpdating }] = useUpdateCurrentUserMutation();
-    const [updateProfilePic, { isLoading: isUpdatingPic }] = useUpdateProfilePictureMutation();
+    const [updateProfilePic] = useUpdateProfilePictureMutation();
 
     const [formData, setFormData] = useState({
         firstName: user?.firstName || '',
         lastName: user?.lastName || '',
         email: user?.email || '',
         schoolId: user?.schoolId || '',
-        bio: user?.bio || '',
+        bio: (user as any)?.bio || '',
         major: user?.major || ''
     });
 
@@ -43,14 +43,12 @@ export const StudentProfile = () => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        // Show preview
         const reader = new FileReader();
         reader.onloadend = () => {
             setPreviewImage(reader.result as string);
         };
         reader.readAsDataURL(file);
 
-        // Upload to Cloudinary
         setUploadingImage(true);
         try {
             const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
@@ -76,195 +74,184 @@ export const StudentProfile = () => {
 
             const data = await response.json();
 
-            if (data.secure_url) {
-                // Update profile picture in backend
-                await updateProfilePic({
-                    profilePicture: data.secure_url,
-                }).unwrap();
-                toast.success('Profile picture updated!');
-                setPreviewImage(null);
-            }
-        } catch (error: any) {
-            toast.error('Failed to upload image');
+            await updateProfilePic({
+                profilePicture: data.secure_url,
+            }).unwrap();
+
+            toast.success('Profile picture updated successfully!');
             setPreviewImage(null);
+        } catch (error: any) {
+            toast.error(error?.data?.message || 'Failed to upload image');
         } finally {
             setUploadingImage(false);
         }
     };
 
-    const userAvatar = user?.profilePicture || user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(
-        `${user?.firstName} ${user?.lastName}`
-    )}&background=6366f1&color=fff&size=128`;
-
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
+        <div className="space-y-8 max-w-4xl">
+            {/* Header */}
+            <div className="flex items-start justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Profile</h1>
-                    <p className="text-gray-600 mt-1">Manage your profile information</p>
+                    <h1 className="text-4xl font-bold text-gray-900">My Profile</h1>
+                    <p className="text-gray-600 mt-2">Manage your personal information</p>
                 </div>
                 <button
                     onClick={() => setIsEditing(!isEditing)}
-                    className="px-4 py-2 bg-[#5773da] text-white rounded-lg hover:bg-[#4861c9] transition-colors"
+                    className="px-4 py-2 rounded-lg bg-[#5773da] text-white hover:bg-[#4861c9] font-medium transition-colors"
                 >
                     {isEditing ? 'Cancel' : 'Edit Profile'}
                 </button>
             </div>
 
-            <div className="bg-white rounded-lg shadow p-6 space-y-6">
-                {/* Avatar Section */}
-                <div className="flex items-center gap-6 pb-6 border-b">
-                    <div className="relative">
-                        <img
-                            src={previewImage || userAvatar}
-                            alt="Profile"
-                            className="w-20 h-20 rounded-full border-4 border-[#5773da] object-cover"
-                        />
-                        {isEditing && (
-                            <button
-                                onClick={() => fileInputRef.current?.click()}
-                                disabled={uploadingImage}
-                                className="absolute bottom-0 right-0 bg-[#5773da] text-white p-2 rounded-full hover:bg-[#4861c9] disabled:opacity-50"
-                            >
-                                {uploadingImage ? (
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                ) : (
-                                    <Upload className="w-4 h-4" />
-                                )}
-                            </button>
-                        )}
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept="image/*"
-                            onChange={handleImageChange}
-                            className="hidden"
-                            disabled={uploadingImage}
-                        />
-                    </div>
-                    <div>
-                        <h2 className="text-2xl font-bold text-gray-900">
-                            {formData.firstName} {formData.lastName}
-                        </h2>
-                        <p className="text-gray-600">{user?.role}</p>
+            {/* Profile Card Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Left: Profile Picture Section */}
+                <div className="lg:col-span-1">
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 space-y-4">
+                        <div className="relative mx-auto w-32 h-32">
+                            <img
+                                src={previewImage || (user as any)?.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.firstName}`}
+                                alt="Profile"
+                                className="w-full h-full rounded-full object-cover border-4 border-[#5773da]"
+                            />
+                            {isEditing && (
+                                <label className="absolute bottom-0 right-0 bg-[#5773da] text-white rounded-full p-2 cursor-pointer hover:bg-[#4861c9] transition-colors">
+                                    <Camera className="w-5 h-5" />
+                                    <input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        onChange={handleImageChange}
+                                        accept="image/*"
+                                        className="hidden"
+                                        disabled={uploadingImage}
+                                    />
+                                </label>
+                            )}
+                            {uploadingImage && (
+                                <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">
+                                    <Loader2 className="w-6 h-6 animate-spin text-white" />
+                                </div>
+                            )}
+                        </div>
+                        <div className="text-center">
+                            <h2 className="text-lg font-bold text-gray-900">
+                                {formData.firstName} {formData.lastName}
+                            </h2>
+                            <p className="text-sm text-gray-600">{formData.schoolId}</p>
+                        </div>
                     </div>
                 </div>
 
-                {/* Personal Information */}
-                <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                            <input
-                                type="text"
-                                value={formData.firstName}
-                                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                                disabled={!isEditing}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder-gray-400 disabled:bg-gray-100 disabled:text-gray-600 focus:ring-2 focus:ring-[#5773da] focus:border-transparent outline-none"
-                            />
+                {/* Right: Information Sections */}
+                <div className="lg:col-span-2 space-y-6">
+                    {/* Personal Information */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 space-y-4">
+                        <div className="flex items-center gap-2 mb-4">
+                            <Mail className="w-5 h-5 text-[#5773da]" />
+                            <h3 className="text-lg font-semibold text-gray-900">Personal Information</h3>
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                            <input
-                                type="text"
-                                value={formData.lastName}
-                                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                                disabled={!isEditing}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder-gray-400 disabled:bg-gray-100 disabled:text-gray-600 focus:ring-2 focus:ring-[#5773da] focus:border-transparent outline-none"
-                            />
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                                <input
+                                    type="text"
+                                    value={formData.firstName}
+                                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                                    disabled={!isEditing}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 disabled:opacity-75"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                                <input
+                                    type="text"
+                                    value={formData.lastName}
+                                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                                    disabled={!isEditing}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 disabled:opacity-75"
+                                />
+                            </div>
                         </div>
+
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-                                <Mail className="w-4 h-4" />
-                                Email
-                            </label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
                             <input
                                 type="email"
                                 value={formData.email}
                                 disabled
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 opacity-75"
                             />
                         </div>
+                    </div>
+
+                    {/* Academic Information */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 space-y-4">
+                        <div className="flex items-center gap-2 mb-4">
+                            <BookOpen className="w-5 h-5 text-[#5773da]" />
+                            <h3 className="text-lg font-semibold text-gray-900">Academic Information</h3>
+                        </div>
+
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-                                <IdCard className="w-4 h-4" />
-                                School ID
-                            </label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">School ID</label>
                             <input
                                 type="text"
                                 value={formData.schoolId}
                                 disabled
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 opacity-75"
                             />
                         </div>
-                        <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Major/Specialization</label>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Major</label>
                             <input
                                 type="text"
                                 value={formData.major}
                                 onChange={(e) => setFormData({ ...formData, major: e.target.value })}
                                 disabled={!isEditing}
-                                placeholder="e.g., Information Technology"
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder-gray-400 disabled:bg-gray-100 disabled:text-gray-600 focus:ring-2 focus:ring-[#5773da] focus:border-transparent outline-none"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 disabled:opacity-75"
                             />
                         </div>
-                        <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Bio</label>
-                            <textarea
-                                value={formData.bio}
-                                onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                                disabled={!isEditing}
-                                placeholder="Tell us about yourself and your interests"
-                                rows={3}
-                                maxLength={250}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder-gray-400 disabled:bg-gray-100 disabled:text-gray-600 focus:ring-2 focus:ring-[#5773da] focus:border-transparent outline-none resize-none"
-                            />
-                            <p className="text-xs text-gray-500 mt-1">{formData.bio.length}/250 characters</p>
+                    </div>
+
+                    {/* Bio Section */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 space-y-4">
+                        <div className="flex items-center gap-2 mb-4">
+                            <Briefcase className="w-5 h-5 text-[#5773da]" />
+                            <h3 className="text-lg font-semibold text-gray-900">Bio</h3>
                         </div>
-                    </div>
-                </div>
 
-                {/* Email Verification Status */}
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
-                    <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
-                    <div>
-                        <p className="font-medium text-green-900">Account Verified</p>
-                        <p className="text-sm text-green-700">Your account and email have been verified</p>
+                        <textarea
+                            value={formData.bio}
+                            onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                            disabled={!isEditing}
+                            placeholder="Tell us about yourself..."
+                            rows={4}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 placeholder-gray-500 disabled:opacity-75"
+                        />
                     </div>
-                </div>
 
-                {/* Save Button */}
-                {isEditing && (
-                    <div className="flex justify-end gap-4 pt-4 border-t">
-                        <button
-                            onClick={() => {
-                                setIsEditing(false);
-                                setPreviewImage(null);
-                            }}
-                            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            onClick={handleSave}
-                            disabled={isUpdating || uploadingImage}
-                            className="px-6 py-2 bg-[#5773da] text-white rounded-lg hover:bg-[#4861c9] disabled:opacity-50 flex items-center gap-2"
-                        >
-                            {isUpdating ? (
-                                <>
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                    Saving...
-                                </>
-                            ) : (
-                                <>
-                                    <Check className="w-4 h-4" />
-                                    Save Changes
-                                </>
-                            )}
-                        </button>
-                    </div>
-                )}
+                    {/* Action Buttons */}
+                    {isEditing && (
+                        <div className="flex gap-3">
+                            <button
+                                onClick={handleSave}
+                                disabled={isUpdating}
+                                className="flex-1 px-6 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 font-medium transition-colors disabled:opacity-75 flex items-center justify-center gap-2"
+                            >
+                                <Check className="w-4 h-4" />
+                                {isUpdating ? 'Saving...' : 'Save Changes'}
+                            </button>
+                            <button
+                                onClick={() => setIsEditing(false)}
+                                className="flex-1 px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium transition-colors flex items-center justify-center gap-2"
+                            >
+                                <X className="w-4 h-4" />
+                                Cancel
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

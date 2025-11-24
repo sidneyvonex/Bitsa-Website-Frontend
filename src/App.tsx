@@ -21,16 +21,63 @@ import ForgotPasswordPage from './Pages/ForgotPassword'
 import SignInPage from './Pages/SignIn'
 import Marketplace from './Pages/MarketPlace'
 import { ProtectedRoute } from './Components/ProtectedRoutes'
+import Communities from './Pages/Communities'
+import Projects from './Pages/Projects'
 import { StudentDashboard } from './Pages/StudentDashboard'
 import { StudentDashboardOverview } from './Components/StudentDashboard/StudentDashboardOverview'
 import { StudentEvents } from './Components/StudentDashboard/Events'
+import { StudentBlogs } from './Components/StudentDashboard/Blogs'
+import { StudentCommunities } from './Components/StudentDashboard/Communities'
+import { StudentProjects } from './Components/StudentDashboard/Projects'
+import { StudentProfile } from './Components/StudentDashboard/Profile'
+import { StudentSettings } from './Components/StudentDashboard/Settings'
+import { StudentEventDetail } from './Components/StudentDashboard/EventDetail'
+import { StudentBlogDetail } from './Components/StudentDashboard/BlogDetail'
+import { StudentProjectDetail } from './Components/StudentDashboard/ProjectDetail'
+import Help from './Pages/Help'
 import AdminDashboard from './Pages/AdminDashboard'
 import { AdminDashboardOverview } from './Components/AdminDasboard/AdminDashboardOverview'
-import { SuperAdminDashboard } from './Pages/SuperAdminDashboard'
+import { AdminBlogs } from './Components/AdminDasboard/AdminBlogs'
+import { AdminEvents } from './Components/AdminDasboard/AdminEvents'
+import { AdminCommunities } from './Components/AdminDasboard/AdminCommunities'
+import { AdminProjects } from './Components/AdminDasboard/AdminProjects'
+import { AdminInterests } from './Components/AdminDasboard/AdminInterests'
+import { AdminReports } from './Components/AdminDasboard/AdminReports'
+import { AdminProfile } from './Components/AdminDasboard/AdminProfile'
+import { AdminSettings } from './Components/AdminDasboard/AdminSettings'
+import SuperAdminDashboard from './Pages/SuperAdminDashboard'
+import { UserManagement } from './Components/SuperAdminDashboard/UserManagement'
+import { AuditLogs } from './Components/SuperAdminDashboard/AuditLogs'
+import { LeadersManagement } from './Components/SuperAdminDashboard/LeadersManagement'
+import { PartnerManagement } from './Components/SuperAdminDashboard/PartnerManagement'
+import { DashboardLayout } from './Components/DashboardDesign/AllDashboardLayout'
 // import {  useEffect, useState } from 'react'
 // import { LoadingScreen } from './Components/LoadingScreen'
 
+// SuperAdmin sub-page components
+const SuperAdminUsersPage = () => (
+  <DashboardLayout userRole="SuperAdmin">
+    <UserManagement />
+  </DashboardLayout>
+);
 
+const SuperAdminLogsPage = () => (
+  <DashboardLayout userRole="SuperAdmin">
+    <AuditLogs />
+  </DashboardLayout>
+);
+
+const SuperAdminLeadersPage = () => (
+  <DashboardLayout userRole="SuperAdmin">
+    <LeadersManagement />
+  </DashboardLayout>
+);
+
+const SuperAdminPartnersPage = () => (
+  <DashboardLayout userRole="SuperAdmin">
+    <PartnerManagement />
+  </DashboardLayout>
+);
 
 function App() {
   // const [loading, setLoading] = useState(true);
@@ -81,7 +128,7 @@ function App() {
     },
     {
       path: 'communities',
-      element: <div>Communities Page</div>,
+      element: <Communities />,
       errorElement: <NotFound />
     }, {
       path: 'about/leadership',
@@ -100,7 +147,7 @@ function App() {
     },
     {
       path: 'projects',
-      element: <div>Projects </div>,
+      element: <Projects />,
       errorElement: <NotFound />
     },
     {
@@ -155,20 +202,40 @@ function App() {
           element: <StudentEvents />
         },
         {
+          path: "events/:eventId",
+          element: <StudentEventDetail />
+        },
+        {
           path: "blogs",
-          element: <div>Student Blogs Page</div>
+          element: <StudentBlogs />
+        },
+        {
+          path: "blogs/:slug",
+          element: <StudentBlogDetail />
         },
         {
           path: "communities",
-          element: <div>Student Communities Page</div>
+          element: <StudentCommunities />
+        },
+        {
+          path: "profile",
+          element: <StudentProfile />
         },
         {
           path: "settings",
-          element: <div>Student Settings Page</div>
+          element: <StudentSettings />
         },
         {
           path: 'projects',
-          element: <div>Student Projects Page</div>
+          element: <StudentProjects />
+        },
+        {
+          path: "projects/:projectId",
+          element: <StudentProjectDetail />
+        },
+        {
+          path: "help",
+          element: <Help />
         }
 
       ]
@@ -194,30 +261,42 @@ function App() {
         // },
         {
           path: "events",
-          element: <div>AdminEvents</div>
+          element: <AdminEvents />
         },
         {
           path: "blogs",
-          element: <div>AdminBlogs</div>
+          element: <AdminBlogs />
         },
         {
           path: "communities",
-          element: <div>AdminCommunities</div>
+          element: <AdminCommunities />
+        },
+        {
+          path: "projects",
+          element: <AdminProjects />
+        },
+        {
+          path: "interests",
+          element: <AdminInterests />
+        },
+        {
+          path: "reports",
+          element: <AdminReports />
+        },
+        {
+          path: "profile",
+          element: <AdminProfile />
         },
         {
           path: "settings",
-          element: <div>AdminSettings</div>
-        },
-        {
-          path: 'projects',
-          element: <div>AdminProjects</div>
+          element: <AdminSettings />
         }
 
       ]
     },
     //3.superadmin routes
     {
-      path: 'admindashboard',
+      path: 'superadmin',
       element: (
         <ProtectedRoute requiredRole={['SuperAdmin']}>
           <SuperAdminDashboard />
@@ -225,36 +304,22 @@ function App() {
       ),
       errorElement: <NotFound />,
       children: [
-        //Admin Nested Routes
-        // {
-        //   index: true,
-        //   element: <SuperAdminDashboardOverview />,
-        // },
-        // {
-        //   path: "profile",
-        //   element: <StudentProfile />,
-        // },
         {
-          path: "events",
-          element: <div>SuperAdminEvents</div>
+          path: 'users',
+          element: <SuperAdminUsersPage />
         },
         {
-          path: "blogs",
-          element: <div>SuperAdminBlogs</div>
+          path: 'logs',
+          element: <SuperAdminLogsPage />
         },
         {
-          path: "communities",
-          element: <div>SuperAdminCommunities</div>
+          path: 'leaders',
+          element: <SuperAdminLeadersPage />
         },
         {
-          path: "settings",
-          element: <div>SuperAdminSettings</div>
-        },
-        {
-          path: 'projects',
-          element: <div>SuperAdminProjects</div>
+          path: 'partners',
+          element: <SuperAdminPartnersPage />
         }
-
       ]
     }
   ])

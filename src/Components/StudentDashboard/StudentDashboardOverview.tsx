@@ -196,7 +196,7 @@ export const StudentDashboardOverview = () => {
                                 {eventsData.data.events.slice(0, 4).map((event: Event) => (
                                     <Link 
                                         key={event.id} 
-                                        to={`/events/${event.id}`}
+                                        to={`/dashboard/events/${event.id}`}
                                         className="flex items-start gap-3 p-3 rounded-lg bg-gray-50 hover:bg-purple-50 hover:border-purple-200 border border-transparent transition-all group"
                                     >
                                         <div className="w-12 h-12 sm:w-14 sm:h-14 bg-purple-100 rounded-lg flex flex-col items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
@@ -218,7 +218,7 @@ export const StudentDashboardOverview = () => {
                             <div className="text-center py-8">
                                 <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                                 <p className="text-gray-500 text-sm">No upcoming events at the moment</p>
-                                <Link to="/events" className="text-sm text-[#5773da] hover:text-[#4861c9] font-medium mt-2 inline-block">
+                                <Link to="/dashboard/events" className="text-sm text-[#5773da] hover:text-[#4861c9] font-medium mt-2 inline-block">
                                     Explore All Events →
                                 </Link>
                             </div>
@@ -263,7 +263,7 @@ export const StudentDashboardOverview = () => {
                             <div className="text-center py-8">
                                 <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                                 <p className="text-gray-500 text-sm">No blogs available yet</p>
-                                <Link to="/blogs" className="text-sm text-[#5773da] hover:text-[#4861c9] font-medium mt-2 inline-block">
+                                <Link to="/dashboard/blogs" className="text-sm text-[#5773da] hover:text-[#4861c9] font-medium mt-2 inline-block">
                                     Explore Blogs →
                                 </Link>
                             </div>
@@ -291,7 +291,7 @@ export const StudentDashboardOverview = () => {
                                 {communitiesData.data.slice(0, 4).map((community: any) => (
                                     <Link 
                                         key={community._id} 
-                                        to="/communities"
+                                        to="/dashboard/communities"
                                         className="p-3 rounded-lg bg-gray-50 hover:bg-green-50 hover:border-green-200 border border-transparent transition-all group"
                                     >
                                         <p className="font-medium text-gray-900 text-sm group-hover:text-green-700 line-clamp-1">{community.name}</p>
@@ -303,7 +303,7 @@ export const StudentDashboardOverview = () => {
                             <div className="text-center py-8">
                                 <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                                 <p className="text-gray-500 text-sm">No communities available</p>
-                                <Link to="/communities" className="text-sm text-[#5773da] hover:text-[#4861c9] font-medium mt-2 inline-block">
+                                <Link to="/dashboard/communities" className="text-sm text-[#5773da] hover:text-[#4861c9] font-medium mt-2 inline-block">
                                     Explore Communities →
                                 </Link>
                             </div>

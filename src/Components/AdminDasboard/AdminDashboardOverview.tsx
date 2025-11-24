@@ -1,63 +1,104 @@
-import { useState } from 'react';
+import { useMemo } from 'react';
 import {
-    Users,
     Calendar,
     FileText,
     Globe,
-    CheckCircle,
-    AlertCircle,
-    Eye,
-    Clock,
+    TrendingUp,
 } from 'lucide-react';
+import { PieChart, Pie, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 import { useAppSelector } from '../../features/app/hooks';
 import { selectCurrentUser } from '../../features/auth/authSlice';
-import {
-    useGetUserStatsQuery,
-    useGetAllUsersQuery,
-} from '../../features/api/userApi';
-import {
-    useGetEventStatsQuery,
-    useGetUpcomingEventsQuery,
-} from '../../features/api/eventApi';
-import {
-    useGetBlogStatsQuery,
-    useGetLatestBlogsQuery,
-} from '../../features/api/blogsApi';
-import {
-    useGetCommunityStatsQuery,
-} from '../../features/api/communitiesApi';
+import { useGetAllBlogsQuery } from '../../features/api/blogsApi';
+import { useGetAllEventsQuery } from '../../features/api/eventApi';
+import { useGetAllCommunitiesQuery } from '../../features/api/communitiesApi';
+import { useGetAllProjectsQuery } from '../../features/api/projectApi';
+import { useGetAllInterestsQuery } from '../../features/api/interestsApi';
 
 export const AdminDashboardOverview = () => {
     const currentUser = useAppSelector(selectCurrentUser);
-    const [selectedTimeRange, setSelectedTimeRange] = useState('week');
 
-    // Fetch stats from APIs
-    const { data: userStats, isLoading: loadingUserStats } = useGetUserStatsQuery();
-    const { data: eventStats, isLoading: loadingEventStats } = useGetEventStatsQuery();
-    const { data: blogStats, isLoading: loadingBlogStats } = useGetBlogStatsQuery();
-    const { data: communityStats, isLoading: loadingCommunityStats } = useGetCommunityStatsQuery();
+    // Fetch all data from APIs
+    const { data: blogsData, isLoading: loadingBlogs } = useGetAllBlogsQuery({ page: 1, limit: 100 });
+    const { data: eventsData, isLoading: loadingEvents } = useGetAllEventsQuery({ page: 1, limit: 100 });
+    const { data: communitiesData, isLoading: loadingCommunities } = useGetAllCommunitiesQuery();
+    const { data: projectsData, isLoading: loadingProjects } = useGetAllProjectsQuery({ page: 1, limit: 100 });
+    const { data: interestsData, isLoading: loadingInterests } = useGetAllInterestsQuery();
 
-    // Fetch recent data
-    const { data: recentUsers } = useGetAllUsersQuery({ page: 1, limit: 5 });
-    const { data: upcomingEvents } = useGetUpcomingEventsQuery(5);
-    const { data: latestBlogs } = useGetLatestBlogsQuery(5);
+    const isLoading = loadingBlogs || loadingEvents || loadingCommunities || loadingProjects || loadingInterests;
 
-    const isLoading = loadingUserStats || loadingEventStats || loadingBlogStats || loadingCommunityStats;
+    // Calculate stats from actual data
+    const stats = useMemo(() => {
+        const blogs = Array.isArray(blogsData?.data?.blogs) ? blogsData.data.blogs : [];
+        const events = Array.isArray(eventsData?.data?.events) ? eventsData.data.events : [];
+        const communities = Array.isArray(communitiesData?.data?.communities) ? communitiesData.data.communities : [];
+        const projects = Array.isArray(projectsData?.projects) ? projectsData.projects : Array.isArray(projectsData?.data?.projects) ? projectsData.data.projects : [];
+        const interests = Array.isArray(interestsData?.data) ? interestsData.data : Array.isArray(interestsData?.interests) ? interestsData.interests : [];
 
-    // Stats cards data
+        // Count by category
+        const eventsByCategory: Record<string, number> = {};
+        events.forEach((event: any) => {
+            const category = event.category || 'Uncategorized';
+            eventsByCategory[category] = (eventsByCategory[category] || 0) + 1;
+        });
+
+        const interestsByCategory: Record<string, number> = {};
+        const hasCategoriesSet = interests.some((i: any) => i.category);
+        
+        interests.forEach((interest: any) => {
+            // If interests have categories, group by category, otherwise group by name
+            const groupKey = hasCategoriesSet ? (interest.category || 'Uncategorized') : (interest.name || 'Unnamed');
+            interestsByCategory[groupKey] = (interestsByCategory[groupKey] || 0) + 1;
+        });
+
+        return {
+            totalBlogs: blogs.length,
+            publishedBlogs: blogs.filter((b: any) => b.isPublished).length,
+            draftBlogs: blogs.filter((b: any) => !b.isPublished).length,
+            totalEvents: events.length,
+            upcomingEvents: events.length,
+            totalCommunities: communities.length,
+            totalProjects: projects.length,
+            eventsByCategory,
+            interestsByCategory,
+        };
+    }, [blogsData, eventsData, communitiesData, projectsData, interestsData]);
+
+    // Transform API data to chart data
+    const eventCategoryData = Object.entries(stats.eventsByCategory).map(([name, value]) => ({
+        name,
+        value: value as number,
+    }));
+
+    const interestCategoryData = Object.entries(stats.interestsByCategory).map(([name, value]) => ({
+        name,
+        value: value as number,
+        fill: ['#0ea5e9', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981'][Object.keys(stats.interestsByCategory).indexOf(name) % 5],
+    }));
+
+    const engagementData = [
+        { day: 'Mon', blogs: 12, events: 8 },
+        { day: 'Tue', blogs: 15, events: 10 },
+        { day: 'Wed', blogs: 18, events: 12 },
+        { day: 'Thu', blogs: 14, events: 11 },
+        { day: 'Fri', blogs: 20, events: 15 },
+        { day: 'Sat', blogs: 16, events: 9 },
+        { day: 'Sun', blogs: 10, events: 7 },
+    ];
+
+    // Stats cards
     const statsCards = [
         {
-            label: 'Total Users',
-            value: userStats?.data?.totalUsers || 0,
+            label: 'Total Blogs',
+            value: stats.totalBlogs,
             change: '+12.5%',
-            icon: Users,
+            icon: FileText,
             color: 'bg-blue-500',
             lightColor: 'bg-blue-50',
             iconColor: 'text-blue-600',
         },
         {
             label: 'Active Events',
-            value: eventStats?.data?.upcomingEvents || 0,
+            value: stats.upcomingEvents,
             change: '+8.2%',
             icon: Calendar,
             color: 'bg-green-500',
@@ -65,19 +106,19 @@ export const AdminDashboardOverview = () => {
             iconColor: 'text-green-600',
         },
         {
-            label: 'Published Blogs',
-            value: blogStats?.data?.publishedBlogs || 0,
-            change: '+15.3%',
-            icon: FileText,
+            label: 'Communities',
+            value: stats.totalCommunities,
+            change: '+5.1%',
+            icon: Globe,
             color: 'bg-purple-500',
             lightColor: 'bg-purple-50',
             iconColor: 'text-purple-600',
         },
         {
-            label: 'Communities',
-            value: communityStats?.data?.totalCommunities || 0,
-            change: '+5.1%',
-            icon: Globe,
+            label: 'Projects',
+            value: stats.totalProjects,
+            change: '+3.2%',
+            icon: TrendingUp,
             color: 'bg-orange-500',
             lightColor: 'bg-orange-50',
             iconColor: 'text-orange-600',
@@ -86,293 +127,168 @@ export const AdminDashboardOverview = () => {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center h-96">
+            <div className="flex flex-col items-center justify-center h-96 gap-4">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5773da]"></div>
+                <p className="text-gray-600">Loading admin dashboard data...</p>
             </div>
         );
     }
 
+
     return (
-        <div className="space-y-6">
-            {/* Header with Greeting */}
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                <div>
-                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
-                        Hey, {currentUser?.firstName || 'Admin'}!
-                    </h1>
-                    <p className="text-gray-600 mt-2 text-lg">Welcome back to your dashboard</p>
-                </div>
-                
-                {/* Time Range Pills */}
-                <div className="flex gap-2">
-                    {['Today', 'Week', 'Month'].map((range) => (
-                        <button
-                            key={range}
-                            onClick={() => setSelectedTimeRange(range.toLowerCase())}
-                            className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${
-                                selectedTimeRange === range.toLowerCase()
-                                    ? 'bg-[#5773da] text-white shadow-lg shadow-[#5773da]/30'
-                                    : 'bg-white border border-gray-200 text-gray-700 hover:border-[#5773da] hover:text-[#5773da]'
-                            }`}
-                        >
-                            {range}
-                        </button>
-                    ))}
-                </div>
+        <div className="space-y-8">
+            {/* Header */}
+            <div>
+                <h1 className="text-4xl font-bold text-gray-900">
+                    Welcome back, {currentUser?.firstName || 'Admin'}!
+                </h1>
+                <p className="text-gray-600 mt-2">Here's what's happening with your platform today.</p>
             </div>
 
-            {/* Stats Cards - Clean Professional Design */}
+            {/* Stats Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {statsCards.map((stat, index) => (
-                    <div
-                        key={index}
-                        className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
-                    >
+                    <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
                         <div className="flex items-start justify-between mb-4">
-                            <div className={`p-3 ${stat.lightColor} rounded-xl`}>
+                            <div className={`p-3 ${stat.lightColor} rounded-lg`}>
                                 <stat.icon className={`w-6 h-6 ${stat.iconColor}`} />
                             </div>
-                            <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                            <span className="text-xs font-medium text-green-600 bg-green-50 px-3 py-1 rounded-full">
                                 {stat.change}
                             </span>
                         </div>
-                        <div>
-                            <p className="text-3xl font-bold text-gray-900 mb-1">{stat.value.toLocaleString()}</p>
-                            <p className="text-sm text-gray-600">{stat.label}</p>
-                        </div>
+                        <p className="text-3xl font-bold text-gray-900 mb-1">{stat.value}</p>
+                        <p className="text-sm text-gray-600">{stat.label}</p>
                     </div>
                 ))}
             </div>
 
-            {/* Main Content Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Recent Users Table - Clean Design */}
-                <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-xl font-bold text-gray-900">Recent Users</h2>
-                        <button className="text-[#5773da] hover:text-[#4861c9] text-sm font-medium">
-                            See All →
-                        </button>
+            {/* Charts Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Interests Category Distribution */}
+                {interestCategoryData.length > 0 && (
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Interests Distribution</h3>
+                        <ResponsiveContainer width="100%" height={300}>
+                            <PieChart>
+                                <Pie
+                                    data={interestCategoryData}
+                                    cx="50%"
+                                    cy="50%"
+                                    labelLine={false}
+                                    label={({ name, value }) => `${name}: ${value}`}
+                                    outerRadius={80}
+                                    fill="#8884d8"
+                                    dataKey="value"
+                                >
+                                    {interestCategoryData.map((entry, idx) => (
+                                        <Cell key={`cell-${idx}`} fill={entry.fill} />
+                                    ))}
+                                </Pie>
+                                <Tooltip />
+                            </PieChart>
+                        </ResponsiveContainer>
                     </div>
+                )}
 
-                    {/* Table */}
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="border-b border-gray-100">
-                                    <th className="text-left py-4 px-4 text-sm font-semibold text-gray-600">User</th>
-                                    <th className="text-left py-4 px-4 text-sm font-semibold text-gray-600">Email</th>
-                                    <th className="text-left py-4 px-4 text-sm font-semibold text-gray-600">Role</th>
-                                    <th className="text-left py-4 px-4 text-sm font-semibold text-gray-600">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {recentUsers?.data?.slice(0, 6).map((user) => (
-                                    <tr key={user._id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                                        <td className="py-4 px-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#5773da] to-[#4861c9] flex items-center justify-center text-white font-semibold text-sm">
-                                                    {user.firstName?.[0]}{user.lastName?.[0]}
-                                                </div>
-                                                <span className="font-medium text-gray-900">
-                                                    {user.firstName} {user.lastName}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td className="py-4 px-4">
-                                            <span className="text-sm text-gray-600">{user.email}</span>
-                                        </td>
-                                        <td className="py-4 px-4">
-                                            <span className="text-sm font-medium text-gray-700">{user.role}</span>
-                                        </td>
-                                        <td className="py-4 px-4">
-                                            {user.isVerified ? (
-                                                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-100 text-green-700 text-xs font-medium">
-                                                    <CheckCircle className="w-3.5 h-3.5" />
-                                                    Verified
-                                                </span>
-                                            ) : (
-                                                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-100 text-orange-700 text-xs font-medium">
-                                                    <AlertCircle className="w-3.5 h-3.5" />
-                                                    Pending
-                                                </span>
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                {/* Event Category Distribution */}
+                {eventCategoryData.length > 0 && (
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Event Categories</h3>
+                        <ResponsiveContainer width="100%" height={300}>
+                            <BarChart data={eventCategoryData}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="name" />
+                                <YAxis />
+                                <Tooltip />
+                                <Bar dataKey="value" fill="#10b981" />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                )}
+            </div>
+
+            {/* Engagement Trends */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Weekly Engagement Trends</h3>
+                <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={engagementData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="day" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Line type="monotone" dataKey="blogs" stroke="#8b5cf6" strokeWidth={2} />
+                        <Line type="monotone" dataKey="events" stroke="#10b981" strokeWidth={2} />
+                    </LineChart>
+                </ResponsiveContainer>
+            </div>
+
+            {/* Recent Content */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Recent Blogs */}
+                <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-semibold text-gray-900">Recent Blogs</h3>
+                        <a href="/admindashboard/blogs" className="text-[#5773da] text-sm font-medium hover:underline">
+                            Manage All →
+                        </a>
+                    </div>
+                    <div className="space-y-3">
+                        {Array.isArray(blogsData?.data?.blogs) && blogsData.data.blogs.slice(0, 4).map((blog: any) => (
+                            <div key={blog.id || blog._id} className="flex items-start justify-between p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition">
+                                <div className="flex-1">
+                                    <h4 className="font-medium text-gray-900 text-sm">{blog.title}</h4>
+                                    <p className="text-xs text-gray-600 mt-1">{blog.category}</p>
+                                </div>
+                                <span className="text-xs text-gray-500 ml-2">{blog.views || 0} views</span>
+                            </div>
+                        ))}
                     </div>
                 </div>
 
-                {/* Today's Requests & Active Projects */}
-                <div className="space-y-6">
-                    {/* Today's Requests */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-lg font-bold text-gray-900">Upcoming Events</h2>
-                            <div className="w-7 h-7 bg-[#5773da] rounded-full flex items-center justify-center">
-                                <span className="text-white text-xs font-bold">
-                                    {upcomingEvents?.data?.events?.length || 0}
-                                </span>
-                            </div>
+                {/* System Status */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">System Status</h3>
+                    <div className="space-y-3">
+                        <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-100">
+                            <span className="text-sm text-gray-700">Published Blogs</span>
+                            <span className="font-bold text-gray-900">{stats.publishedBlogs}</span>
                         </div>
-                        <div className="space-y-2">
-                            {upcomingEvents?.data?.events?.slice(0, 3).map((event) => (
-                                <div
-                                    key={event._id}
-                                    className="p-3 border border-gray-200 rounded-xl hover:border-[#5773da] hover:shadow-sm transition-all cursor-pointer"
-                                >
-                                    <h4 className="font-medium text-gray-900 text-sm mb-1">
-                                        {event.title}
-                                    </h4>
-                                    <p className="text-xs text-gray-600 mb-2">{event.location}</p>
-                                    <div className="flex items-center justify-between">
-                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs">
-                                            {event.status}
-                                        </span>
-                                        <span className="text-xs text-gray-500">
-                                            {event.registeredCount}/{event.capacity}
-                                        </span>
-                                    </div>
-                                </div>
-                            ))}
+                        <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-100">
+                            <span className="text-sm text-gray-700">Upcoming Events</span>
+                            <span className="font-bold text-gray-900">{stats.upcomingEvents}</span>
                         </div>
-                    </div>
-
-                    {/* Active Projects */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                        <h2 className="text-lg font-bold text-gray-900 mb-4">System Overview</h2>
-                        <div className="space-y-3">
-                            <div className="flex items-center justify-between p-3 bg-blue-50 rounded-xl border border-blue-100">
-                                <div className="flex items-center gap-2">
-                                    <Globe className="w-4 h-4 text-blue-600" />
-                                    <span className="text-sm font-medium text-gray-700">Communities</span>
-                                </div>
-                                <span className="text-sm font-bold text-gray-900">{communityStats?.data?.totalCommunities || 0}</span>
-                            </div>
-                            <div className="flex items-center justify-between p-3 bg-green-50 rounded-xl border border-green-100">
-                                <div className="flex items-center gap-2">
-                                    <Calendar className="w-4 h-4 text-green-600" />
-                                    <span className="text-sm font-medium text-gray-700">Events</span>
-                                </div>
-                                <span className="text-sm font-bold text-gray-900">{eventStats?.data?.totalEvents || 0}</span>
-                            </div>
-                            <div className="flex items-center justify-between p-3 bg-purple-50 rounded-xl border border-purple-100">
-                                <div className="flex items-center gap-2">
-                                    <FileText className="w-4 h-4 text-purple-600" />
-                                    <span className="text-sm font-medium text-gray-700">Blogs</span>
-                                </div>
-                                <span className="text-sm font-bold text-gray-900">{blogStats?.data?.totalBlogs || 0}</span>
-                            </div>
-                            <div className="flex items-center justify-between p-3 bg-orange-50 rounded-xl border border-orange-100">
-                                <div className="flex items-center gap-2">
-                                    <Users className="w-4 h-4 text-orange-600" />
-                                    <span className="text-sm font-medium text-gray-700">Total Users</span>
-                                </div>
-                                <span className="text-sm font-bold text-gray-900">{userStats?.data?.totalUsers || 0}</span>
-                            </div>
+                        <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg border border-purple-100">
+                            <span className="text-sm text-gray-700">Communities</span>
+                            <span className="font-bold text-gray-900">{stats.totalCommunities}</span>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg border border-orange-100">
+                            <span className="text-sm text-gray-700">Total Projects</span>
+                            <span className="font-bold text-gray-900">{stats.totalProjects}</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Latest Blog Posts - Clean Cards */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-bold text-gray-900">Latest Content</h2>
-                    <button className="text-[#5773da] hover:text-[#4861c9] text-sm font-medium">
-                        View All →
-                    </button>
+            {/* Upcoming Events */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Upcoming Events</h3>
+                    <a href="/admindashboard/events" className="text-[#5773da] text-sm font-medium hover:underline">
+                        Manage All →
+                    </a>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {latestBlogs?.data?.blogs?.slice(0, 3).map((blog) => (
-                        <div
-                            key={blog._id}
-                            className="border border-gray-200 rounded-xl p-4 hover:border-[#5773da] hover:shadow-md transition-all cursor-pointer"
-                        >
-                            <div className="flex items-start justify-between mb-3">
-                                <span className="text-xs bg-gray-100 text-gray-700 px-2.5 py-1 rounded-full font-medium">
-                                    {blog.category}
-                                </span>
-                                <div className="flex items-center gap-1 text-gray-500">
-                                    <Eye className="w-3.5 h-3.5" />
-                                    <span className="text-xs">{blog.views}</span>
-                                </div>
+                <div className="space-y-2">
+                    {Array.isArray(eventsData?.data?.events) && eventsData.data.events.slice(0, 3).map((event: any) => (
+                        <div key={event.id || event._id} className="flex items-start justify-between p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition">
+                            <div>
+                                <p className="font-medium text-gray-900 text-sm">{event.title}</p>
+                                <p className="text-xs text-gray-600 mt-1">{event.location}</p>
                             </div>
-                            <h4 className="font-semibold text-gray-900 mb-2 line-clamp-2">
-                                {blog.title}
-                            </h4>
-                            <p className="text-xs text-gray-600 line-clamp-2 mb-3">{blog.excerpt}</p>
-                            <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                                <span className="text-xs text-gray-500">
-                                    By {blog.author?.firstName || 'Unknown'}
-                                </span>
-                                {blog.isPublished ? (
-                                    <span className="inline-flex items-center gap-1 text-xs text-green-600">
-                                        <CheckCircle className="w-3 h-3" />
-                                        Published
-                                    </span>
-                                ) : (
-                                    <span className="inline-flex items-center gap-1 text-xs text-orange-600">
-                                        <Clock className="w-3 h-3" />
-                                        Draft
-                                    </span>
-                                )}
-                            </div>
+                            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">{event.category}</span>
                         </div>
                     ))}
-                </div>
-            </div>
-
-            {/* System Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-gray-600">Verified Users</p>
-                            <p className="text-2xl font-bold text-gray-900 mt-1">
-                                {userStats?.data?.verifiedUsers || 0}
-                            </p>
-                        </div>
-                        <CheckCircle className="w-8 h-8 text-green-500" />
-                    </div>
-                </div>
-
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-gray-600">Total Events</p>
-                            <p className="text-2xl font-bold text-gray-900 mt-1">
-                                {eventStats?.data?.totalEvents || 0}
-                            </p>
-                        </div>
-                        <Calendar className="w-8 h-8 text-blue-500" />
-                    </div>
-                </div>
-
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-gray-600">Total Blogs</p>
-                            <p className="text-2xl font-bold text-gray-900 mt-1">
-                                {blogStats?.data?.totalBlogs || 0}
-                            </p>
-                        </div>
-                        <FileText className="w-8 h-8 text-purple-500" />
-                    </div>
-                </div>
-
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-gray-600">Total Members</p>
-                            <p className="text-2xl font-bold text-gray-900 mt-1">
-                                {communityStats?.data?.totalMembers || 0}
-                            </p>
-                        </div>
-                        <Users className="w-8 h-8 text-orange-500" />
-                    </div>
                 </div>
             </div>
         </div>

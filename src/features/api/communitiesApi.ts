@@ -1,15 +1,17 @@
 import { baseApi } from './baseApi';
 
 export interface Community {
-  _id: string;
+  id: string;
   name: string;
   description: string;
-  icon: string;
-  category: string;
-  memberCount: number;
-  leaderId?: string;
+  whatsappLink?: string;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
+  icon?: string;
+  category?: string;
+  memberCount?: number;
+  membersCount?: number;
+  leaderId?: string;
 }
 
 interface CommunityListResponse {
@@ -47,6 +49,31 @@ export const communitiesApi = baseApi.injectEndpoints({
     // Get all communities
     getAllCommunities: builder.query<CommunityListResponse, void>({
       query: () => '/communities',
+      transformResponse: (response: any) => {
+        // Handle different response formats from backend
+        if (response.data?.communities) {
+          return {
+            success: true,
+            data: {
+              communities: (response.data.communities as any[]).map(c => ({
+                id: c.id || c._id,
+                name: c.name,
+                description: c.description,
+                whatsappLink: c.whatsappLink,
+                createdAt: c.createdAt,
+                icon: c.icon,
+                category: c.category,
+                memberCount: c.memberCount || c.membersCount || 0,
+                membersCount: c.membersCount || c.memberCount || 0
+              })),
+              total: response.data.total || response.data.communities.length,
+              limit: response.data.limit || 50,
+              offset: response.data.offset || 0
+            }
+          };
+        }
+        return response;
+      },
       providesTags: ['Community'],
     }),
 
