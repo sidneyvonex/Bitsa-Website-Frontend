@@ -52,6 +52,7 @@ import { LeadersManagement } from './Components/SuperAdminDashboard/LeadersManag
 import { PartnerManagement } from './Components/SuperAdminDashboard/PartnerManagement'
 import { DashboardLayout } from './Components/DashboardDesign/AllDashboardLayout'
 import { Contact } from './Pages/Contact';
+import { EventsCalendarView } from './Pages/EventsCalendarview';
 // import {  useEffect, useState } from 'react'
 // import { LoadingScreen } from './Components/LoadingScreen'
 
@@ -102,6 +103,12 @@ function App() {
         {
           index: true,
           element: <Events />
+        },
+        {
+
+          path: 'calendar-view',
+          element: <EventsCalendarView />
+
         },
         {
           path: ':eventId',
