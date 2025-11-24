@@ -265,6 +265,18 @@ export default function Topbar() {
                 <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#f59e0b]"></span>
               )}
             </Link>
+
+            <Link
+              to="/contact"
+              className={`relative text-sm xl:text-base font-medium py-2 transition-colors group whitespace-nowrap ${
+                isActive("/contact") ? "text-[#f59e0b]" : "text-gray-800"
+              }`}
+            >
+              Contact
+              {isActive("/contact") && (
+                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#f59e0b]"></span>
+              )}
+            </Link>
           </div>
 
           {/* Right Side Actions */}
@@ -482,6 +494,15 @@ export default function Topbar() {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Communities
+              </Link>
+
+              {/* Contact Link */}
+              <Link
+                to="/contact"
+                className="block text-gray-800 font-medium py-2 hover:text-[#f59e0b] transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Contact
               </Link>
 
               {/* Divider */}

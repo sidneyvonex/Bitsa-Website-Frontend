@@ -5,19 +5,21 @@ import { useGetAllCommunitiesQuery } from '../../features/api';
 
 export const StudentCommunities = () => {
     const [searchQuery, setSearchQuery] = useState('');
-    const { data: communitiesData, isLoading } = useGetAllCommunitiesQuery();
+    const { data: communitiesData, isLoading, error } = useGetAllCommunitiesQuery();
 
     const filteredCommunities = useMemo(() => {
         let allCommunities: any[] = [];
         
         if (!communitiesData) {
             allCommunities = [];
+        } else if (communitiesData.data?.communities && Array.isArray(communitiesData.data.communities)) {
+            allCommunities = communitiesData.data.communities;
         } else if (Array.isArray(communitiesData)) {
             allCommunities = communitiesData;
         } else if (Array.isArray(communitiesData.data)) {
             allCommunities = communitiesData.data;
         } else if (communitiesData.data && typeof communitiesData.data === 'object') {
-            allCommunities = Object.values(communitiesData.data);
+            allCommunities = Object.values(communitiesData.data).filter(item => typeof item === 'object');
         }
         
         return allCommunities.filter((community: any) => {
@@ -51,6 +53,10 @@ export const StudentCommunities = () => {
             {isLoading ? (
                 <div className="flex justify-center py-12">
                     <Loader2 className="w-8 h-8 animate-spin text-[#5773da]" />
+                </div>
+            ) : error ? (
+                <div className="bg-white rounded-lg shadow p-12 text-center">
+                    <p className="text-red-600">Failed to load communities. Please try again.</p>
                 </div>
             ) : filteredCommunities.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
