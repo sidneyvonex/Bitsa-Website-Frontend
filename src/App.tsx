@@ -51,6 +51,7 @@ import { AuditLogs } from './Components/SuperAdminDashboard/AuditLogs'
 import { LeadersManagement } from './Components/SuperAdminDashboard/LeadersManagement'
 import { PartnerManagement } from './Components/SuperAdminDashboard/PartnerManagement'
 import { DashboardLayout } from './Components/DashboardDesign/AllDashboardLayout'
+import { Contact } from './Pages/Contact';
 // import {  useEffect, useState } from 'react'
 // import { LoadingScreen } from './Components/LoadingScreen'
 
@@ -149,6 +150,13 @@ function App() {
       path: 'projects',
       element: <Projects />,
       errorElement: <NotFound />
+    },
+  
+          {
+      path: 'contact',
+      element: <Contact />,
+      errorElement: <NotFound />
+    
     },
     {
       path: 'signup',
