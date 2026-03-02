@@ -1,8 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../app/store';
 
-// Base API URL - update this to your backend URL
-const BASE_URL = 'https://bitsabackendapi.azurewebsites.net/api';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL as string;
+
+if (!BASE_URL) {
+  throw new Error('VITE_API_BASE_URL is not defined in your .env file');
+}
 
 // Base query with authentication
 const baseQuery = fetchBaseQuery({
